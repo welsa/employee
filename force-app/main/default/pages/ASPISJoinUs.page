@@ -1,0 +1,531 @@
+<apex:page showHeader="false" 
+            standardStylesheets="false" 
+            sidebar="false" 
+            applyHtmlTag="false" 
+            applyBodyTag="false" 
+            docType="html-5.0"
+            controller="ASPISJoinUs"
+            language="{!language}">
+
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <title>{!$Label.ASPISJoinUsTitle}</title>
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <!--<apex:slds />-->
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <!-- Initalise the global variable first as these values are used in the external javascript files -->
+            <script>
+                window.params = {
+                                    // URL For Icons
+                                     "languageSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#location')}",
+                                    "languagePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility/location_60.png')}",
+                                    "closeSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                                    "closePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                                };
+                var widgetId;
+            </script>
+            <apex:includescript value="https://www.google.com/recaptcha/api.js?render=explicit&hl={!$CurrentPage.Parameters.lang}"/>
+        </head>
+        <body class="slds-scope">
+            <apex:form id="joinUsForm">
+                <div class="slds">
+                    <div class="slds-text-align_center slds-m-top_large">
+                        <object data="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}" 
+                                type="image/svg+xml"
+                                width="500"/>
+                    </div>
+                    <div class="slds-grid slds-m-top_large">
+                        <div class="slds-col"></div>
+
+                        <div class="slds-col slds-m-bottom_large">
+                            <div class="slds-box">
+                                <h1 class="slds-text-heading_medium boldText slds-m-bottom_medium">{!$Label.RequestRegistration}</h1>
+                                
+                                <div class="slds-form_compound">
+                                    <apex:outputText rendered="{!country == 'it'}">
+                                        <h2 class="slds-text-heading_medium boldText">{!$Label.Identification}</h2>
+                                    </apex:outputText>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Account.fields.Name.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="name"
+                                                                    styleClass="slds-input requiredField"
+                                                                    html-placeholder="{!$ObjectType.Account.fields.Name.label}"
+                                                                    value="{!currentAccount.Name}"
+                                                                    required="false" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2"/>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!IF(country != 'IT', $Label.CEO, $Label.CEO_IT)} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-grid slds-m-bottom_x-small">
+                                                    <div class="slds-col slds-size--1-of-4 slds-form-element__control">
+                                                        <apex:inputfield id="contactSalutation"
+                                                                            styleClass="slds-select requiredField"
+                                                                            html-placeholder="{!$ObjectType.Contact.fields.Salutation.label}"
+                                                                            value="{!currentContact.Salutation}"/>
+                                                    </div>
+                                                    <div class="slds-col slds-size--3-of-4 slds-form-element__control">
+                                                        <apex:inputfield id="contactLastName"
+                                                                            styleClass="slds-input requiredField"
+                                                                            html-placeholder="{!$ObjectType.Contact.fields.LastName.label}"
+                                                                            value="{!currentContact.LastName}"
+                                                                            required="false" />
+                                                    </div>
+                                                </div>
+                                                <apex:inputfield id="contactFirstName"
+                                                                    styleClass="slds-input requiredField"
+                                                                    html-placeholder="{!$ObjectType.Contact.fields.FirstName.label}"
+                                                                    value="{!currentContact.FirstName}" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2"/>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Account.fields.Phone.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="phone"
+                                                                    styleClass="slds-input requiredField"
+                                                                    html-placeholder="{!$ObjectType.Account.fields.Phone.label}"
+                                                                    value="{!currentAccount.Phone}" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Account.fields.Fax.label}</label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="fax"
+                                                                    styleClass="slds-input"
+                                                                    html-placeholder="{!$ObjectType.Account.fields.Fax.label}"
+                                                                    value="{!currentAccount.Fax}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Contact.fields.MobilePhone.label}</label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="mobilePhone"
+                                                                    styleClass="slds-input"
+                                                                    html-placeholder="{!$ObjectType.Contact.fields.MobilePhone.label}"
+                                                                    value="{!currentContact.MobilePhone}" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Contact.fields.OtherPhone.label}</label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="otherPhone"
+                                                                    styleClass="slds-input"
+                                                                    html-placeholder="{!$ObjectType.Contact.fields.OtherPhone.label}"
+                                                                    value="{!currentContact.OtherPhone}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Account.fields.ContactEmail__c.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="email"
+                                                                    styleClass="slds-input requiredField"
+                                                                    html-placeholder="{!$ObjectType.Account.fields.ContactEmail__c.label}"
+                                                                    value="{!currentAccount.ContactEmail__c}" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$Label.SIRETCode} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="referenceNumber"
+                                                                    styleClass="slds-input requiredField"
+                                                                    html-placeholder="{!$Label.SIRETCode}"
+                                                                    value="{!currentAccount.LocalReferenceNumber__c}" 
+                                                                    required="false"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Account.fields.VATNumber__c.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="vatNumber"
+                                                                    styleClass="slds-input requiredField"
+                                                                    html-placeholder="{!$ObjectType.Account.fields.VATNumber__c.label}"
+                                                                    value="{!currentAccount.VATNumber__c}" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2"/>
+                                    </div>
+
+                                    <h2 class="slds-text-heading_medium boldText">{!$Label.CompanyAddress}</h2>
+
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Account.fields.BillingStreet.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <!-- WCH 24/08/2020 C-003838 -->
+                                                <apex:inputfield id="billingStreet"
+                                                                    styleClass="slds-textarea requiredField"
+                                                                    html-placeholder="{!$ObjectType.Account.fields.BillingStreet.label}"
+                                                                    value="{!currentAccount.BillingStreet__c}" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2"/>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Account.fields.BillingCity.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <!-- WCH 24/08/2020 C-003838 -->
+                                                <apex:inputfield id="billingCity"
+                                                                    styleClass="slds-input requiredField"
+                                                                    html-placeholder="{!$ObjectType.Account.fields.BillingCity.label}"
+                                                                    value="{!currentAccount.BillingCity__c}" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Account.fields.BillingPostalCode.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <!-- WCH 24/08/2020 C-003838 -->
+                                                <apex:inputfield id="billingPostalCode"
+                                                                styleClass="slds-input requiredField"
+                                                                html-placeholder="{!$ObjectType.Account.fields.BillingPostalCode.label}"
+                                                                value="{!currentAccount.BillingPostalCode__c}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.Account.fields.BillingCountry.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <!-- WCH 24/08/2020 C-003838 -->
+                                                <apex:inputfield id="billingCountry"
+                                                                styleClass="slds-select slds-input requiredField"
+                                                                html-placeholder="{!$ObjectType.Account.fields.BillingCountry.label}"
+                                                                value="{!currentAccount.BillingCountryCode}"/>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2"/>
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="slds-card">
+                                    <div class="slds-card__header slds-p-left_medium"/>
+                                    <div class="slds-card__body slds-p-left_medium">
+                                        <h2>{!$Label.Procedure}</h2>
+                                        <ul>
+                                            <apex:outputText escape="false" 
+                                                             value="{!$Label.ProcedureSteps}"
+                                                             rendered="{!country != 'IT'}"/>
+                                            <apex:outputText escape="false" 
+                                                             value="{!$Label.ProcedureSteps_IT}"
+                                                             rendered="{!country == 'IT'}"/>
+                                        </ul>
+
+                                        <div id="reCaptcha" class="g-recaptcha slds-m-top_large" data-sitekey="{!$Label.CaptchaSiteKey}"></div>
+                                        
+                                        <div class="slds-grid slds-m-top_large">
+                                            <div class="slds-col slds-text-align_center">
+                                                <!--<div id="errorContainer" class="slds-has-error slds-m-bottom_medium">
+                                                    <div class="slds-form-element__help">
+                                                    </div>
+                                                </div>-->
+                                                <button id="btnSubmit" class="slds-button slds-button_brand clickOnce"
+                                                        type="button" 
+                                                        onclick="validateForm();">{!$Label.Submit}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <button class="slds-button slds-button_brand slds-m-top_large"
+                                        type="button"
+                                        onclick="toggleLanguageSection();">
+                                    <span class="languageSVG"/>
+                                    {!$Label.Language}:
+                                    {!mapLanguageCodeLanguage[language]}
+                                </button>
+
+                                <div id="languageSection" class="slds-box slds-m-top_medium">
+                                    <div>
+                                        <p>{!$Label.ChooseLanguage}:</p>
+                                        <ul class="slds-list_horizontal slds-has-inline-block-links_space">
+                                            <apex:repeat value="{!setLanguageCodeLanguage}" var="languageCode">
+                                                <li>
+                                                    <button class="slds-button slds-text-link_reset slds-text-link"
+                                                            type="button"
+                                                            onclick="changeLanguage('{!languageCode}');">
+                                                        {!mapLanguageCodeLanguage[languageCode]}
+                                                    </button>
+                                                </li>
+                                            </apex:repeat>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-col"></div>
+                    </div>
+
+                    <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+                    <div id="spinner"
+                        class="slds-spinner_container"
+                        style="display:none;">
+                        <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+
+                    <div id="browserMessage"
+                         class="slds-notify_container container-bottom slds-hide">
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                    title="{!$Label.Close}"
+                                    type="button"
+                                    onclick="hideBrowserMessage();">
+                            </button>
+                            
+                            <h2>
+                                <apex:outputText value="{!$Label.BrowserSupported}"
+                                                 escape="false"/>
+                            </h2>
+                        </div>
+                    </div>
+
+                    <!-- Error Manager -->
+                    <apex:outputPanel id="errorMessage">
+                        <div id="toastMessage" 
+                            class="slds-notify_container slds-hide">
+                            <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                                <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                        title="{!$Label.Close}"
+                                        type="button"
+                                        onclick="hideError();">
+                                </button>
+                                <div class="slds-notify__content">
+                                    <p class="slds-text-align_center customErrorMsg"></p>
+                                    <apex:pagemessages id="toastErrorMessage" escape="false" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="errorModal"
+                            class="slds-modal slds-modal_prompt"
+                            aria-hidden="false"
+                            role="dialog">
+                            <div class="slds-modal__container">
+                                <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                    <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                                </div>
+                                <div class="slds-modal__content slds-p-around_medium">
+                                    <p class="slds-m-bottom_medium">
+                                        {!$Label.ErrorModalBody}
+                                    </p>
+                                    <apex:pagemessages escape="false" />
+                                </div>
+                                <div class="slds-modal__footer slds-theme_default">
+                                    <input type="button"
+                                        class="slds-button slds-button_destructive"
+                                        value="{!$Label.Close}"
+                                        onclick="hideError();" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                    </apex:outputPanel>
+
+
+                    <div id="welcomeModal"
+                        class="slds-modal slds-modal_prompt"
+                        aria-hidden="false"
+                        role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_info slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.WelcomeModalHeader}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <p class="slds-m-bottom_medium">
+                                    <apex:outputText value="{!$Label.WelcomeModalBody}" escape="false"/>
+                                </p>
+                            </div>
+                            <div class="slds-modal__footer slds-theme_default">
+                                <input type="button"
+                                    class="slds-button slds-button_brand"
+                                    value="{!$Label.Close}"
+                                    onclick="hideWelcomeMessage();" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="welcomeModalBackdrop" class="slds-backdrop"></div>
+                </div>
+                
+
+                <apex:actionfunction name="submitForm"
+                                     action="{!submitForm}"
+                                     rerender="joinUsForm"
+                                     status="statusSpinner"
+                                     oncomplete="renderCaptcha();"/>
+
+                <apex:actionfunction name="changeLanguage"
+                                     action="{!changeLanguage}"
+                                     rerender="joinUsForm"
+                                     oncomplete="renderCaptcha();"
+                                     immediate="true">
+                    <apex:param name="language"
+                                value=""
+                                assignto="{!language}" />
+                </apex:actionfunction>
+
+                <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+                <!--<script src='https://www.google.com/recaptcha/api.js?hl={!$CurrentPage.Parameters.lang}' defer=""></script>-->
+                <!--<apex:includescript value="https://www.google.com/recaptcha/api.js?render=explicit&hl={!$CurrentPage.Parameters.lang}"/>-->
+
+                <script>
+                    if (typeof jQuery != 'undefined')
+                    {
+                        $j = jQuery.noConflict();
+                    }
+
+                    if({!unauthorizedId}){
+                        $j("#btnSubmit").attr('disabled',true);
+                    }
+                    else
+                        $j("#btnSubmit").attr('disabled',false);
+
+                    function validateForm()
+                    {
+                        // Ensuring that there is no error appearing when triggering the function validateForm
+                        hideError();
+                        $j('.customErrorMsg').text('');
+                        $j('[id$="toastErrorMessage"]').text('');
+
+                        //  boolean to know if the form is valid or not
+                        var isValid = true;
+
+                        // loop in the required field to add/remove error
+                        $j('.requiredField').each(function(index, el)
+                        {
+                            if(!$j(el).val())
+                            {
+                                isValid = false;
+                                addError(el);
+                            }
+                            else
+                            {
+                                clearError(el);
+                            }
+                        });
+                        
+                        // If there are any requiredField empty stops validation
+                        if(!isValid)
+                        {
+                            $j('.customErrorMsg').text('{!JSENCODE($Label.FillEmptyFields)}');
+                            showError(true, true);
+                            return;
+                        }
+                        
+                        isValid = verifyReCaptchaResponse();
+
+                        if(isValid)
+                        {
+                            submitForm();
+                            grecaptcha.reset();
+                        }
+                    }
+
+                    function addError(el)
+                    {
+                        $j(el).parent().addClass("slds-has-error");
+                    }
+
+                    function clearError(el)
+                    {
+                        $j(el).parent().removeClass("slds-has-error");
+
+                        hideError();
+                    }
+
+                    function verifyReCaptchaResponse()
+                    {
+                        var hasReCaptchaCompleted = false;
+
+                        if($j("[id^='g-recaptcha-response']").prop('id') === 'g-recaptcha-response')
+                        {
+                            hasReCaptchaCompleted = grecaptcha.getResponse() !== "";
+                        }
+                        else
+                        {
+                            hasReCaptchaCompleted = $j("[id^='g-recaptcha-response']").val() !== "";
+                        }
+
+                        if(!hasReCaptchaCompleted)
+                        {
+                            $j('.customErrorMsg').text('{!JSENCODE($Label.CompleteReCaptcha)}');
+                            showError(true, true);
+                        }
+                        return hasReCaptchaCompleted;
+                    }
+
+                    function showRecepient()
+                    {
+                        /*WCH 16/06/2020 C-003810
+                        var a = 'alphascalefrancegestionnaire';
+                        var b = 'gma';*/
+                        var ab = '{!$Label.AspisServiceEmailAddress}';//WCH 16/06/2020 C-003810 //HRM 03/11/21 C-004489
+                        var c = 'il';
+                        var d = 'com';
+                        var finalString;
+
+                        
+                        finalString = '<' + 'A h' + 're' + 'f="ma' + c + 'to' + ':' + ab + '">' + ab +'<' + '/' + 'a>';
+                        
+
+                        $j("#eaddress").html(finalString);
+                    }
+
+                    function renderCaptcha()
+                    {
+                        grecaptcha.reset(widgetId);
+                    }
+                    
+                    showRecepient();
+                    renderIcons();
+                   
+                    if($j('.errorMsg').length > 0){
+                        showWelcomeMessage(false);
+                    }
+                    else{
+                        showWelcomeMessage({!showWelcomeMessage});
+                    }
+                    
+                    setButtonLocking();
+                    showError({!hasErrors}, {!isToastError});
+                    checkPageMessage({!hasErrors});
+                    displayBrowserMessage();
+
+                    $j(document).ready(function()
+                    {
+                        var timeoutId = setTimeout(function() {
+                            widgetId = grecaptcha.render('reCaptcha', {"sitekey" : "{!$Label.CaptchaSiteKey}"});
+                            //clearTimeout(timeoutId);
+                        }, 500);
+                    });
+
+                    //$j("#errorContainer").width($j("#errorContainer"));
+                </script>
+
+            </apex:form>
+
+        </body>
+    </html>
+</apex:page>

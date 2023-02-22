@@ -1,0 +1,78 @@
+<template>
+    <div class="slds-align_absolute-center">
+       <p style = "font-weight:bold;font-size: 1rem;">Nouveau Prêt</p>
+    </div>
+
+    <hr class="solid" style = "margin-top : 3%;">
+
+    <div class = "center" style = "justify-content: center;">
+        <lightning-messages data-id = "form-err"> </lightning-messages>
+        <lightning-record-edit-form 
+                                    onsuccess={handleSuccess}
+                                    onsubmit={handleSubmit} 
+                                    onerror={handleError}
+                                    onload = {handleload}
+                                    object-api-name="NOB_Rent__c">
+
+            <template if:true={isLoading}>
+                <div class="slds-p-around_medium">
+                    <lightning-spinner size="medium" variant="brand"></lightning-spinner>
+                </div>
+            </template>
+
+            <lightning-layout>
+                <lightning-layout-item size = "12-of-12" class = "slds-align_absolute-center">
+                    <template if:true={isObsolete}>
+                        <!-- <div class = "error" style = "background-color:orange;width:100%">
+                            <p style = "color: white; text-align:center; font-weight:bold;">{label.NOB_LC53_VrWarning}</p>
+                        </div> -->
+                        <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+                            <span class="slds-assistive-text">warning</span>
+                            <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small" title="Description of icon when needed">
+                              <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                                <use xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#warning"></use>
+                              </svg>
+                            </span>
+                            
+                            <lightning-layout multiple-rows="true">
+                                <lightning-layout-item class = "slds-grid_align-center" size = "12-of-12">{msg1}</lightning-layout-item>
+                                <lightning-layout-item  class = "slds-grid_align-center" size = "12-of-12">{msg2}</lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </template>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout>
+                <lightning-layout-item size = "6-of-12" class = "slds-p-right_medium">
+                    <lightning-input-field class= "vrInput" name="inp1" field-name="NOB_ReplacementVehicule__c" required="true" tabindex="-1" onchange= {handleObsolete} > </lightning-input-field>
+                </lightning-layout-item>
+
+                <lightning-layout-item size = "6-of-12" padding="around-small">
+                    <div class="header-column">
+                        <p class="field-title" title="Field 1">{label.NOB_LC53_OrdreDexecution}</p>
+                        <p>{woNumber}</p>
+                    </div>
+                </lightning-layout-item>
+            </lightning-layout>
+    
+            <lightning-input-field field-name = "NOB_VehiculeRentalDate__c" value = {datePriseCharge}></lightning-input-field>
+
+            <lightning-input-field field-name = "NOB_VehiculeReturnDate__c" value = {dateRestitution}></lightning-input-field>
+
+
+        <hr class="solid" style = "margin-bottom : 4%;">
+        <div>
+            <lightning-layout>
+                <!-- <lightning-layout-item size = "6-of-12"></lightning-layout-item> -->
+                <lightning-layout-item size = "12-of-12" class="slds-align_absolute-center" >
+                    <lightning-button label={label.NOB_LC53_Cancel} tabindex="0" data-id = "cancelBtn" class = "slds-p-right_x-small" variant = "brand" onclick = {handleCancel}></lightning-button>
+                    <lightning-button type="submit" label={label.NOB_LC53_Save} variant = "brand" onclick= {handleSave}></lightning-button>
+                </lightning-layout-item>
+
+            </lightning-layout>
+        </div>
+
+        </lightning-record-edit-form>
+        </div>
+</template>

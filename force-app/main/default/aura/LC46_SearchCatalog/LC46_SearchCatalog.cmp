@@ -1,0 +1,152 @@
+<aura:component controller="LC46_SearchCatalog" implements="force:appHostable,forceCommunity:availableForAllPageTypes,force:hasRecordId,force:recordTab" Access="Public">
+	<!-- ************************************************************* -->
+    <!-- **************** AUTHOR  : SC (DMG)         ***************** -->
+    <!-- **************** VERSION : 1.0              ***************** -->
+    <!-- **************** SINCE   : 03/04/2019       ***************** -->
+    <!-- ************************************************************* -->
+	<aura:attribute name="oemVal" type="string" default=""/>
+	<aura:attribute name="oemLimit" type="Integer" />
+	<aura:attribute name="error" type="Boolean" default="false"/>
+	<aura:attribute name="displayButton" type="Boolean" default="true"/>
+	<aura:attribute name="showTable" type="boolean" default="true" />
+	<aura:attribute name="showResults" type="boolean" default="false" />
+	<aura:attribute name="lstBrand" type="List"/>
+	<aura:attribute name="showSmall" type="boolean" default="false" description="control the spinner object"/>   
+	<aura:attribute name="OEMs" access="private" type="object[]" default="[]"/>
+	<aura:attribute name="csvValues" access="private" type="object[]" default="[]"/>
+	<aura:attribute name="Brand" type="String"/>
+	<aura:attribute name="BrandLabel" type="String"/>
+	<aura:attribute name="selectedValue" type="String" default="None"/>
+	<aura:attribute name="isIE" type="boolean" default="false" />
+
+	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+<!-- 	<ltng:require scripts="{!$Resource.alasql}"/> -->
+
+    <div class="slds">  
+      
+     <div class="{!v.showSmall ? '': 'slds-hide'}">
+      <div role="status" class="slds-spinner slds-spinner_small">
+        <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+        <div class="slds-spinner__dot-a"></div>
+        <div class="slds-spinner__dot-b"></div>
+      </div>
+    </div>
+      <html style="line-height: 2.5;">
+      <div class="slds-grid slds-wrap slds-grid--pull-padded">          
+        <div class="slds-col--padded " >
+            <div class="slds-box slds-box--small slds-theme--shade">
+            	<div class="{! !v.showResults ? '' : 'slds-hide'}">
+					<article class="slds-card">
+					  <div class="slds-card__header slds-grid">
+					    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+					      <div  class="slds-media__figure" >
+					        <span class="slds-icon_container slds-icon-standard-account" title="{!$Label.c.CrossReferenceSearch}">
+					           <lightning:icon class="logoCss" iconName="standard:search" size="Medium" alternativeText=""/>
+					          <span class="slds-assistive-text">{!$Label.c.CrossReferenceSearch}</span>
+					        </span>
+					      </div>
+					      <div class="slds-media__body">
+					        <h2 class="slds-card__header-title">
+					            <span>{!$Label.c.CrossReferenceSearch}</span>
+					        </h2>
+					      </div>
+					    </header>
+					  </div>
+					</article>
+					<div class="slds-form-element slds-card" style="padding: 1%;">
+						<div class="slds-form-element slds-size--1-of-2">
+						    <lightning:select aura:id="brandSelect" name="select" label="{!$Label.c.SelectBrand}" value="{!v.selectedValue}"  onchange="{! c.handleChangeBrand }">
+						        <aura:iteration items="{!v.lstBrand}" var="b">
+						            <option value="{!b.value}" text="{!b.label}" selected="{!b.selected}"></option>
+						        </aura:iteration>
+						    </lightning:select>
+
+						    <!--  <lightning:combobox aura:id="brandSelect" name="Select brands" label="{!$Label.c.SelectBrand}" placeholder="None" options="{! v.lstBrand }" onchange="{! c.handleChangeBrand }"/> -->
+						</div>
+						<div class="slds-form-element slds-size--1-of-1">
+							<lightning:textarea name="OEM" value="{!v.oemVal}" maxlength="{!v.oemLimit}" messageWhenBadInput="Limit Reached" 
+		    									label="{!$Label.c.AddOEMRef}" onchange="{! c.checkLength}" />
+		    				<label class="slds-form-element__label" style="line-height: initial;" for="input-03">{!$Label.c.Seperator} <br/> {!$Label.c.Seperator2}</label>
+		    				<label class="{!v.error ? 'slds-form-element__label' : 'slds-hide'}" style="line-height: initial;color:red;" for="input-04">{!$Label.c.Limit_Reached}</label>
+						</div>
+				 		<div class="slds-form-element slds-size--1-of-1">
+				 			<div class="slds-align_absolute-center">
+							<lightning:button variant="brand" label="{!$Label.c.Search}" title="{!$Label.c.Search}" onclick="{!c.showResult}" disabled="{!v.displayButton}"/>  
+						</div>
+		            	</div>	
+	            	</div>
+	            </div>
+
+	            <div class="{! v.showResults ? '' : 'slds-hide'}">
+					<article class="slds-card">
+					  <div class="slds-card__header slds-grid">
+					    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+					      <div  class="slds-media__figure" >
+					        <span class="slds-icon_container slds-icon-standard-account" title="{!$Label.c.AlphaScaleCatalog}">
+					           <lightning:icon iconName="standard:search" size="Medium" alternativeText=""/>
+					          <span class="slds-assistive-text">{!$Label.c.AlphaScaleCatalog}</span>
+					        </span>
+					      </div>
+					      <div class="slds-media__body">
+					        <h2 class="slds-card__header-title">
+					            <span>{!$Label.c.AlphaScaleCatalog}</span>
+					        </h2>
+					      </div>
+					    </header>
+
+					  </div>
+							<table     style="margin-bottom: 1%;    margin-left: 1%;">
+								<thead>
+									<tr class="slds-text-title--caps">
+										<th style="width:33%;    text-align: left;">
+											{!$Label.c.Selected_Brand} : {!v.BrandLabel} 
+										</th>
+										<th style="width:33%;    text-align: center;">
+											<lightning:button variant="brand" label="{!$Label.c.BACKTOSEARCH}" title="{!$Label.c.BACKTOSEARCH}" onclick="{!c.hideResult}" disabled=""/>  
+										</th>						
+										<th style="width:33%;    text-align: center;">
+											<lightning:button variant="brand" label="{!$Label.c.NewSearch}" title="{!$Label.c.NewSearch}" onclick="{!c.chnageResult}" disabled=""/>  
+											
+										</th>
+									</tr>
+								</thead>
+
+							</table>	
+					</article>
+				
+				<aura:iteration items="{!v.OEMs}" var="group">
+					<c:LC46_CrossReference glabel="{!group.label}" records="{!group.records}"/>
+					<br/>
+				</aura:iteration>
+
+
+					<article class="slds-card">
+					  <div class="slds-card__header slds-grid">
+							<table>
+								<thead>
+									<tr class="slds-text-title--caps">
+										<th style="width:33%;    text-align: center;">
+											<lightning:button variant="brand" label="{!$Label.c.Export}" title="{!$Label.c.Export}" onclick="{!c.downloadCsv}" disabled=""/>  
+										</th>
+										<th style="width:33%;    text-align: center;">
+											<lightning:button variant="brand" label="{!$Label.c.BACKTOSEARCH}" title="{!$Label.c.BACKTOSEARCH}" onclick="{!c.hideResult}" disabled=""/>  
+										</th>						
+										<th style="width:33%;    text-align: center;">
+											<lightning:button variant="brand" label="{!$Label.c.NewSearch}"  title="{!$Label.c.NewSearch}" onclick="{!c.chnageResult}" disabled=""/>  
+											
+										</th>
+									</tr>
+								</thead>
+
+							</table>
+					  </div>
+					</article>
+				</div>
+            </div>
+        </div>
+      </div> 
+  	</html>
+    </div>
+
+</aura:component>

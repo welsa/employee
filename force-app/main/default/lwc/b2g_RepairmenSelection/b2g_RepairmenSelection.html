@@ -1,0 +1,196 @@
+<template>
+    <!-- Body section : Map section and list selection section -->
+    <div if:true={showMap}>
+        <lightning-layout multiple-rows vertical-align="center" horizontal-align="center">
+
+            <lightning-layout-item flexibility="auto">
+                <div if:true={usingMobilePhone}>
+                    <!--Initial message on no markers-->
+                    <div if:false={hasMarkers}>
+                        <div class="slds-text-align_center">
+                            <div class="slds-m-around_small slds-text-heading_small ">
+                                <p>
+                                    <lightning-formatted-text
+                                        value={searchRepairmenMsg}>
+                                    </lightning-formatted-text>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div if:true={hasMarkers}>
+                        <div class="bold-border">
+                            <div if:true={isMarkerSelected}>
+                                <lightning-card>
+                                    <div class="slds-text-align_center">
+                                        <div class="slds-var-m-vertical_x-small">
+                                            <lightning-icon icon-name="standard:event" alternative-text="Approved"
+                                                title="Approved"></lightning-icon>
+                                        </div>
+                                        <div class="slds-m-around_small slds-text-heading_medium slds-text-title_bold">
+                                            {selectedRepairman.Name}</div>
+                                        <p>📍 {selectedRepairman.BillingStreet} <br />
+                                            {selectedRepairman.BillingPostalCode} - {selectedRepairman.BillingCity} </p>
+                                        <p>📞 <lightning-formatted-phone value={selectedRepairman.Phone}>
+                                            </lightning-formatted-phone>
+                                        </p>
+                                    </div>
+                                    <div class="slds-align_absolute-center slds-border_top">
+                                        <div class="slds-m-top_small">
+                                            <lightning-button label={btnAppointmentLabel} title={btnAppointmentLabel}
+                                                onclick={handleAppointment} disabled={cantMakeAppointment}
+                                                variant="Brand" icon-name="utility:event" slot="footer">
+                                            </lightning-button>
+                                        </div>
+                                    </div>
+                                </lightning-card>
+                            </div>
+                        </div>
+                    </div>
+                    <div class={getMsgVariant}>
+                        <p>
+                            <lightning-formatted-rich-text value={getSelectionMsg}>
+                            </lightning-formatted-rich-text>
+                        </p>
+                    </div>
+                </div>
+            </lightning-layout-item>
+
+
+            <lightning-layout-item size="12" medium-device-size="10">
+                <div class="slds-border_right slds-box slds-m-top_x-small">
+                    <div if:true={hasMarkers}>
+                        <div>
+                            <lightning-map map-markers={markers} markers-title={markersTitle}
+                                onmarkerselect={handleMarkerSelect} selected-marker-value={selectedMarkerValue}
+                                list-view="visible" icon="standard:location" >
+                            </lightning-map>
+                        </div>
+                    </div>
+
+                    <div if:false={hasMarkers}>
+                        <div class="hidecoordinates">
+                            <lightning-map map-markers={markers} markers-title={markersTitle}
+                                onmarkerselect={handleMarkerSelect} selected-marker-value={selectedMarkerValue}
+                                list-view="visible" icon="standard:location"  zoom-level={getZoomLevel}>
+                            </lightning-map>
+                        </div>
+                    </div>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" medium-device-size="2" flexibility="auto">
+                <div if:false={usingMobilePhone}>
+                    <!--Initial message on no markers-->
+                    <div if:false={hasMarkers}>
+                        <div class="slds-text-align_center">
+                            <div class="slds-m-around_small slds-text-heading_small ">
+                                <div class="slds-var-m-vertical_x-small">
+                                    <lightning-icon icon-name="action:info" alternative-text="info" title="info">
+                                    </lightning-icon>
+                                </div>
+                                <p>
+                                    <lightning-formatted-text
+                                        value={searchRepairmenMsg}>
+                                    </lightning-formatted-text>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div if:true={hasMarkers}>
+                        <div class="bold-border">
+                            <div if:false={isMarkerSelected}>
+                                <div class="slds-text-align_center">
+                                    <div class="slds-m-around_small slds-text-heading_small ">
+                                        <div class="slds-var-m-vertical_x-small">
+                                            <lightning-icon icon-name="action:info" alternative-text="info" title="info"> </lightning-icon>
+                                        </div>
+                                        <p>
+                                            <lightning-formatted-text
+                                                value={selectRepairmenMsg}>
+                                            </lightning-formatted-text>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        
+
+                            <div if:true={isMarkerSelected}>
+                                <lightning-card>
+                                    <div class="slds-text-align_center">
+                                        <div class="slds-var-m-vertical_x-small">
+                                            <lightning-icon icon-name="standard:event" alternative-text="Approved"
+                                                title="Approved"></lightning-icon>
+                                        </div>
+                                        <div class="slds-m-around_small slds-text-heading_medium slds-text-title_bold">
+                                            {selectedRepairman.Name}</div>
+                                        <p>📍 {selectedRepairman.BillingStreet} <br />
+                                            {selectedRepairman.BillingPostalCode}
+                                            - {selectedRepairman.BillingCity} </p>
+                                        <p>📞 <lightning-formatted-phone value={selectedRepairman.Phone}>
+                                            </lightning-formatted-phone>
+                                        </p>
+                                    </div>
+                                    <div class="slds-align_absolute-center slds-border_top">
+                                        <div class="slds-m-top_small">
+                                            <lightning-button label={btnAppointmentLabel} title={btnAppointmentLabel}
+                                                onclick={handleAppointment} disabled={cantMakeAppointment}
+                                                variant="Brand" icon-name="utility:event" slot="footer">
+                                            </lightning-button>
+                                        </div>
+                                    </div>
+                                </lightning-card>
+                            </div>
+                        </div>
+                    </div>
+                    <div class={getMsgVariant}>
+                        <p>
+                            <lightning-formatted-rich-text value={getSelectionMsg}>
+                            </lightning-formatted-rich-text>
+                        </p>
+                    </div>
+                </div>
+
+
+                <div if:true={usingMobilePhone}>
+                    <div if:true={hasMarkers}>
+                        <div if:true={isMarkerSelected}>
+                            <lightning-card>
+                                <div class="slds-text-align_center">
+                                    <div class="slds-var-m-vertical_x-small">
+                                        <lightning-icon icon-name="standard:event" alternative-text="Approved"
+                                            title="Approved"></lightning-icon>
+                                    </div>
+                                    <div class="slds-m-around_small slds-text-heading_medium slds-text-title_bold">
+                                        {selectedRepairman.Name}</div>
+                                    <p>📍 {selectedRepairman.BillingStreet} <br />
+                                        {selectedRepairman.BillingPostalCode} - {selectedRepairman.BillingCity} </p>
+                                    <p>📞 <lightning-formatted-phone value={selectedRepairman.Phone}>
+                                        </lightning-formatted-phone>
+                                    </p>
+                                </div>
+                                <div class="slds-align_absolute-center slds-border_top">
+                                    <div class="slds-m-top_small">
+                                        <lightning-button label={btnAppointmentLabel} title={btnAppointmentLabel}
+                                            onclick={handleAppointment} disabled={cantMakeAppointment}
+                                            variant="Brand" icon-name="utility:event" slot="footer">
+                                        </lightning-button>
+                                    </div>
+                                </div>
+                            </lightning-card>
+                        </div>
+                    </div>
+                </div>
+
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+
+    <!-- Spinner -->
+    <div if:false={isLoaded}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </div>
+</template>

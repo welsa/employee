@@ -1,0 +1,4 @@
+.community-branding {
+    border-color: #6f6f6f !important;
+    --sds-c-pill-color-border: var(--lwc-brandAccessible);
+}

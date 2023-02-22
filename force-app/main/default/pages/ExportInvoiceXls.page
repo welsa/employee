@@ -1,0 +1,126 @@
+<apex:page standardStylesheets="false" controller="ASPISMyInvoices" 
+    contenttype="application/vnd.ms-excel">
+{!xmlheader}
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+<DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+      <Author></Author>
+      <LastAuthor></LastAuthor>
+      <Company></Company>
+      <Version>1</Version>
+    </DocumentProperties>
+
+    <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+      <WindowHeight>16000</WindowHeight>
+      <WindowWidth>20480</WindowWidth>
+      <WindowTopX>400</WindowTopX>
+      <WindowTopY>400</WindowTopY>
+      <ProtectStructure>False</ProtectStructure>
+      <ProtectWindows>False</ProtectWindows>
+    </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s68">
+   <Alignment ss:Vertical="Bottom"/>
+   <Font ss:Size="12" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#16325c" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s75">
+   <Alignment ss:Vertical="Center"/>
+   <Font ss:Size="10"/>
+  </Style>
+ </Styles>
+ 
+ <Worksheet ss:Name="Invoices">
+  <Table ss:ExpandedColumnCount="17" ss:ExpandedRowCount="1500" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="65">
+   <Column ss:AutoFitWidth="0" ss:Width="150"/>
+   <Column ss:AutoFitWidth="0" ss:Width="90"/>
+   <Column ss:AutoFitWidth="0" ss:Width="80"/>
+   <Column ss:AutoFitWidth="0" ss:Width="80"/>
+   <Column ss:AutoFitWidth="0" ss:Width="132"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="124"/>
+   <Column ss:AutoFitWidth="0" ss:Width="132"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96"/>
+      
+   <Row ss:Height="20">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.Number__c.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.Type__c.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.PrerequisiteOrder__c.fields.Name.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.PrerequisiteOrder__c.fields.BodyshopOrderNumber__c.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.PlateNumber__c.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.CreatedDate.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.PrerequisiteOrder__c.fields.Manufacturer__c.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.PrerequisiteOrder__c.fields.Model__c.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.TotalNet__c.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.VAT__c.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.TotalVAT__c.label}</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.Total__c.label}</Data></Cell>
+      <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.Status__c.label}</Data></Cell>
+      <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.Claim_Reference__c.label}</Data></Cell>
+      <Cell ss:StyleID="s68"><Data ss:Type="String">{!$label.OrderReference}</Data></Cell>
+      <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.EstimatedPaymentDate__c.label}</Data></Cell>
+      <Cell ss:StyleID="s68"><Data ss:Type="String">{!$ObjectType.Invoice__c.fields.Date__c.label}</Data></Cell> 
+   </Row>
+   <apex:repeat value="{!invoiceWrapperList}" var="invWrp">
+   <Row ss:Height="14">
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.Number__c}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.Type__c}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.PrerequisiteOrder__r.Name}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.PrerequisiteOrder__r.BodyshopOrderNumber__c}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.PlateNumber__c}</Data></Cell> 
+    <Cell ss:StyleID="s75"><Data ss:Type="String"><apex:outputText value="{0,date,dd/MM/yy}"> <apex:param value="{!invWrp.currentInvoice.CreatedDate}"/></apex:outputText></Data></Cell> 
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.PrerequisiteOrder__r.Manufacturer__c}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.PrerequisiteOrder__r.Model__c}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.TotalNet__c}{!userCurrency}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.VAT__c}&#37;</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.TotalVAT__c}{!userCurrency}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.Total__c}{!userCurrency}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.Status__c}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.Claim_Reference__c}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">{!invWrp.currentInvoice.PrerequisiteOrder__r.BodyshopOrderNumber__c}</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String"><apex:outputText value="{0,date,dd/MM/yy}"> <apex:param value="{!invWrp.currentInvoice.EstimatedPaymentDate__c}"/></apex:outputText></Data></Cell> 
+    <Cell ss:StyleID="s75"><Data ss:Type="String"><apex:outputText value="{0,date,dd/MM/yy}"> <apex:param value="{!invWrp.currentInvoice.Date__c}" /></apex:outputText></Data></Cell> 
+   </Row>
+   </apex:repeat> 
+   
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageLayoutZoom>0</PageLayoutZoom>
+   <Selected/>
+   <FreezePanes/>
+   <FrozenNoSplit/>
+   <SplitHorizontal>1</SplitHorizontal>
+   <TopRowBottomPane>1</TopRowBottomPane>
+   <ActivePane>2</ActivePane>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>
+    
+</apex:page>

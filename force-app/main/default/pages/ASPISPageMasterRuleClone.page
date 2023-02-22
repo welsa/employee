@@ -1,0 +1,38 @@
+<apex:page standardController="MasterRules__c" extensions="ASPISCtrlMasterRuleClone" showHeader="false" sidebar="false">
+	<apex:stylesheet value="{!URLFOR($Resource.popin,'Style1.css')}"/>  
+	<apex:includeScript value="{!URLFOR($Resource.popin,'popin.js')}"/>
+	<body style="background-color:#f8f8f8;text-align:center">
+
+		<apex:form id="formClone">
+			<SCRIPT type="text/javascript">
+				function controlparent(){
+					var answer = 'close';
+					window.top.postMessage(answer, '*');
+				} 
+				function openClone(){
+					//alert('{!newMRId}');
+					window.parent.location='/{!newMRId}';
+				} 
+				function loadImg(val,divId){
+	                if (val){
+	                document.getElementById(divId).style.visibility = 'visible';
+	                }
+	                else {
+	                document.getElementById(divId).style.visibility = 'hidden';
+	                }
+	            }
+			</SCRIPT>
+
+			<apex:actionStatus onstart="loadImg(true,'img2')" onstop="openClone()" id="status001"/>
+			<apex:outputLabel value="Are you sure you want to clone?"/>
+			<br/><br/>
+			<input type="button" class="btn" value="Yes" onclick="cloning()"/>			
+			<apex:actionFunction action="{!cloneMasterDetail}" name="cloning" rerender="formClone" status="status001"/>
+			&nbsp;&nbsp;
+			<input type="button" class="btn" value="No" onclick="controlparent()"/>
+			&nbsp;&nbsp;
+			<img id="img2" src="/img/loading.gif" alt="Loading graphic" style="visibility:hidden" />
+		</apex:form>
+		<apex:pageMessages />
+	</body>
+</apex:page>

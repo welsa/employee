@@ -1,0 +1,237 @@
+<apex:page standardController="PrerequisiteOrder__c" extensions="VFC_PrintPartListForBodyshop" showHeader="false" applyBodyTag="false" applyHtmlTag="false" renderAs="{!renderAs}" cache="true">
+    <html>
+
+    <head>
+        <style>
+            @page {
+                size: A4 landscape;
+                @bottom-right {
+                    content: "Page " counter(page) " - " counter(pages);
+                    font-family: 'Arial', 'Helvetica', sans-serif;
+                    font-size: 10px;
+                }
+            }
+            
+            .pdftable tr th,
+            .pdftable tr td {
+                padding: 6px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <apex:outputField value="{!PrerequisiteOrder__c.Name}" rendered="false" />
+        <apex:outputField value="{!PrerequisiteOrder__c.ClaimReference__c}" rendered="false" />
+        <apex:outputField value="{!PrerequisiteOrder__c.ReferenceNumber__c}" rendered="false" />
+        <apex:outputField value="{!PrerequisiteOrder__c.PlateNumber__c}" rendered="false" />
+        <apex:outputField value="{!PrerequisiteOrder__c.Status__c}" rendered="false" />
+        <apex:outputField value="{!PrerequisiteOrder__c.BodyShop__r.ShippingCountry}" rendered="false" />
+        <h3 style="clear:both;margin-bottom:0px;padding-bottom:0px;font-size:34px;">{!$Label.Delivery_note}</h3>
+        <div style="float:left;width:50%;margin-right:10px;">
+            <img src="{!$Resource.logo}" />
+        </div>
+        <apex:outputtext escape="false" value="{!address}"></apex:outputtext>
+        <div style="clear:both;color:#FFFFFF;">.</div>
+        <br/>
+        <!--<apex:repeat value="{!SalesOrder}" var="so" id="theRepeat1">-->
+        <div style="width:42%;margin-right:10px;float:left;">
+            <div class="test" style="width:55%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+                <apex:outputText escape="false" value="{!$Label.Sales_order_number}" />:
+            </div>
+            <div style="width:35%;margin-right:10px;float:left;">
+                {!currentSalesOrder.Name}
+            </div>
+            <div style="width:55%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+                <apex:outputText escape="false" value="{!$Label.Claim_number}" />:
+            </div>
+            <div style="width:35%;margin-right:10px;float:left;">
+                {!currentSalesOrder.ClaimReference__c}
+            </div>
+
+            <div style="width:55%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+                <apex:outputText escape="false" rendered="{!currentSalesOrder.ReferenceNumber__c != ''}" value="{!$Label.ReferenceNumber}" />
+            </div>
+
+            <div style="width:35%;margin-right:10px;float:left;">
+                {!currentSalesOrder.ReferenceNumber__c}
+            </div>
+
+        </div>
+        <div style="width:53%;margin-right:10px;float:left;">
+            <div class="test" style="width:70%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+                <apex:outputText escape="false" value="{!$Label.Delivery_note_creation_date}" />:
+            </div>
+            <div style="width:20%;margin-right:10px;float:left;">
+                {!currentDate}
+            </div>
+            <div style="width:70%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+                <apex:outputText escape="false" value="{!$Label.Plate_number}" />
+            </div>
+            <div style="width:20%;margin-right:10px;float:left;">
+                {!currentSalesOrder.PlateNumber__c}
+            </div>
+            <div style="clear:both;color:#FFFFFF;">.</div>
+        </div>
+        <!--</apex:repeat>-->
+        <div style="clear:both;color:#FFFFFF;">.</div>
+
+        <table class="pdftable" border="2" width="100%">
+            <tr>
+                <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.Reference}" />
+                </th>
+                <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.PartDescription}" />
+                </th>
+                <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.Qty}" />
+                </th>
+                <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.Type}" />
+                </th>
+                <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.CataloguePrice}" />
+                </th>
+
+                <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.DiscountPercentage}" />
+                </th>
+
+                <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.UnitPrice}" />
+                </th>
+
+                <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.TotalPrice}" />
+                </th>
+
+                <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.CreatedDate}" />
+                </th>
+
+                <th style="font-size:12px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+                    <apex:outputText escape="false" value="{!$Label.Deliverystatus}" />
+                </th>
+            </tr>
+            <apex:variable value="{!0}" var="totalCataloguePrice" />
+            <apex:variable value="{!0}" var="totalPrice" />
+            <apex:repeat value="{!mapOfferWrapper}" var="parentOfferId">
+                <apex:outputText rendered="{!(currentSalesOrder.Status__c == 'INACCEPTANCE') || (currentSalesOrder.Status__c != 'INACCEPTANCE' && mapOfferWrapper[parentOfferId].isSuppliedByAS)}">
+                    <apex:outputText rendered="{!!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                        <apex:variable value="{!(totalCataloguePrice + mapOfferWrapper[parentOfferId].parentOffer.CataloguePrice__c)}" var="totalCataloguePrice" />
+                        <apex:variable value="{!(totalPrice + mapOfferWrapper[parentOfferId].parentOffer.BSTotalPrice__c)}" var="totalPrice" />
+                        <tr>
+                            <td style="font-size:13px;padding:6px;width: 10%">{!mapOfferWrapper[parentOfferId].parentOffer.PartNUmber__c}</td>
+
+                            <td style="font-size:13px;padding:6px;width: 10%">{!mapOfferWrapper[parentOfferId].parentOffer.Description__c}</td>
+
+                            <td style="font-size:13px;padding:6px;width: 8%">{!mapOfferWrapper[parentOfferId].parentOffer.Quantity__c}</td>
+
+                            <td style="font-size:13px;padding:6px;width: 7%">{!mapOfferWrapper[parentOfferId].parentOffer.FinalType__c}</td>
+
+                            <td style="font-size:13px;padding:6px;width: 10%">{!mapOfferWrapper[parentOfferId].parentOffer.CataloguePrice__c}</td>
+
+                            <td style="font-size:13px;padding:6px;width: 10%">{!mapOfferWrapper[parentOfferId].parentOffer.Discount__c}</td>
+
+                            <td style="font-size:13px;padding:6px;width: 15%">{!mapOfferWrapper[parentOfferId].parentOffer.Price__c}</td>
+
+                            <td style="font-size:13px;padding:6px;width: 10%">{!mapOfferWrapper[parentOfferId].parentOffer.BSTotalPrice__c}</td>
+
+                            <td style="font-size:13px;padding:6px;width: 10%">{!mapOfferWrapper[parentOfferId].parentOfferCreatedDate}</td>
+
+                            <td style="font-size:13px;padding:6px;width: 10%">
+                                <apex:outputField value="{!mapOfferWrapper[parentOfferId].parentOffer.DeliveryStatus__c}" />
+                            </td>
+                        </tr>
+                    </apex:outputText>
+                    <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                        <apex:repeat value="{!mapOfferWrapper[parentOfferId].childOfferList}" var="bundleItemOffer">
+                            <apex:variable value="{!(totalCataloguePrice + bundleItemOffer.bundleItem.CataloguePrice__c)}" var="totalCataloguePrice" />
+                            <apex:variable value="{!(totalPrice + bundleItemOffer.bundleItem.BSTotalPrice__c)}" var="totalPrice" />
+                            <tr>
+                                <td style="font-size:13px;padding:6px;width: 10%">{!bundleItemOffer.bundleItem.PartNUmber__c}</td>
+
+                                <td style="font-size:13px;padding:6px;width: 10%">{!bundleItemOffer.bundleItem.Description__c}</td>
+
+                                <td style="font-size:13px;padding:6px;width: 8%">{!bundleItemOffer.bundleItem.Quantity__c}</td>
+
+                                <td style="font-size:13px;padding:6px;width: 7%">{!bundleItemOffer.bundleItem.FinalType__c}</td>
+
+                                <td style="font-size:13px;padding:6px;width: 10%">{!bundleItemOffer.bundleItem.CataloguePrice__c}</td>
+
+                                <td style="font-size:13px;padding:6px;width: 10%">{!bundleItemOffer.bundleItem.Discount__c}</td>
+
+                                <td style="font-size:13px;padding:6px;width: 15%">{!bundleItemOffer.bundleItem.Price__c}</td>
+
+                                <td style="font-size:13px;padding:6px;width: 10%">{!bundleItemOffer.bundleItem.BSTotalPrice__c}</td>
+
+                                <td style="font-size:13px;padding:6px;width: 10%">{!bundleItemOffer.bundleItemCreatedDate}</td>
+
+                                <td style="font-size:13px;padding:6px;width: 10%">
+                                    <apex:outputField value="{!bundleItemOffer.bundleItem.DeliveryStatus__c}" />
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                    </apex:outputText>
+                </apex:outputText>
+            </apex:repeat>
+            <!--<apex:repeat value="{!OfferLines}" var="of" id="theRepeat2">
+                <apex:variable value="{!(totalPrice+of.BSTotalPrice__c)}" var="totalPrice" />
+                <apex:variable value="{!(totalCataloguePrice+of.Total__c)}" var="totalCataloguePrice" />
+                <tr>
+                    <td style="font-size:13px;padding:6px;width: 10%">{!of.PartNUmber__c}</td>
+
+                    <td style="font-size:13px;padding:6px;width: 10%">{!of.Description__c}</td>
+
+                    <td style="font-size:13px;padding:6px;width: 8%">{!of.Quantity__c}</td>
+
+                    <td style="font-size:13px;padding:6px;width: 7%">{!of.FinalType__c}</td>
+
+                    <td style="font-size:13px;padding:6px;width: 10%">{!of.CataloguePrice__c}</td>
+
+                    <td style="font-size:13px;padding:6px;width: 10%">{!of.Discount__c}</td>
+
+                    <td style="font-size:13px;padding:6px;width: 15%">{!of.Price__c}</td>
+
+                    <td style="font-size:13px;padding:6px;width: 10%">{!of.BSTotalPrice__c}</td>
+
+                    <td style="font-size:13px;padding:6px;width: 10%">
+                        <apex:outputText value="{0, date, d'/'MM'/'YYYY}">
+                            <apex:param value="{!of.CreatedDate}" />
+                        </apex:outputText>
+                    </td>
+
+                    <td style="font-size:13px;padding:6px;width: 10%">
+                        <apex:outputField value="{!of.DeliveryStatus__c}" />
+                    </td>
+                </tr>
+            </apex:repeat>-->
+            <!-- </table>
+        <table width="100%"> -->
+            <tr>
+                <td style="font-size:13px;padding:6px;width: 10%"
+                    colspan="4">
+                    <apex:outputText escape="false" value="{!$Label.TotalAmount}" />
+                </td>
+                <!--<td style="width: 10%"></td>
+                <td style="width: 8%"></td>
+                <td style="width: 7%"></td>-->
+                <td style="font-size:13px;padding:6px;width: 10%">
+                    {!totalCataloguePrice}&nbsp;
+                </td>
+                <td style="width: 10%" colspan="2"></td>
+                <!--<td style="font-size:13px;padding:6px;width: 15%;">
+
+                </td>-->
+                <td style="font-size:13px;padding:6px;width: 10%;">
+                    {!totalPrice}&nbsp;
+                </td>
+                <td style="width: 10%" colspan="2"></td>
+                <!--<td style="width: 10%"></td>-->
+            </tr>
+        </table>
+    </body>
+
+    </html>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+</apex:page>

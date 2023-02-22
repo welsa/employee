@@ -1,0 +1,17 @@
+<apex:page standardController="PurchaseOrder__c" extensions="ASPISCtrlOrdManageOrderLines">
+    <apex:form >
+    <apex:pageBlock title="{!$Label.ItemsOrdered}">
+        <apex:commandbutton value="{!$Label.ConfirmDelivered}" 
+            action="{!updateConfirmedLines}"
+            oncomplete="window.top.location='/{!PurchaseOrder__c.id}'"
+        />
+        <apex:pageBlocktable value="{!listOrderedLines}" var="ol">
+            <apex:column value="{!ol.DeliveryStatus__c}"/>
+            <!--<apex:column value="{!ol.BodyShopDeliveryStatus__c}"/>-->
+            <apex:column value="{!ol.Name}"/>
+            <apex:column value="{!ol.PartNumber__c}"/>
+            <apex:column value="{!ol.Description__c}"/>
+        </apex:pageBlocktable>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

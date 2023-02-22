@@ -1,0 +1,24 @@
+<aura:component >
+    <aura:attribute name="selItems" type="object"  access="public" /> 
+    <aura:attribute name="competences" type="List" access="public"/>
+    <aura:handler name="change" value="{!v.selItems}" action="{!c.searchChanges}"/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:registerEvent name="ChangeCompetences" type="c:ChangeCompetences"/>
+	<c:NOB_LC00Lookup aura:id="lookup" objectName="Competences"
+                                                  field_API_text="Name"
+                                                  field_API_val="Id"
+                                                  limit="10"
+                                                  field_API_search="Name"
+                                                  lookupIcon="standard:account" 
+                                                  selItem="{!v.selItems}" 
+                                                  placeholder="Sélectionner Compétences"
+                                                  label="Sélectionner Compétences"
+                                                  textInput="{!v.newRepName}"
+                                                  />  
+    <aura:method name="setComp" action="{!c.doSetComp}" > 
+        <aura:attribute name="competences" type="Object" /> 
+    </aura:method>
+    <aura:if isTrue="{!v.competences.length > 0}">
+        <lightning:pillContainer items="{!v.competences}" onitemremove="{!c.handleItemRemove}"/>
+    </aura:if>
+</aura:component>

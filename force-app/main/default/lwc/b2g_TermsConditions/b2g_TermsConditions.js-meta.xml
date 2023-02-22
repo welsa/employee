@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+
+            <property 
+                name="isDebug" 
+                type="Boolean" 
+                label="Debug logs ?" 
+                default="false"
+                role="inputOnly"
+            />
+
+            <property   
+                name="areTermsAccepted"
+                label="Accepted Terms ?"
+                type="Boolean"
+                description="If user checked terms checkbox"
+            />    
+
+            <property   
+                name="termsConditionsMsg"
+                label="Terms and conditions message"
+                type="String"
+                role="inputOnly"
+                description="User terms and conditions"
+            />   
+
+
+            <property   
+                name="additionalTermsConditionsMsg"
+                label="Additional Terms and conditions message"
+                type="String"
+                role="inputOnly"
+                description="Additional User terms and conditions"
+            />   
+
+            <property   
+                name="incorrectInputCheckbox"
+                label="Incorrect Input (Terms condition) Message"
+                type="String"
+                role="inputOnly"
+                description="Focus on terms checkbox ?"
+            />  
+
+        </targetConfig>
+    </targetConfigs>
+
+
+</LightningComponentBundle>

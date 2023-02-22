@@ -1,0 +1,1 @@
+public class mcr_Exception extends Exception {}

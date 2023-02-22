@@ -1,0 +1,202 @@
+<apex:page controller="VFC17_PrintPartListForAssessment" showHeader="false" applyBodyTag="false" applyHtmlTag="false" renderAs="{!renderAs}" cache="true" language="{!language}">
+    <html>
+
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <style>
+            @page {
+                size: A4;
+                /*margin: 75px;*/
+                margin-bottom: 100px;
+                @bottom-right {
+                    content: "{!$Label.Page} : " counter(page) " / " counter(pages);
+                    font-size: 9px !important;
+                    font-weight: 200 !important;
+                    /*color: #8181bb;*/
+                    margin-top: 0px;
+                }
+            }
+            
+            .font-size-10 {
+                font-size: 10px;
+            }
+            
+            .font-size-12 {
+                font-size: 12px;
+            }
+            
+            .font-size-11 {
+                font-size: 11px;
+            }
+            
+            .font-size-18 {
+                font-size: 18px;
+            }
+            
+            .margin-top-medium {
+                margin-top: 16px;
+            }
+            
+            .margin-bottom-medium {
+                margin-bottom: 16px;
+            }
+            
+            .margin-top-large {
+                margin-top: 24px;
+            }
+            
+            html {
+                line-height: 1.25;
+            }
+            
+            .text-bold {
+                font-weight: bold;
+            }
+            
+            .text-underline {
+                text-decoration: underline;
+            }
+            
+            .table-bordered {
+                border: 1px solid #bfbfbf;
+            }
+            
+            .table-bordered td,
+            .table-bordered th {
+                border-top: 1px solid #bfbfbf;
+                border-bottom: 1px solid #bfbfbf;
+                padding: 2px;
+            }
+            
+            .table-bordered th {
+                border: 1px solid #bfbfbf;
+                background: #f1f4ff !important;
+                white-space: normal;
+                word-break: break-all;
+                font-weight: normal;
+            }
+            
+            td {
+                vertical-align: top;
+            }
+            
+            .table-bordered tfoot td {
+                border: 1px solid #bfbfbf;
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+            
+            .table-bordered tfoot td.noBorderWidth {
+                border-left: 0px;
+                border-bottom: 0px;
+            }
+            
+            .cell-header {
+                background: #f1f4ff !important;
+            }
+            
+            .border-left {
+                border-left: 1px solid #bfbfbf;
+            }
+            
+            .border-right {
+                border-right: 1px solid #bfbfbf;
+            }
+            
+            .width-50 {
+                width: 50px;
+            }
+            
+            .width-40 {
+                width: 40px;
+            }
+            
+            .width-110 {
+                width: 110px;
+            }
+            
+            .noWrap {
+                white-space: nowrap;
+            }
+            
+            hr {
+                margin: 0px;
+                border-top: 1px dashed black;
+            }
+            
+            .text-caps {
+                text-transform: uppercase;
+            }
+        </style>
+    </head>
+
+    <body>
+        <table>
+            <tr>
+                <td class="slds-size_1-of-2 slds-text-align_left">
+                    <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}" width="200" alt="Alpha Scale Logo" />
+                </td>
+                <td class="slds-size_1-of-2 slds-text-align_right font-size-10">
+                    <p class="text-bold font-size-18 text-caps">{!$Label.QuotationDeliveryNote}</p>
+                    <p>{!$Label.DocumentsDate} : {!currentDate}</p>
+                    <p>{!$Label.Currency} : {!currentAssessmentWrapper.currencyIsoCode}</p>
+                </td>
+            </tr>
+        </table>
+
+        <table class="margin-top-medium">
+            <tr>
+                <td class="slds-size_1-of-2 slds-text-align_left font-size-12">
+                    <apex:outputText value="{!$Label.CountryDescriptionOnDeliveryNote}" escape="false"/>
+                </td>
+                <td class="slds-size_1-of-2 slds-text-align_right font-size-12">
+                    <p class="text-bold">{!$ObjectType.Account.fields.ShippingAddress.label}</p>
+                    <apex:outputText value="{!currentAssessmentWrapper.billingAddress}" escape="false" />
+                    <p>{!$ObjectType.Account.fields.VATNumber__c.label} : {!currentAssessmentWrapper.vatNumber}</p>
+                </td>
+            </tr>
+        </table>
+
+        <div class="margin-top-large font-size-10">
+            <p class="text-bold">{!$Label.References} :</p>
+            <p>{!$ObjectType.Assessment__c.fields.ASReference__c.label} : {!currentAssessmentWrapper.asReference}</p>
+            <p>{!$ObjectType.Assessment__c.fields.Manufacturer__c.label} : {!currentAssessmentWrapper.manufacturer}</p>
+            <p>{!$ObjectType.Assessment__c.fields.ModelV2__c.label} : {!currentAssessmentWrapper.model}</p>
+            <p>{!$ObjectType.Assessment__c.fields.PlateNumber2__c.label} : {!currentAssessmentWrapper.plateNumber}</p>
+            <p>{!$ObjectType.Assessment__c.fields.ClaimReference__c.label} : {!currentAssessmentWrapper.claimReference}</p>
+        </div>
+
+        <apex:outputText >
+            <table class="table-bordered font-size-11 margin-top-medium">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.PartNumber}</th>
+                        <th class="slds-text-align_center">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$Label.Qty}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    <apex:repeat value="{!mapPartListsWrapper}" var="originalPlId">
+                        <apex:outputText >
+                            <tr>
+                                <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                <td class="slds-text-align_center">{!mapPartListsWrapper[originalPlId].Partnumber}</td>
+                                <td class="slds-text-align_left">
+                                    {!mapPartListsWrapper[originalPlId].description}
+                                    <!--<br/> {!$ObjectType.PartList__c.fields.Type__c.label} : {!mapPartListsWrapper[originalPlId].Type}-->
+                                    <br/>
+                                </td>
+                                <td class="slds-text-align_center noWrap border-right">{!mapPartListsWrapper[originalPlId].quantity}</td>
+                            </tr>
+                            <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                        </apex:outputText>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </apex:outputText>
+    </body>
+
+    </html>
+</apex:page>

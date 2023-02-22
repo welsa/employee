@@ -1,0 +1,87 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+    <html>
+
+    <head>
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.css')}" />
+        <style>
+            html,
+            body,
+            .fullHeight {
+                height: 100%;
+            }
+            
+            .content {
+                height: 70%;
+            }
+
+            .message {
+                text-align: justify;
+                -moz-text-align-last: center;
+                text-align-last: center;
+            }
+        </style>
+        <!--[if IE 9]>
+            <style>
+                .ieAlignCenter {
+                    margin-top: 10%;
+                }
+            </style>
+        <![endif]-->
+    </head>
+
+    <body>
+        <div class="slds slds-text-align--center fullHeight">
+            <div class="slds-grid slds-grid--vertical-align-center slds-grid--align-center fullHeight ieAlignCenter">
+                <div class="content">
+                    <div class="slds-image slds-text-align--center">
+                        <object data="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}" type="image/svg+xml" width="500" />
+                    </div>
+                    
+                    <div id="frenchSupport" class="slds-hide message slds-m-horizontal--medium">
+                        <p class="slds-m-vertical--medium slds-text-heading--medium">Bienvenue chez Alpha Scale, la commande de pièces en toute simplicité depuis votre outil de chiffrage.</p>
+
+                        <p class="slds-m-bottom--x-small">N’hésitez pas à nous appeler pour réaliser votre première commande et être guidé pas-à-pas.</p>
+
+                        <p class="slds-m-bottom--x-small">Notre équipe est à votre entière disposition, du lundi au vendredi, de 09h00 à 17h00 au {!$Label.AspisStandardPhoneNumber}.</p><!-- WCH 31/05/2019 C-003212 -->
+
+                        <p>Vous pouvez également nous contacter par e-mail à <a href="mailto:service.alphascale1@axa.fr">service.alphascale1@axa.fr</a></p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <script>
+            // Initialising the jquery
+            if (typeof jQuery != 'undefined') {
+                $j = jQuery.noConflict();
+            }
+
+            var language = navigator.languages && navigator.languages[0] ||
+                navigator.language ||
+                navigator.userLanguage;
+
+            var languageCode = language.slice(0, 2);
+
+            console.log("code", languageCode);
+            switch (languageCode) {
+                case "fr":
+                    $j("#frenchSupport").show();
+                    break;
+                /*case "es":
+                    $j("#welcomeMessage").text("¡Bienvenido a Alpha Scale!");
+                    break;
+                case "it":
+                    $j("#welcomeMessage").text("Benvenuto in Alpha Scale!");
+                    break;
+                case "de":
+                    $j("#welcomeMessage").text("Willkommen bei Alpha Scale!");
+                    break;*/
+                default:
+                    //$j("#welcomeMessage").text("Welcome to Alpha Scale!");
+            }
+        </script>
+    </body>
+
+    </html>
+</apex:page>

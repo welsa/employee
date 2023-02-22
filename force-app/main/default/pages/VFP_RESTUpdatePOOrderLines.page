@@ -1,0 +1,150 @@
+<apex:page standardcontroller="PurchaseOrder__c"
+           extensions="VFC_RESTUpdatePOOrderLines"
+           sidebar="false"
+           showheader="false"
+           standardstylesheets="false"> 
+    <head>
+      <apex:slds />
+      <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+    </head>
+
+    <body class="slds-scope">
+        <div class="demo-only demo--inverse" style="height: 6rem;" id="loadTable">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_medium">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-only" style="height: 4rem;">
+            <div class="slds-notify_container slds-is-relative" id="status">
+
+            </div>
+        </div>
+    </body>
+
+    <script>
+        var PurchaseOrderId = "{!$CurrentPage.parameters.Id}"; 
+        var deserialiseResp = {};
+
+        var $j = jQuery.noConflict();                
+                    
+        $j(document).ready(function() {
+            //on initial load,show spinner
+            $j('#loadTable').show();
+
+            //hide status panel
+            $j('#status').hide();
+
+            //clear status panel
+            $j('#status').empty();
+
+            var showWarning = false;
+
+            if ( typeof String.prototype.startsWith != 'function' ) {
+                String.prototype.startsWith = function( str ) {
+                    return str.length > 0 && this.substring( 0, str.length ) === str;
+                }
+            };
+            
+            VFC_RESTUpdatePOOrderLines.launchDistributorCallOut(PurchaseOrderId,function(result,event){
+                if(event.status){
+                    //console.log('result ' , result);
+
+                    if(result){
+                        if(result == '{!$Label.DistributorAlreadyLaunchMsg}'){
+                            showWarning = true;
+                            content = buildContent('null','{!$Label.DistributorAlreadyLaunchMsg}',true);
+                            $j('#status').append(content);
+                        }else if(result == '{!$Label.DistributorNotConnected}'){
+                            showWarning = true;
+                            content = buildContent('null','{!$Label.DistributorNotConnected}',true);
+                            $j('#status').append(content);
+                        }
+                        else if(result.startsWith('Error: ') || result.startsWith('Exceptions:')){
+                            showWarning = true;
+                            content = buildContent('null',result,true);
+                            $j('#status').append(content);
+                        }
+                        else if(result == '{!$Label.DistributorWSNoInfo}'){
+                            showWarning = true;
+                            content = buildContent('null','{!$Label.DistributorWSNoInfo}',true);
+                            $j('#status').append(content);
+                        }else{
+                            //console.log('result ' , result);
+                            deserialiseResp = jQuery.parseJSON($j('<div/>').html(result).text());
+                        }
+                        console.log('deserialiseResp ' , deserialiseResp);
+                        
+                        var isError = false;
+
+                        if(deserialiseResp.length > 0 && showWarning == false){
+                            //check if there is error first
+                            $j.each(deserialiseResp,function(index,ele){
+                                if(ele.Success == false){
+                                    isError = true;
+                                }
+                            });
+
+                            if(isError){
+                                $j.each(deserialiseResp,function(index,ele){
+                                    var content = '';
+                                    if(ele.Success == false){
+                                        content = buildContent(true,ele.ErrorMessage,null);
+                                        $j('#status').append(content);
+                                    }
+                                });
+                            }else{
+                                var content = buildContent(false,'{!$Label.UpdateStockInfoSuccessMessage}',null);//WCH 01/07/2019 C-003129
+                                $j('#status').append(content);
+                            }
+                        }//end if deserialiseResp.length > 0
+
+                        //hide spinner
+                        $j('#loadTable').hide();
+
+                        //show status panel
+                        $j('#status').show();
+                    }   
+                }
+            });
+
+        });
+
+        function buildContent(isError,message,attention){
+            var content = '';
+            if(isError == true){
+                content = '<div class="slds-notify slds-notify_toast slds-theme_error" role="alert">';
+            }else if(isError == false){
+                content = '<div class="slds-notify slds-notify_toast slds-theme_success" role="alert">';
+            }else if(attention){
+                content = '<div class="slds-notify slds-notify_toast slds-theme_warning" role="alert">';
+            }
+
+            content += '<span class="slds-assistive-text">error</span>';
+            content += '<span class="slds-icon_container slds-icon-utility-error slds-m-right_small ';
+            content += 'slds-no-flex slds-align-top" title="">';
+            content += '<svg class="slds-icon slds-icon_small" aria-hidden="true">';
+
+            if(isError == true){
+                content += '<use xlink:href="{!URLFOR($Asset.SLDS,"/assets/icons/utility-sprite/svg/symbols.svg#error")}"></use>';
+            }else if(isError == false){
+                content += '<use xlink:href="{!URLFOR($Asset.SLDS,"/assets/icons/utility-sprite/svg/symbols.svg#success")}"></use>';
+            }else if(attention){
+                content += '<use xlink:href="{!URLFOR($Asset.SLDS,"/assets/icons/utility-sprite/svg/symbols.svg#warning")}"></use>';
+            }
+
+            content += '</svg></span>';
+            content += '<div class="slds-notify__content">';
+            content += '<h2 class="slds-text-heading_small ">';
+            content += message;
+
+            content += '</h2></div></div>';
+
+            return content;
+        }
+    </script>
+</apex:page>

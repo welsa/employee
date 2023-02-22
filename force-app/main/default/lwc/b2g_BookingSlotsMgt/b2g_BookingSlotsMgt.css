@@ -1,0 +1,29 @@
+.THIS.c-container {
+    border: 1px solid #d8dde6;
+    margin: 10px 0 20px 0;
+}
+
+.slds-border_right{
+    border-width: thin;
+    border-color: var(--lwc-brandAccessible);
+}
+
+
+.slds-box{
+    border-width: thin;
+    border-radius:0;
+    padding: var(--lwc-varSpacingSmall, spacingSmall);
+}
+
+.selectedItem {
+    border-color: var(--lwc-brandAccessible) !important;
+    border-width:  2px !important;
+    --sds-c-button-radius-border : 0px !important;
+}
+
+
+.disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.5;
+  }

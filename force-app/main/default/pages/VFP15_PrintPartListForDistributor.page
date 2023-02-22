@@ -1,0 +1,551 @@
+<apex:page controller="VFC15_PrintPartListForDistributor" showHeader="false" applyBodyTag="false" applyHtmlTag="false" renderAs="{!renderAs}" cache="true" language="{!language}">
+    <html>
+
+    <head>
+        <!--<style>
+            @page {
+                size: A4 landscape;
+                @bottom-right {
+                    content: "Page " counter(page) " - " counter(pages);
+                    font-family: 'Arial', 'Helvetica', sans-serif;
+                    font-size: 10px;
+                }
+            }
+            
+            .pdftable tr th,
+            .pdftable tr td {
+                padding: 6px;
+            }
+            
+            .pdftable tr th {
+                background-color: #000066;
+                color: white;
+                font-weight: bold;
+            }
+            
+            .detailsTable {
+                width: 100%;
+                table-layout: fixed;
+                margin-bottom: 16px;
+            }
+            
+            .detailsTable tr th {
+                text-align: right;
+            }
+            
+            .detailsTable tr td {
+                text-align: left;
+                padding-left: 6px;
+            }
+
+            .logoTable {
+                table-layout: fixed;
+                width: 100%;
+                margin-bottom: 16px;
+            }
+
+            .title
+            {
+                margin-bottom: 0px;
+                font-size: 32px;
+            }
+        </style>-->
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <style>
+            @page {
+                size: A4;
+                /*margin: 75px;*/
+                margin-bottom: 100px;
+                @bottom-right {
+                    content: "{!$Label.Page} : " counter(page) " / " counter(pages);
+                    font-size: 9px !important;
+                    font-weight: 200 !important;
+                    /*color: #8181bb;*/
+                    margin-top: 0px;
+                }
+                /*WCH 01/04/2019 C-003060 Agency Mode, 24/12/2019 C-003531 commented code*/
+                /* @bottom-left {
+                    content: "{!IF(POisInAgencyMode,currentPurchaseOrder.DistributorContact__r.Email,'')} \A {!IF(POisInAgencyMode,currentPurchaseOrder.Distributor__r.Phone,'')}";
+                    white-space: pre;
+                    font-size: 9px !important;
+                    font-weight: 200 !important;
+                } */
+            }
+
+            .font-size-10 {
+                font-size: 10px;
+            }
+
+            .font-size-12 {
+                font-size: 12px;
+            }
+
+            .font-size-14 {
+                font-size: 14px;
+            }
+
+            .font-size-11 {
+                font-size: 11px;
+            }
+
+            .font-size-18 {
+                font-size: 18px;
+            }
+
+            .margin-top-medium {
+                margin-top: 16px;
+            }
+
+            .margin-bottom-medium {
+                margin-bottom: 16px;
+            }
+
+            .margin-top-large {
+                margin-top: 24px;
+            }
+
+            html {
+                line-height: 1.25;
+            }
+
+            .text-bold {
+                font-weight: bold;
+            }
+
+            .text-underline {
+                text-decoration: underline;
+            }
+
+            .table-bordered {
+                border: 1px solid #bfbfbf;
+            }
+
+            .table-bordered td,
+            .table-bordered th {
+                border-top: 1px solid #bfbfbf;
+                border-bottom: 1px solid #bfbfbf;
+                padding: 2px;
+            }
+
+            .table-bordered th {
+                border: 1px solid #bfbfbf;
+                background: #f1f4ff !important;
+                white-space: normal;
+                word-break: break-all;
+                font-weight: normal;
+            }
+
+            td {
+                vertical-align: top;
+            }
+
+            .table-bordered tfoot td {
+                border: 1px solid #bfbfbf;
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+
+            .table-bordered tfoot td.noBorderWidth {
+                border-left: 0px;
+                border-bottom: 0px;
+            }
+
+            .cell-header {
+                background: #f1f4ff !important;
+            }
+
+            .border-left {
+                border-left: 1px solid #bfbfbf;
+            }
+
+            .border-right {
+                border-right: 1px solid #bfbfbf;
+            }
+
+            .width-50 {
+                width: 50px;
+            }
+
+            .width-40 {
+                width: 40px;
+            }
+
+            .width-110 {
+                width: 110px;
+            }
+
+            .noWrap {
+                white-space: nowrap;
+            }
+
+            hr {
+                margin: 0px;
+                border-top: 1px dashed black;
+            }
+
+            .text-caps {
+                text-transform: uppercase;
+            }
+
+            .text-red
+            {
+                color: red !important;
+            }
+
+            .margin-top-small {
+                margin-top: 12px;
+            }
+
+            .text-highlight{
+                background-color: yellow !important;
+                font-size: 13px !important;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- <h1 class="title">{!$Label.Delivery_note}</h1>
+
+        <table class="logoTable">
+            <tr>
+                <td><img src="{!$Resource.logo}" /></td>
+                <td><apex:outputtext escape="false" value="{!address}"/></td>
+            </tr>
+        </table> -->
+        <!--VSU Case 2497 09/05/18-->
+        
+        <div  style="{!IF((canSeePO), 'display:block', 'display:none')}" >   <!--KPA 09/11/2020 C-004026 -->
+        <table class="detailsTable">
+            <tr>
+                <td class="slds-size_1-of-2 slds-text-align_left">
+                    <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}" width="200" alt="Alpha Scale Logo" />
+                </td>
+                <td class="slds-size_1-of-2 slds-text-align_right font-size-10">
+                    <!-- WCH 23/12/2019 C-003531 remove POisInAgencyMode condition-->
+                    <!-- WCH 01/04/2019 C-003060 Agency Mode -->
+                    <!--<p class="text-bold font-size-18 text-caps">{!IF(POisInAgencyMode,$Label.Delivery_Request,$Label.Delivery_note)}</p>    -->
+                    <p class="text-bold font-size-18 text-caps">{!IF(currentPurchaseOrder.TECH_AssessmentCountryCode__c== 'FR',$Label.Delivery_Request,$Label.Delivery_note)}</p>
+                    <p><apex:outputText escape="false" value="{!$Label.Delivery_note_creation_date}" />: {!currentDate}</p>
+                    <p class="margin-top-medium text-bold font-size-14 text-caps text-red">
+                        <apex:outputText escape="false" value="{!$Label.Order_number}" />: {!IF(currentPurchaseOrder.TECH_AssessmentCountryCode__c== 'FR',currentPurchaseOrderWrapper.BodyShopOrderNumber,currentPurchaseOrderWrapper.name)}
+
+                        <!-- WCH 05/04/2019 C-002996 Estimation prix "Renseignement N° PO sur bon de livraison" -->
+                        <apex:outputText escape="false" value="{!'<br>'+$Label.PO_Number+' : '+currentPurchaseOrder.Name}" rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c== 'FR'}"/>
+
+                        <!-- WCH 18/10/2019 C-003417 SO Number in PO Delivery Note -->
+                        <apex:outputText escape="false" value="{!'<br>'+(IF(CONTAINS('FR;ES',currentPurchaseOrder.TECH_AssessmentCountryCode__c),($Label.SONumberForDist+' : '+currentPurchaseOrderWrapper.SoNumber),currentPurchaseOrderWrapper.SoNumber))}" rendered="{!displaySONumber}"/>
+                    </p> 
+                </td>
+            </tr>
+            <!-- <tr>
+                <th><apex:outputText escape="false" value="{!$Label.Order_number}" />:</th>
+                <td>{!currentPurchaseOrderWrapper.name}</td>
+                <th><apex:outputText escape="false" value="{!$Label.Delivery_note_creation_date}" />:</th>
+                <td>{!currentDate}</td>
+                
+            </tr> -->
+        </table>
+
+
+            <!-- <tr>
+                --DUN 19/03/2018 Added MissionNumber for BE--
+                <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'BE'}">
+                    <th>
+                        <apex:outputText escape="false" value="{!$ObjectType.Assessment__c.fields.ClaimReference__c.label}"/> :
+                    </th>
+                    <td>{!currentPurchaseOrderWrapper.claimReference}</td>
+                </apex:outputText>
+                <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c == 'BE'}">
+                    <th>
+                        <apex:outputText escape="false" value="{!$ObjectType.Assessment__c.fields.MissionNumber__c.label}" />:
+                    </th>
+                    <td>{!currentPurchaseOrder.Assessment__r.MissionNumber__c}</td>
+                </apex:outputText>
+                <th><apex:outputText escape="false" value="{!$Label.Plate_number}" />:</th>
+                <td>{!currentPurchaseOrderWrapper.plateNumber}</td>
+            </tr> -->
+
+        <table class="margin-top-medium"><!--VSU Case 2497 09/05/18-->
+            <tr>
+                <td class="slds-size_1-of-2 slds-text-align_left font-size-12">
+                    <apex:outputText escape="false" rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c = 'FR'}">
+                        <apex:outputtext escape="false" value="{!alphaScaleFranceContactInfo}"/>
+                    </apex:outputText>
+                </td>
+                <td class="slds-size_1-of-2 slds-text-align_left font-size-12">
+                    <apex:outputtext escape="false" value="{!address}"/>
+                </td>
+            </tr>
+        </table>
+
+        <div class="margin-top-large font-size-10">
+            <!--DUN 19/03/2018 Added MissionNumber for BE-->
+            <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'BE'}"><!-- WCH 01/04/2019 C-003060 Agency Mode, 24/12/2019 C-003531  -->
+                <p> <apex:outputText escape="false" value="{!$ObjectType.Assessment__c.fields.ClaimReference__c.label}"/> : {!currentPurchaseOrderWrapper.claimReference} </p>
+            </apex:outputText>
+            <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c == 'BE'}">
+                <p><apex:outputText escape="false" value="{!$ObjectType.Assessment__c.fields.MissionNumber__c.label}" />: {!currentPurchaseOrder.Assessment__r.MissionNumber__c}</p>
+            </apex:outputText>
+            <p><apex:outputText escape="false" value="{!$Label.Plate_number}" />: {!currentPurchaseOrderWrapper.plateNumber}</p>
+            <p><apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c = 'FR'}" value="{!'Numéro de Série: '+currentPurchaseOrderWrapper.VINNumber}" /> </p>
+            <p><apex:outputText rendered="{!OR(POisInAgencyMode, isDDL)}" value="{!$Label.Brand+': '+currentPurchaseOrder.Brand__c}" /></p><!-- WCH 01/04/2019 C-003060 Agency Mode, 24/12/2019 C-003531  -->
+        </div>
+
+        <!-- Calculating whether there is a line in the section -->
+        <apex:variable var="numberOfWrapperInSuppliedByAS" value="{!0}" />
+        <apex:variable var="numberOfWrapperInNotNotAcceptedByBS" value="{!0}" />
+
+        <apex:repeat var="parentOrderLineId" value="{!mapOrderLineWrapper}">
+            <apex:variable var="numberOfWrapperInSuppliedByAS" 
+                            value="{!IF((
+                                            (currentPurchaseOrderWrapper.isQuotation && mapOrderLineWrapper[parentOrderLineId].isSuppliable) ||
+                                            (!currentPurchaseOrderWrapper.isQuotation && mapOrderLineWrapper[parentOrderLineId].isAcceptedByBS)
+                                        ) && 
+                                        mapOrderLineWrapper[parentOrderLineId].isPreselectedForOrder == hasPreselectedParts
+                                        , numberOfWrapperInSuppliedByAS + 1, numberOfWrapperInSuppliedByAS)}" />
+
+            <apex:variable var="numberOfWrapperInNotNotAcceptedByBS" 
+                            value="{!IF(
+                                        (!currentPurchaseOrderWrapper.isQuotation &&
+                                        !mapOrderLineWrapper[parentOrderLineId].isAcceptedByBS && 
+                                        mapOrderLineWrapper[parentOrderLineId].isPreselectedForOrder == hasPreselectedParts), numberOfWrapperInNotNotAcceptedByBS + 1, numberOfWrapperInNotNotAcceptedByBS)}" />
+
+
+        </apex:repeat>
+
+        
+
+        <!--VSU Case 2497 09/05/18-->
+        <apex:outputText rendered="{!numberOfWrapperInSuppliedByAS > 0}">
+
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">
+                    <apex:outputtext rendered="{!currentPurchaseOrderWrapper.isQuotation && !isDDL}"><!-- WCH 23/12/2019 C-003531-->
+                        <h2>{!$Label.SuppliedBy}</h2>
+                    </apex:outputtext>
+                    <apex:outputtext rendered="{!!currentPurchaseOrderWrapper.isQuotation && !isDDL}"><!-- WCH 23/12/2019 C-003531-->
+                        <h2>{!$Label.SelectedByBodyshop}</h2>
+                    </apex:outputtext>
+                </p>
+            </div>   
+            
+
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.PartNumber}" />
+                        </th>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.PartDescription}" />
+                        </th>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.Qty}" />
+                        </th>
+                    <!--VSU 10/04/18 09/05/18 Case 2497-->
+                    <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'FR' && currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'ES'}">
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.Type}" />
+                        </th>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.CataloguePrice}" />
+                        </th>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.CreatedDate}" />
+                        </th>
+                    </apex:outputText>
+                </tr>
+                </thead>
+                <tbody>
+                <apex:repeat value="{!mapOrderLineWrapper}" var="parentOrderLineId">
+                    <apex:outputtext rendered="{!(
+                                                    (currentPurchaseOrderWrapper.isQuotation &&
+                                                    mapOrderLineWrapper[parentOrderLineId].isSuppliable
+                                                ) ||
+                                                    (!currentPurchaseOrderWrapper.isQuotation &&
+                                                    mapOrderLineWrapper[parentOrderLineId].isAcceptedByBS)
+                                                ) && mapOrderLineWrapper[parentOrderLineId].isPreselectedForOrder == hasPreselectedParts}">
+
+                        <apex:outputText rendered="{! !mapOrderLineWrapper[parentOrderLineId].isFinalOriginal && !mapOrderLineWrapper[parentOrderLineId].isFinalAltenative && !mapOrderLineWrapper[parentOrderLineId].isBundle}">
+                            <tr>
+                                <td class="slds-text-align_center border-left">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.partNumber}</td>
+
+                                <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.description}</td>
+
+                                
+                                <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'FR' && currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'ES'}"><td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.quantity}</td></apex:outputText>
+
+                                <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c = 'FR' || currentPurchaseOrder.TECH_AssessmentCountryCode__c = 'ES'}"><td class="slds-text-align_center noWrap border-right">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.quantity}</td></apex:outputText>
+                                
+                                <!--VSU 10/04/18-->
+                                <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'FR' && currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'ES'}">
+
+                                    <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.type}</td>
+
+                                    <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.cataloguePrice}</td>
+
+                                    <td class="slds-text-align_center noWrap border-right">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.createdDate}</td>
+
+                                </apex:outputText>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText rendered="{! mapOrderLineWrapper[parentOrderLineId].isFinalOriginal || mapOrderLineWrapper[parentOrderLineId].isFinalAltenative}">
+                            <tr>
+                                <td class="slds-text-align_center border-left">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.partNumber}</td>
+
+                                <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.description}</td>
+
+                                <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'FR' && currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'ES'}"><td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.quantity}</td></apex:outputText>
+
+                                <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c = 'FR' || currentPurchaseOrder.TECH_AssessmentCountryCode__c = 'ES'}"><td class="slds-text-align_center noWrap border-right">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.quantity}</td></apex:outputText>
+
+                                <!--VSU 10/04/18-->
+                                <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'FR' && currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'ES'}">
+
+                                    <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.type}</td>
+
+                                    <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.cataloguePrice}</td>
+
+                                    <td class="slds-text-align_center noWrap border-right">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.createdDate}</td>
+
+                                </apex:outputText>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText rendered="{! mapOrderLineWrapper[parentOrderLineId].isBundle}">
+                            <apex:repeat value="{!mapOrderLineWrapper[parentOrderLineId].bundleItemList}" var="bundleItemWrapper">
+                                <tr>
+                                    <td class="slds-text-align_center border-left">{!bundleItemWrapper.partNumber}</td>
+
+                                    <td class="slds-text-align_center noWrap">{!bundleItemWrapper.description}</td>
+
+                                    <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'FR' && currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'ES'}"><td class="slds-text-align_center noWrap">{!bundleItemWrapper.quantity}</td></apex:outputText>
+
+                                    <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c = 'FR' || currentPurchaseOrder.TECH_AssessmentCountryCode__c = 'ES'}"><td class="slds-text-align_center noWrap border-right">{!bundleItemWrapper.quantity}</td></apex:outputText>
+
+                                    <!--VSU 10/04/18-->
+                                    <apex:outputText rendered="{!currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'FR' && currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'ES'}">
+
+                                        <td class="slds-text-align_center noWrap">{!bundleItemWrapper.type}</td>
+
+                                        <td class="slds-text-align_center noWrap">{!bundleItemWrapper.cataloguePrice}</td>
+
+                                        <td class="slds-text-align_center noWrap border-right">{!bundleItemWrapper.createdDate}</td>
+
+                                    </apex:outputText>
+                                </tr>
+                            </apex:repeat>
+                        </apex:outputText>
+                    </apex:outputText>
+                </apex:repeat>
+                </tbody>
+            </table>
+        </apex:outputText>
+
+        <!--VSU Case 2497 09/05/18-->
+        <apex:outputText rendered="{!!currentPurchaseOrderWrapper.isQuotation && numberOfWrapperInNotNotAcceptedByBS > 0 && currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'FR' && currentPurchaseOrder.TECH_AssessmentCountryCode__c != 'ES'}">
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">{!$Label.NotSelected}</p>
+            </div>
+
+
+           <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-40">
+                        <apex:outputText escape="false" value="{!$Label.PartNumber}" />
+                        </th>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.PartDescription}" />
+                        </th>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.Qty}" />
+                        </th>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.Type}" />
+                        </th>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.CataloguePrice}" />
+                        </th>
+                        <th class="slds-text-align_center width-40">
+                            <apex:outputText escape="false" value="{!$Label.CreatedDate}" />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                <apex:repeat value="{!mapOrderLineWrapper}" var="parentOrderLineId">
+                    <apex:outputtext rendered="{!   !currentPurchaseOrderWrapper.isQuotation &&
+                                                    !mapOrderLineWrapper[parentOrderLineId].isAcceptedByBS && 
+                                                    mapOrderLineWrapper[parentOrderLineId].isPreselectedForOrder == hasPreselectedParts}">
+
+                        <apex:outputText rendered="{! !mapOrderLineWrapper[parentOrderLineId].isFinalOriginal && !mapOrderLineWrapper[parentOrderLineId].isFinalAltenative && !mapOrderLineWrapper[parentOrderLineId].isBundle}">
+                            <tr>
+                                <td class="slds-text-align_center border-left">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.partNumber}</td>
+
+                                <td class="slds-text-align_center">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.description}</td>
+
+                                <td class="slds-text-align_center nowrap">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.quantity}</td>
+
+                                <td class="slds-text-align_center nowrap">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.type}</td>
+
+                                <td class="slds-text-align_center nowrap">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.cataloguePrice}</td>
+
+                                <td class="slds-text-align_center noWrap border-right">{!mapOrderLineWrapper[parentOrderLineId].originalOrderLine.createdDate}</td>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText rendered="{! mapOrderLineWrapper[parentOrderLineId].isFinalOriginal || mapOrderLineWrapper[parentOrderLineId].isFinalAltenative}">
+                            <tr>
+                                <td class="slds-text-align_center border-left">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.partNumber}</td>
+
+                                <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.description}</td>
+
+                                <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.quantity}</td>
+
+                                <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.type}</td>
+
+                                <td class="slds-text-align_center noWrap">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.cataloguePrice}</td>
+
+                                <td class="slds-text-align_center noWrap border-right">{!mapOrderLineWrapper[parentOrderLineId].finalOrderLine.createdDate}</td>
+                            </tr>
+                        </apex:outputText>
+                        <apex:outputText rendered="{! mapOrderLineWrapper[parentOrderLineId].isBundle}">
+                            <apex:repeat value="{!mapOrderLineWrapper[parentOrderLineId].bundleItemList}" var="bundleItemWrapper">
+                                <tr>
+                                    <td class="slds-text-align_center border-left">{!bundleItemWrapper.partNumber}</td>
+
+                                    <td class="slds-text-align_center noWrap">{!bundleItemWrapper.description}</td>
+
+                                    <td class="slds-text-align_center noWrap">{!bundleItemWrapper.quantity}</td>
+
+                                    <td class="slds-text-align_center noWrap">{!bundleItemWrapper.type}</td>
+
+                                    <td class="slds-text-align_center noWrap">{!bundleItemWrapper.cataloguePrice}</td>
+
+                                    <td class="slds-text-align_center noWrap border-right">{!bundleItemWrapper.createdDate}</td>
+                                </tr>
+                            </apex:repeat>
+                        </apex:outputText>
+                    </apex:outputText>
+                </apex:repeat>
+                </tbody>
+            </table>
+        </apex:outputText>
+
+
+        <!-- 06/07/2022 KEM C-004724  : Commentaire dans la commande (vision distributeur) -->
+        <apex:outputText rendered="{!(currentPurchaseOrder.Assessment__r.Comment__c != null)}">
+            <div class="margin-top-medium slds-text-align_left">
+                <div>
+                    <p class="font-size-11" ><strong>{!$Label.Comment}</strong> : <span class="text-highlight"><strong>{!currentPurchaseOrder.Assessment__r.Comment__c}</strong></span></p>
+                </div>
+            </div>
+        </apex:outputText>
+
+        </div>
+        <!--KPA 09/11/2020 C-004026 -->
+        <div style="{!IF(!(canSeePO), 'display:block', 'display:none')}" > 
+            <apex:outputText value="{!$Label.VFPrintDeliveryNoteErrorMessage}" />
+        </div>  
+    </body>
+
+    </html>
+</apex:page>

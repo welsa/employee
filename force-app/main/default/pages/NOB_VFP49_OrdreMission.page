@@ -1,0 +1,450 @@
+<!--
+  @description       : 
+  @author            : ARA
+  @group             : 
+  @last modified on  : 05-24-2021
+  @last modified by  : DUN
+  Modifications Log 
+  Ver   Date         Author   Modification
+  1.0   08-17-2020   ARA   Initial Version
+  1.1   05/11/2020   HMO   Replacing EL from Case to WorkOrder
+-->
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" standardController="WorkOrder"
+    extensions="NOB_VFC49_OrdreMissionController" renderAs="pdf">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+        <style type="text/css">
+            @media print {
+                html,
+                body {
+                    page-break-after: avoid;
+                    page-break-before: avoid;
+                }
+            }
+
+            @page {
+                size: A4;
+                margin: 75px;
+                
+                @bottom-center {
+                    content: element(footer);
+                    padding-bottom: 5px;
+                }
+            }
+
+            .header {
+                top:0px;
+            }
+
+            table {
+                width: 100%;
+                text-align: left;
+                border-collapse: collapse;
+                vertical-align: top;
+
+            }
+
+            body {
+
+                font-family: sans-serif, Arial Unicode MS;
+                font-size: 12px;
+                color: black;
+                font-weight: normal;
+                font-style: normal;
+                text-decoration: none;
+            }
+
+            .tbl thead {
+                font-weight: bold;
+                background-color: #bfbfbf;
+                font-size: 14px;
+                
+                vertical-align: top;
+            }
+            .tbl td{
+                vertical-align: top;
+            }
+
+            .text-bold {
+                font-weight: bold;
+            }
+
+            .fieldRed {
+                color: red;
+            }
+
+            div.footer {
+                font-size: 10px;
+                text-align: center;
+                position: running(footer);
+                padding-bottom: 5px;
+
+            }
+            .title{
+                margin-top:30px;
+            }
+            .text-align-center{
+                text-align: center;
+            }
+            td.label{
+                padding-bottom:5px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="header">
+            <div>
+                    <div style="padding-bottom:10px;"><apex:image url="{!URLFOR($Resource.VFP49,'VFP49/Prefikar.png')}" style="width: 200px"/></div>
+                    <div style="font-size: 10px;">9 Avenue des Andes</div>
+                    <div style="font-size: 10px;">91978 Courtabœuf Cedex</div>
+                    <div style="font-size: 10px;">France</div>
+            </div>
+            <div style="font-weight:bold;text-align: center;font-size:14px;">Demande d'enlèvement</div>
+            <div style="padding-bottom:10px;"/>
+        </div>
+
+        <div class="footer">
+            <div class="text-align-center" style="font-size: 12px;">PREFIKAR</div>
+            <div class="text-align-center">Société par Actions Simplifiée</div>
+            <div class="text-align-center">Au capital de 5.279.700 €</div>
+            <div class="text-align-center">Siège social : 9 avenue des Andes - Courtaboeuf</div>
+            <div class="text-align-center">91940 Les Ulis</div>
+            <div class="text-align-center">440 575 652 RCS EVRY</div>
+            <div style="padding-bottom:9px;"></div>
+        </div>
+
+        <div class="body">
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th colspan="2;" style="border-style: solid;border-top-color:black;border-left:transparent;border-right:transparent; border-width:1px;"> Détails de l'Assuré</th>
+                        <th style="border-style: solid;border-top-color:black;border-left:transparent;border-right:transparent; border-width:1px;">Date</th>
+                        <th style="border-style: solid;border-top-color:black;border-left:transparent;border-right:transparent; border-width:1px;">{!IF(DAY(TODAY()) > 9, DAY(TODAY()), '0'+TEXT(DAY(TODAY())))}/{!IF(MONTH(TODAY()) > 9, MONTH(TODAY()), '0'+TEXT(MONTH(TODAY())))}/{!Year(TODAY())}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width:50%" colspan="2">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Émetteur </td>
+                                    <td style="width:25%">{!wo.NOB_TECH_BusinessProvider__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Numéro de sinistre</td>
+                                    <td style="width:25%">{!wo.NOB_TECH_InsurerClaimNumber__c} </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Date du sinistre </td>
+                                    <td style="width:25%">
+                                        <apex:outputPanel layout="inline" rendered="{!wo.NOB_IncidentDateandTime__c != null}">
+                                            {!IF(DAY(DATEVALUE(wo.NOB_IncidentDateandTime__c)) > 9, DAY(DATEVALUE(wo.NOB_IncidentDateandTime__c)), '0'+TEXT(DAY(DATEVALUE(wo.NOB_IncidentDateandTime__c))))}/{!IF(MONTH(DATEVALUE(wo.NOB_IncidentDateandTime__c)) > 9, MONTH(DATEVALUE(wo.NOB_IncidentDateandTime__c)), '0'+TEXT(MONTH(DATEVALUE(wo.NOB_IncidentDateandTime__c))))}/{!Year(DATEVALUE(wo.NOB_IncidentDateandTime__c))}
+                                        </apex:outputPanel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Nom de l’assuré </td>
+                                    <td style="width:25%">{!wo.NOB_TECH_InsuredName__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%; padding-bottom:10px;">
+                                        Orientation du Dossier
+                                    </td>
+                                    <td style="width:25%; padding-bottom:10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="width:50%" colspan="2">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Domicile </td>
+                                    <td style="width:25%">{!wo.NOB_TECH_InsuredPhone__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Bureau </td>
+                                    <td style="width:25%">{!wo.NOB_TECH_ContactOtherPhone__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Mobile </td>
+                                    <td style="width:25%">{!wo.NOB_TECH_InsuredMobile__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Fax</td>
+                                    <td>{!wo.NOB_TECH_ContactFax__c}</td>
+                                </tr>
+                                <tr>
+                                    <td style="width:25%; padding-bottom:10px;"></td>
+                                    <td style="width:25%; padding-bottom:10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th colspan="2" style="border-style: solid;border-top-color:black;border-left:transparent;border-right:transparent; border-width:1px;"> Détails du Véhicule</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Marque</td>
+                                    <td style="width:50%">{!wo.NOB_VehicleBrand__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Modele </td>
+                                    <td style="width:50%">{!wo.NOB_VehicleModel__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%;  padding-bottom:10px;" >Type </td>
+                                    <td style="padding-bottom:10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Immatriculation</td>
+                                    <td style="width:50%">{!wo.NOB_TECH_VehicleRegistrationNumber__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Année </td>
+                                    <td style="width:50%">{!wo.NOB_ModelReleasedYear__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50% ; padding-bottom:10px;" >Couleur</td>
+                                    <td style="padding-bottom:10px;">{!wo.NOB_Color__c}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th colspan="2" style="border-style: solid;border-top-color:black;border-left:transparent;border-right:transparent; border-width:1px;"> Détails du Réparateur </th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Réparateur</td>
+                                    <td style="width:50%">{!wo.NOB_TECH_ReparateurName__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Adresse</td>
+                                    <td style="width:50%; ">{!wo.NOB_TECH_ReparateurBillingStreet__c}
+                                        {!wo.NOB_TECH_ReparateurBillingPostalCode__c} {!wo.NOB_TECH_ReparateurBillingCity__c}
+                                        {!wo.NOB_TECH_ReparateurBillingState__c} {!wo.NOB_TECH_ReparateurBillingCountry__c}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%; padding-bottom:10px;"></td>
+                                    <td style="width:50%; padding-bottom:10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Téléphone</td>
+                                    <td style="width:50%">{!wo.NOB_TECH_ReparateurPhone__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Fax </td>
+                                    <td style="width:50%">{!wo.NOB_TECH_ReparateurFax__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50% ; padding-bottom:10px;">Numéro de SIRET</td>
+                                    <td style="width:50%; padding-bottom:10px;">{!wo.NOB_TECH_ReparateurSiret__c}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th colspan="4" style="border-style: solid;border-top-color:black;border-left:transparent;border-right:transparent; border-width:1px;">Franchises</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Fixe</td>
+                                    <td style="width:50%">{!wo.NOB_Franchise__c}€</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Variable</td>
+                                    <td style="width:50%">{!wo.NOB_Variable__c}€</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Minimum </td>
+                                    <td style="width:50%">{!wo.NOB_VariableMin__c}€</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Maximum</td>
+                                    <td style="width:50%">{!wo.NOB_VariableMax__c}€</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%; padding-bottom:10px;">Kilométrage / limite
+                                    </td>
+                                    <td style="width:50%;padding-bottom:10px;">{!wo.NOB_Mileage__c}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Garantie Assistance</td>
+                                    <td style="width:50%">{!wo.NOB_AssistanceGuarantee__c} %</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Commentaires </td>
+                                    <td style="width:50%"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Vehicule de Remplacement
+                                    </td>
+                                    <td style="width:50">{!rent.Name}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">TVA payee par le client</td>
+                                    <td style="width:50%"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th colspan="4" style="border-style: solid;border-top-color:black;border-left:transparent;border-right:transparent; border-width:1px;">Etat du Vehicule</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Cause </td>
+                                    <td style="width:50%">{!wo.NOB_NatureOfTheEvent__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Sous-Cause</td>
+                                    <td style="width:50%">{!wo.NOB_DamageType__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Description des dommages </td>
+                                    <td style="width:50%">{!wo.NOB_TECH_DamageDetails__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%;padding-bottom:10px;"></td>
+                                    <td style="width:50%;padding-bottom:10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Roulant</td>
+                                    <td style="width:50%">
+                                        <apex:outputField value="{!wo.NOB_TECH_RunningVehicle__c}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Expert</td>
+                                    <td style="width:50%">{!wo.NOB_TECH_Expert__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%">Telephone Expert</td>
+                                    <td style="width:50%">{!wo.NOB_TECH_ExpertTelephone__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:50%;padding-bottom:10px;">Contexte de l'expertise</td>
+                                    <td style="width:50%;padding-bottom:10px;">{!wo.NOB_ContexteDeLexpertise__c}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th colspan="4" style="border-style: solid;border-top-color:black;border-left:transparent;border-right:transparent; border-width:1px;">Détails sur le lieu du rendez-vous</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Mode de transfert du véhicule</td>
+                                    <td class="fieldRed" style="width:25%">{!wo.NOB_TECH_PriceBook_PriceBookOffre__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Date du rendez-vous</td>
+                                    <td class="fieldRed" style="width:25%">{!dateRendezVous} {!timeRendezVous}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%;padding-bottom:10px;">Personne présente </td>
+                                    <td class="fieldRed" style="width:25%;padding-bottom:10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="width:50%">
+                            <table>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Adresse</td>
+                                    <td style="width:25%">{!wo.NOB_InsuredStreet__c} {!wo.NOB_InsuredZipCode__c} {!wo.NOB_InsuredCity__c} {!wo.NOB_TECH_ContactPickUpMailingState__c} {!wo.NOB_TECH_ContactPickup_MailingCountry__c}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%">Informations complémentaires
+                                    </td>
+                                    <td style="width:25%"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-bold label" style="width:25%;padding-bottom:10px;">Commentaires</td>
+                                    <td style="width:25%;padding-bottom:10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</apex:page>

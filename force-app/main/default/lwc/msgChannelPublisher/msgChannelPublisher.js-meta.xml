@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Message Channel Publisher</masterLabel>
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+
+
+    <targetConfigs>
+
+
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="message" type="String" ></property>
+            <property name="messageVariant" type="String" ></property>
+        </targetConfig>
+
+
+        <targetConfig targets="lightning__FlowScreen">
+            <property 
+                name="isDebug" 
+                type="Boolean" 
+                label="Debug logs ?" 
+                default="false"
+                role="inputOnly"
+            />
+            <property name="message" type="String" ></property>
+            <property name="messageVariant" type="String" ></property>
+        </targetConfig>
+    </targetConfigs>
+
+
+</LightningComponentBundle>

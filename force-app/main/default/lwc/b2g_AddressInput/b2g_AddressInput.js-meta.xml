@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+
+            <property 
+                name="isDebug" 
+                type="Boolean" 
+                label="Debug logs ?" 
+                default="false"
+                role="inputOnly"
+            />
+
+            <property 
+                name="searchTerm" 
+                label="searchTerm"
+                type="String" 
+            />
+
+            <property 
+                name="searchLabel" 
+                type="String" 
+                label="Search Label " 
+                description="Search label "
+                default="Trouvez un centre proche de chez vous.."
+                role="inputOnly"
+            />
+
+            <property 
+                name="searchAddressLabel" 
+                type="String" 
+                label="Search Address Label " 
+                description="Search Address label "
+                default="Recherchez votre adresse.."
+                role="inputOnly"
+            />
+
+            <property 
+                name="HomeInterventionLabel" 
+                type="String" 
+                label="Home Intervention Label" 
+                description="HomeInterventionLabel"
+                default="Intervention à domicile ?"
+                role="inputOnly"
+            />
+
+            <property 
+                name="needLoanVehicleLabel" 
+                type="String" 
+                label="Need loan vehicle label" 
+                description="Need loan vehicle label"
+                default="Besoin d'un véhicule de prêt ?"
+                role="inputOnly"
+            />
+
+            <property 
+                name="btnCurrLocationLabel" 
+                type="String" 
+                label="[Button] Get Current Location Label " 
+                description="[Button] Get Current Location Label "
+                default="Utiliser ma position "
+                role="inputOnly"
+            />
+
+            <property 
+                name="AddressLabel" 
+                type="String" 
+                label="AddressLabel" 
+                description="AddressLabel"
+                default="Adresse"
+                role="inputOnly"
+            />
+
+            <property 
+                name="streetLabel" 
+                type="String" 
+                label="streetLabel" 
+                description="streetLabel"
+                default="Rue"
+                role="inputOnly"
+            />
+
+            <property 
+                name="cityLabel" 
+                type="String" 
+                label="cityLabel" 
+                description="cityLabel"
+                default="Ville"
+                role="inputOnly"
+            />
+
+            <property 
+                name="countryLabel" 
+                type="String" 
+                label="countryLabel" 
+                description="countryLabel"
+                default="Pays"
+                role="inputOnly"
+            />
+
+            <property 
+                name="postalCodeLabel" 
+                type="String" 
+                label="postalCodeLabel" 
+                description="postalCodeLabel"
+                default="Code postal"
+                role="inputOnly"
+            />
+
+            <property 
+                name="isSelected_HomeApt" 
+                type="Boolean" 
+                label="Handle Home Appointment ? " 
+                description="Handle Home Appointment ? "
+            />
+
+            <property 
+                name="isSelected_LoanVehicle" 
+                type="Boolean" 
+                label="Need loan vehicle ? " 
+                description="Need loan vehicle ? "
+            />
+
+            <property 
+                name="formatted_address" 
+                type="String" 
+                label="formatted_address" 
+                description="formatted_address"
+            />
+
+            <property 
+                name="postal_code" 
+                type="String" 
+                label="postal_code" 
+                description="postal_code"
+            />
+
+            <property 
+                name="locality" 
+                type="String" 
+                label="City" 
+                description="City"
+            />
+
+            <property 
+                name="route" 
+                type="String" 
+                label="route" 
+                description="route"
+            />
+
+            <property 
+                name="country" 
+                type="String" 
+                label="country" 
+                description="country"
+            />
+
+            <property 
+                name="handleHomeAppointment" 
+                type="Boolean" 
+                label="REDUNDANT NOW" 
+                description="REDUNDANT NOW"
+                role="outputOnly"
+            />
+
+            <property 
+                name="btnAppointmentLabel" 
+                type="String" 
+                label="Button 'Prendre RDV' Label: " 
+                default="Prendre RDV"
+                role="inputOnly"
+            />
+
+            <property 
+                name="key" 
+                type="String" 
+                label="Google API KEY " 
+                role="inputOnly"
+            />
+
+            <property 
+                label="Google searchable countries" 
+                type="String" 
+                name="searchableCountries" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="isDisableApppointment" 
+                type="Boolean" 
+                label="Disable Appointment buttons ?" 
+                role="inputOnly"
+                default="false"
+            />
+
+        </targetConfig>
+    </targetConfigs>
+
+</LightningComponentBundle>

@@ -1,0 +1,55 @@
+.THIS img{
+    width:40px;
+}
+
+.THIS .sbtn{
+    position:relative;top:23px;left:8px;
+}
+
+.THIS .sel-rep{
+ 
+        margin-top: 92%;
+    margin-left: .5rem;
+}
+
+.THIS .sel-other{
+    display: block;
+    position: relative;
+    left: 6px;
+    top:17px;
+}
+
+.THIS .slds-table th{
+    position: sticky;
+}
+
+.THIS .slds-table {
+    
+    position: relative;
+     
+}
+
+.THIS .slds-table th {
+    
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    
+}
+
+.THIS .tab-left{
+    width:70% !important;
+}
+
+.THIS .tab-right{
+    width:30% !important;
+}
+
+.THIS .slds-map{
+    height:420px !important;
+}
+
+.THIS .table-wrapper{
+    overflow-y:auto;overflow-x:hidden;height:420px
+}

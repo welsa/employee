@@ -1,0 +1,16 @@
+<apex:page controller="AgreementCtrl" showHeader="false" sidebar="false" action="{!Init}">
+
+<script>
+
+window.onload = function(e){
+    if({!AgreementNeeded}){
+    	// AMI 09/08/2018 : Community Rollout
+    	//changing relative url to that both can be exexcuted for force.com and community
+        window.top.location.href = "../apex/AgreementVFPage?name={!AgreementName}";
+    }
+
+} 
+
+</script>
+
+</apex:page>

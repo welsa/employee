@@ -1,0 +1,23 @@
+<template>
+    <lightning-card  >
+        <!--Previous-->
+        <lightning-button 
+            label={previousLabel} 
+            disabled={disablePrevious} 
+            slot="actions" 
+            onclick={handlePrevious}
+            class={HidePreviousButton}>
+        </lightning-button>
+
+        <!--Next-->
+        <lightning-button 
+            variant="Brand"
+            label={nextLabel} 
+            disabled={disableNext} 
+            onclick={handleNext}
+            class={HideNextButton}
+            slot="actions">
+        </lightning-button>
+
+    </lightning-card>
+</template>

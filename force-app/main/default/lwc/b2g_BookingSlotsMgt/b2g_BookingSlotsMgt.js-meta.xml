@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>B2G - Gestion Sélections Glaciers</masterLabel>
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+
+            <property 
+                name="isDebug" 
+                type="Boolean" 
+                label="Debug logs ?" 
+                default="false"
+                role="inputOnly"
+            />
+
+            <property 
+                name="responses" 
+                label="responses"
+                type="String" 
+                role="inputOnly"/>
+
+            <property 
+                name="timezones" 
+                label="timezones map"
+                type="String" 
+                role="inputOnly"/>
+                
+            <property 
+                name="country" 
+                label="country"
+                type="String" 
+                role="inputOnly"/>
+
+            <property 
+                name="selectedBooking" 
+                label="selected Booking Response"
+                type="String" 
+                role="outputOnly"/>
+
+            <property 
+                name="selectedBranchId" 
+                label="Selected Branch Id"
+                type="String" 
+                role="outputOnly"/>
+
+            <property 
+                name="selectedBranchCode" 
+                label="Selected Branch code"
+                type="String" 
+                role="outputOnly"/>
+
+            <property 
+                name="selectedBranchPostalCode" 
+                label="Selected Branch Postal Code"
+                type="String" 
+                role="outputOnly"/>
+
+            <propertyType name="T"
+                extends="SObject"
+                label="Object"
+                description="Select an object API Name." />
+
+            <property   name="parentRepairCenters"
+                label="parentRepairCenters"
+                type="{T[]}"
+                role="inputOnly" 
+                description="List of parent glaciers"/>
+
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

@@ -1,0 +1,574 @@
+<apex:page standardcontroller="PrerequisiteOrder__c">
+	<h1>Delete this page</h1>
+</apex:page>
+<!--<apex:page standardController="PrerequisiteOrder__c" extensions="VFC06_SOManageOffers_V2" tabStyle="PrerequisiteOrder__c" sidebar="false" showHeader="false" applyHtmlTag="false">
+    <apex:includeScript value="{!URLFOR($Resource.SF1,'Jquery/jquery-2.1.0.min.js')}"/> 
+    <apex:includeScript value="{!URLFOR($Resource.SF1,'Jquery/jquery-ui.js')}"/>
+    <head>
+        <style>
+            body {
+            display: table;
+            width: 100%;
+            margin: 0;
+            }
+            body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {
+            background:none;
+            }
+            .table-original-header {
+            background: #D0D0D8;
+            }
+            .table-original-column {
+            border: none;
+            border-top: 0.8px;
+            }
+            .list td.table-original-alternative-column, body .pbBody table.list tr.dataRow td.table-original-alternative-column{
+            padding-top: 0px;
+            padding: 0px;
+            //padding-left: 90px;
+            border: none;
+            }
+            .input-small {
+            width: 50px;
+            text-align: right;
+            }
+            .input-smaller {
+            width: 35px;
+            }
+            .table-alternative {
+            font-size: 11px;
+            border-spacing: 1px 0px;
+            width: 100%;
+            // margin-left: 175px;
+            border: 0.1em solid lavender;
+            border-size: 0.1em 0 0.1em 0;
+            }
+            th.table-alternative-header {
+            background: lavender;
+            font-weight: bold;
+            font-size: 11px;
+            border-right: 1px solid white;
+            }
+            .table-alternative-td {
+            //border: 1px solid lavender;
+            border-spacing: 0px;
+            padding: 3px;
+            border-width: 1px 0 0px 0;
+            }
+            .table-alternative input, .table-alternative select, .myform input, .myform select{
+            font-size: 11px;
+            line-height: 11px;
+            //   text-align: right;
+            }
+            .alternative-grid {
+            float: right;
+            width: 98%;
+            padding-bottom: 5px;
+            }
+            td.alternative-grid-td {
+            border: 0px;
+            padding: 0px;
+            border-width: 0px;
+            }
+            body .pbBody table.list tr.dataRow td.alternative-grid-td {
+            border:none;
+            }
+            body .pbBody table.list tr.dataRow td{
+            border-width: 1px 0 0px 0;
+            }
+            .alternative-bundle-img {
+            width: 40px;
+            padding-right: 5px;
+            }
+            .footer-text {
+            text-align: right;
+            font-size: 10px;
+            width: 40px;
+            }
+            .input-medium {
+            width: 90px;
+            text-align: left;
+            }
+            .myform{
+            width: 100%;
+            position: relative;
+            font-size: 11px;
+            line-height: 11px;
+            }
+            .table-original {
+            table-layout: auto;
+            width: 99%;
+            white-space: nowrap;
+            }          
+            .table-original-column-type span, .table-original-column-quantity span, .table-original-column-type, .table-original-column-quantity input, .table-original-column-type, .table-original-column-quantity td, 
+            .table-alternative-column-type span, .table-alternative-column-quantity span, .table-alternative-column-type, .table-alternative-column-quantity input, .table-alternative-column-type, .table-alternative-column-quantity {
+            width: 35px;
+            text-align: center;
+            }            
+            .table-original-column-bsDiscount input, .table-original-column-bsPrice input, .table-original-column-axaDiscount input, .table-original-column-totalPrice input, .table-original-column-unitPrice input, .table-original-column-expectedDelivery input,
+            .table-original-column-bsDiscount, .table-original-column-bsPrice, .table-original-column-axaDiscount, .table-original-column-totalPrice, .table-original-column-unitPrice, .table-original-column-expectedDelivery,
+            .table-alternative-column-bsDiscount, .table-alternative-column-bsPrice, .table-alternative-column-axaDiscount, .table-alternative-column-totalPrice, .table-alternative-column-unitPrice, .table-alternative-column-expectedDelivery,
+            .table-alternative-column-bsDiscount input, .table-alternative-column-bsPrice input, .table-alternative-column-axaDiscount input, .table-alternative-column-totalPrice input, .table-alternative-column-unitPrice input, .table-alternative-column-expectedDelivery input{
+            width: 50px;
+            text-align: right;
+            }
+            .table-alternative-column-name, .table-original-column-addAlternative, .table-original-column-suppliable{
+            width: 15px;
+            text-align: center;
+            }
+            .table-original-column-name, .table-original-column-manufacturer, .table-original-column-partNb, .table-original-column-descr,
+            .table-alternative-column-manufacturer, .table-alternative-column-partNb, .table-alternative-column-descr{
+            width: 90px;
+            text-align: left;
+            }
+            .table-original-suppliable-img{
+            width: 15px;
+            margin-left: 3px;
+            }
+            .table-original-addAlternative-img {
+            width: 12px;
+            text-align: center;
+            }  
+            
+            .table-original-column-compliantPart{
+            width: 15px;
+            text-align: center;
+            }
+            .table-alternative-bundle-img{
+            width: 24px;
+            }
+            .table-alternative-column-name-alt-img{
+            width: 12px;
+            vertical-align: text-bottom;
+            margin-right:5px;
+            }
+            .table-alternative-delete-img{
+            width: 10px;
+            }
+            .header-page{
+                text-align: center;
+            margin: 15px;
+            }
+            .errorStyle, .errorMsg, .importantWarning, .pbBody .errorStyle a, .pbBody .errorMsg a {
+            color: #d74c3b;
+            width: inherit;
+            font-size: 0px;
+            line-height: 0px;
+            }
+            .status-loading-img{
+            width: 15px;
+            padding-left: 5px;
+            vertical-align: text-bottom;
+            position: absolute;
+            top: 2px;
+            }
+            .status-notsaved-img{
+            position: absolute;
+            right: 3px;
+            }
+            /* button border */
+            .styleClassValidateButtonActive {
+                display: inline-block !important;
+                border: 3px solid #17DC7D !important;
+            }
+            .styleClassValidateButtonPassive {
+                display: inline-block !important;
+                border: 1px solid #ffffff !important;
+            }
+        </style>
+        
+        <script>        
+        function sum(id){
+            var table = document.getElementById(id+"_nestedTableBundle");
+            var bundle = table.getElementsByClassName("input-sum-bundle-CatPrice"); 
+            var rows = table.getElementsByClassName("input-sum-alt-CatPrice");
+            var sum = 0;
+            
+            // start with 2 to skip first row, which is col headers and second row, which is the bundle.
+            for (var i = 0; i < rows.length; i++) {
+                sum+=parseFloat(rows[i].value);
+            }
+            bundle[0].value = sum;
+        }
+        </script>
+
+            !-- NEW DEV --
+    <script type="text/javascript">__sfdcSessionId = '{!$Api.Session_Id}';</script>
+    <script src="/soap/ajax/34.0/connection.js"></script>
+
+
+!-- jQuery UI theme 
+    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.10.4/themes/south-street/jquery-ui.css" /> 
+    jQuery UI theme --
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.jQueryUICustomTheme,'jquery-ui.css')}" /> 
+    
+    <script type="text/javascript">
+                                    if(typeof jQuery != 'undefined'){ 
+                                        j$ =jQuery.noConflict(); 
+                                    }
+
+        function modalPopup() {                                    
+
+            var j$modalDialog2 = j$('<div></div>')
+             .html("{!$Label.ConfirmJS}") // 'Do you want to send...'
+             .dialog({
+                  autoOpen: false,
+                  title: "{!$Label.ConfirmJSTitle}",
+                  resizable: false,
+                  width: 400,
+                  height: 150,
+                  autoResize: true,
+                  modal: true,
+                  draggable: true,
+                  open: function(event, ui) { j$(".ui-dialog-titlebar-close").hide(); },
+                  buttons: [
+                    {
+                        text: "OK",
+                        icons: {
+                            primary: "ui-icon-check"
+                        },
+                        click: function() {
+                            record = j$(this).data('record');
+                            record.Status__c = 'RESPONDED';
+                            var salesOrderId = j$(this).data('actualsalesOrder');
+                            record.id= salesOrderId ;
+                            //alert(actualsalesOrder);
+                            //update status
+                            result = sforce.connection.update([record]);
+                            
+                            //test operation result
+                            if(1==1){
+                            //inform if succeed
+                                 //alert("{!$Label.ConfirmJSSuccess}");
+                                 window.parent.location.href ='/'+salesOrderId+'';
+                                 
+                                //reload page so new state becomes visible
+                            }   
+                            else{
+                                 alert("{!$Label.ConfirmJSFailure}");
+                            }
+                            j$modalDialog2.dialog('close');
+                        }
+                    }, // added ,
+                    {
+                        text: "Cancel",
+                        icons: {
+                            primary: "ui-icon-closethick"
+                        },
+                        click: function() {
+                            j$modalDialog2.dialog('close');
+                        }
+                    }
+                  ] // buttons ends here
+              }); // j$modalDialog ends here
+
+            var salesOrder = actualsalesOrder = sforce.connection.query("Select Id, Status__c From PrerequisiteOrder__c where Id = '{!PrerequisiteOrder__c.Id}'"); 
+            var lines= salesOrder.getArray("records"); 
+            //for(var i=0; i< lines.length; i++) { 
+                actualsalesOrder = lines[0]; 
+                var record = new sforce.SObject("PrerequisiteOrder__c");
+                j$modalDialog2
+                    .data({
+                        'actualsalesOrder':actualsalesOrder.Id,
+                        'record':record
+                    })
+                    .dialog('open');
+            //} // for loop ends
+        } // click function modalPopup ends
+    </script>
+    !-- NEW DEV ENDS --
+    </head>
+    
+    <apex:form rendered="true" styleClass="myform" id="myForm" >   
+        <div class="header-page">
+            
+            !-- case 1523 <apex:commandLink value="{!$Label.SaveAllChanges}" action="{!saveAllChanges}" target="_self" styleClass="btn" style="text-decoration:none;padding:4px;" status="actStatusId" />--
+            <apex:commandButton value="{!$Label.SaveAllChanges}" action="{!saveAllChanges}" styleClass="btn" style="text-decoration:none;padding:4px;" status="actStatusId" disabled="{!isDisabledSave}"/>
+
+            <apex:commandButton styleClass="{!styleClassValidateButton}" value="Respond" onclick="modalPopup();" reRender="myForm" status="actStatusId" disabled="{!isDisabled}" />
+
+            <apex:actionStatus id="actStatusId" >
+                <apex:facet name="start" >
+                    <img src="/img/loading.gif" class="status-loading-img" />                    
+                </apex:facet>
+            </apex:actionStatus>
+            
+            <apex:outputPanel id="needSave" style="float: right;"> 
+                <apex:image id="imgNotSaved" styleClass="status-notsaved-img" url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/save-xxl-red.png')}" rendered="{!hasSomeChangesNotSaved}" title="{!$Label.VFWARNINGCHANGESNEEDSAVE}" width="20" />
+                !-- apex:image id="imgSaved" url="http://www.iconsdb.com/icons/preview/moth-green/save-xxl.png" rendered="{!NOT(hasSomeChangesNotSaved)}" width="20" / --
+            </apex:outputPanel>
+        </div>
+        <apex:pageMessages escape="false" id="errMsgs" showDetail="false"/>
+        
+        !--------------------------------------------- OFFER LINES --------------------------------------------- --
+        <apex:repeat value="{!m_OfferType2ListTable[PrerequisiteOrder__c.OfferType__c]}" var="offerType" rendered="{!PrerequisiteOrder__c.OfferType__c != null}">
+            <apex:pageBlock title="{!m_OfferType2LabelSection[offerType]}">             
+                !--<apex:panelGrid columns="2" rendered="{!offerType == PrerequisiteOrder__c.OfferType__c}">--
+				<apex:panelGrid columns="2" rendered="{!(renderSelectOption && offerType == PrerequisiteOrder__c.OfferType__c)}">
+                    <apex:outputText >Offer Type:</apex:outputText>
+                    <apex:selectList value="{!PrerequisiteOrder__c.OfferType__c}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!l_OfferTypeOptions}"/>
+                        <apex:actionSupport action="{!changeOfferTypeSelected}" event="onchange" reRender="needSave,tableType,myForm"  status="actStatusId" />
+                    </apex:selectList>
+                </apex:panelGrid>
+                
+                <apex:pageBlockTable id="allOri" rendered="{!m_OfferType2NbItems[offerType]!=0}" value="{!m_OfferType2ListItems[offerType]}" var="offer" align="center" styleClass="table-original" headerClass="table-original-header" columnClasses="table-original-column" >
+                    !------------------------------------------ ORIGINAL ITEM ------------------------------------------
+
+                    !-- Final: Part Number --
+                    <apex:column value="{!offer.OriginalPartNUmber__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" />
+                    <apex:column value="{!offer.PartNUmber__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c == null}" />
+                    
+                    !-- Final: Distributor --
+                    <apex:column headerValue="{!$ObjectType.Offer__c.fields.Distributor__c.label}" styleClass="table-original-column-name" >
+                        !-- apex:outputLink value="#" onblur="LookupHoverDetail.getHover(this.id).hide();" id="offerHover" 
+onmouseout="LookupHoverDetail.getHover(this.id).hide();" 
+onfocus="LookupHoverDetail.getHover(this.id, '/{!offer.OrderLine__r.PurchaseOrder__r.Distributor__r.Id}/m?retURL=%2Fapex%2FCampaignCallList%3FscontrolCaching%3D1%26id%3D{!offer.Id}&isAjaxRequest=1&nocache=1418312066674').show();" 
+onmouseover="LookupHoverDetail.getHover(this.id, '/{!offer.OrderLine__r.PurchaseOrder__r.Distributor__r.Id}/m?retURL=%2Fapex%2FCampaignCallList%3FscontrolCaching%3D1%26id%3D{!offer.Id}&isAjaxRequest=1&nocache=1418312066674').show();" >
+<apex:outputText value="{!offer.Distributor__c}"/>
+</apex:outputLink --
+                        <apex:outputText value="{!offer.Distributor__c}" >
+                        </apex:outputText>
+                    </apex:column>
+                    
+                    !-- Final: Part Number --
+                    <apex:column value="{!offer.OriginalType__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" />
+                    <apex:column value="{!offer.FinalType__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c == null}" />
+                    
+                    !-- Final: Part Number --
+                    <apex:column value="{!offer.OriginalDescription__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" />
+                    <apex:column value="{!offer.Description__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c == null}" />
+                    
+                    !-- Final: Part Number --
+                    <apex:column value="{!offer.OriginalManufacturer__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" />
+                    <apex:column value="{!offer.Manufacturer__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c == null}" />
+                    
+                    !-- Final: Part Number --
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDUNITPRICE}" value="{!offer.OriginalCatalogPrice__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" />
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDUNITPRICE}" value="{!offer.CataloguePrice__c}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c == null}" />
+                    
+                    !-- Final: Estimated Delivery Duration --
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" />     
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}" value="{!offer.ExpectedDeliveryDuration__c}" styleClass="table-original-column-expectedDelivery" rendered="{!offer.OriginalPartNUmber__c == null}" />           
+                    
+                    !-- Final: Quantity --
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDQUANTITY}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" /> 
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDQUANTITY}" value="{!offer.Quantity__c}" id="origQuantity" footerClass="footer-text" styleClass="table-original-column-quantity" rendered="{!offer.OriginalPartNUmber__c == null}"  />                 
+                    
+                    !-- Final: Total Price --
+                    <apex:column headerValue="{!$ObjectType.Offer__c.fields.Total__c.label}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" /> 
+                    <apex:column headerValue="{!$ObjectType.Offer__c.fields.Total__c.label}" value="{!offer.Total__c}" styleClass="table-original-column-totalPrice" rendered="{!offer.OriginalPartNUmber__c == null}"  />         
+                    
+                    !-- Final: BS Discount --   
+                    <apex:column headerValue="{!$ObjectType.Offer__c.fields.Discount__c.label}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" /> 
+                    <apex:column headerValue="{!$ObjectType.Offer__c.fields.Discount__c.label}" value="{!offer.Discount__c}" id="origBSDiscount" footerClass="footer-text" styleClass="table-original-column-bsDiscount" rendered="{!offer.OriginalPartNUmber__c == null}" />                                     
+                    
+                    !-- Final: BS Price --
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDBSUNITPRICE}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" /> 
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDBSUNITPRICE}" value="{!offer.Price__c}" styleClass="table-original-column-bsPrice" rendered="{!offer.OriginalPartNUmber__c == null}" />                   
+                    
+                    !-- Final: BS Total Price --
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDBSTOTALPRICE}" styleClass="table-original-column-partNb" rendered="{!offer.OriginalPartNUmber__c != null}" /> 
+                    <apex:column headerValue="{!$Label.VFORDERLINEFIELDBSTOTALPRICE}" value="{!offer.BSTotalPrice__c}" styleClass="table-original-column-bsTotalPrice" rendered="{!offer.OriginalPartNUmber__c == null}" />
+
+                    !-- Final: Compliant Part --
+                    <apex:column value="{!offer.OrderLine__r.PartList__r.CompliantPart__c}" styleClass="table-original-column-compliantPart" rendered="{!offer.OriginalPartNUmber__c != null}" />
+                    <apex:column value="{!offer.OrderLine__r.PartList__r.CompliantPart__c}" styleClass="table-original-column-compliantPart" rendered="{!offer.OriginalPartNUmber__c == null}" />
+                    
+                    !-- Final: Accepted By BS --
+                    <apex:column headerValue="Accepted" id="oColSuppliable" styleClass="table-original-column-suppliable">
+                        <apex:outputPanel rendered="{!(AND(offerType != $Label.OFFERUNSUPPLIEABLEITEM+PrerequisiteOrder__c.OfferType__c , PrerequisiteOrder__c.Status__c != 'RESPONDED'))}">
+                            <apex:commandLink action="{!currOfferIsAcceptedByBS}" rendered="{!offer.Accepted__c!='YES'}"  reRender="allOri,needSave,errMsgs" status="actStatusId"> 
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl.png')}" styleClass="table-original-suppliable-img"/>
+                                <apex:param name="selectedOrderItem" value="{!offer.Id}" assignTo="{!selectedOrderItem}"/>
+                            </apex:commandLink>
+                            <apex:commandLink action="{!currOfferIsAcceptedByBS}" rendered="{!offer.Accepted__c=='YES'}"  reRender="allOri,needSave,errMsgs" status="actStatusId"> 
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl-green.png')}" styleClass="table-original-suppliable-img"/>
+                                <apex:param name="selectedOrderItem" value="{!offer.Id}" assignTo="{!selectedOrderItem}"/>
+                            </apex:commandLink>
+                            
+                            <apex:commandLink action="{!currOfferIsNotAcceptedByBS}" rendered="{!offer.Accepted__c!='NO'}" reRender="allOri,needSave,errMsgs" status="actStatusId"> 
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl.png')}" styleClass="table-original-suppliable-img"/>
+                                <apex:param name="selectedOrderItem" value="{!offer.Id}" assignTo="{!selectedOrderItem}"/>
+                            </apex:commandLink>
+                            <apex:commandLink action="{!currOfferIsNotAcceptedByBS}" rendered="{!offer.Accepted__c=='NO'}" reRender="allOri,needSave,errMsgs" status="actStatusId"> 
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl-red.png')}" styleClass="table-original-suppliable-img"/>
+                                <apex:param name="selectedOrderItem" value="{!offer.Id}" assignTo="{!selectedOrderItem}"/>
+                            </apex:commandLink>
+                        </apex:outputPanel> 
+
+                        <apex:outputPanel rendered="{!(AND(offerType != $Label.OFFERUNSUPPLIEABLEITEM+PrerequisiteOrder__c.OfferType__c , PrerequisiteOrder__c.Status__c == 'RESPONDED'))}">
+                            <apex:outputPanel rendered="{!offer.Accepted__c!='YES'}" > 
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl.png')}" styleClass="table-original-suppliable-img"/>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!offer.Accepted__c=='YES'}" > 
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl-green.png')}" styleClass="table-original-suppliable-img"/>
+                            </apex:outputPanel>
+                            
+                            <apex:outputPanel rendered="{!offer.Accepted__c!='NO'}" > 
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl.png')}" styleClass="table-original-suppliable-img"/>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!offer.Accepted__c=='NO'}" > 
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl-red.png')}" styleClass="table-original-suppliable-img"/>
+                            </apex:outputPanel>
+                        </apex:outputPanel> 
+
+                        <apex:outputPanel rendered="{!offerType == $Label.OFFERUNSUPPLIEABLEITEM+PrerequisiteOrder__c.OfferType__c}">
+                            <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl-red.png')}" styleClass="table-original-suppliable-img"/>
+                        </apex:outputPanel> 
+                    </apex:column>
+                    
+                    !------------------------------------------ BUNDLE & ALTERNATIVE ITEMS ------------------------------------------
+                    <apex:column breakBefore="true" colspan="13" styleClass="table-original-alternative-column">
+                        <apex:panelGrid columns="2" styleClass="alternative-grid" cellspacing="0px" columnClasses="alternative-grid-td" rendered="{!offer.OriginalPartNUmber__c != null}">
+                            <apex:outputPanel styleclass="alternative-bundle-img" rendered="{!m_OfferId2HasSomeAlternatives[offer.Id]}">
+                                <apex:image title="Bundle" styleClass="table-alternative-bundle-img" url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/stackoverflow-6-xxl.png')}" width="24px" />
+                            </apex:outputPanel>
+                            <apex:outputPanel >
+                                <table class="table-alternative">
+                                    <tr>
+                                        <th class="table-alternative-header">{!$ObjectType.Offer__c.fields.PartNUmber__c.label}</th>
+                                        <th class="table-alternative-header">{!$ObjectType.Offer__c.fields.Type__c.label}</th>
+                                        <th class="table-alternative-header">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                                        <th class="table-alternative-header">{!$ObjectType.Offer__c.fields.Manufacturer__c.label}</th>
+                                        <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDUNITPRICE}</th>
+                                        <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}</th>
+                                        <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDQUANTITY}</th>
+                                        <th class="table-alternative-header">{!$ObjectType.Offer__c.fields.Total__c.label}</th>
+                                        <th class="table-alternative-header">{!$ObjectType.Offer__c.fields.Discount__c.label}</th>
+                                        <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDBSUNITPRICE}</th>
+                                        <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDBSTOTALPRICE}</th>
+                                    </tr>
+                                    
+                                    !-- Bundle display --
+                                    <apex:outputPanel layout="none" id="rendBundle" rendered="{!m_OfferId2HasSomeAlternatives[offer.Id] == false}">
+                                        <tr>                                 
+                                            !-- Bundle: Part Number --
+                                            <td class="table-alternative-td table-alternative-column-partNb">
+                                                <apex:outputField value="{!offer.PartNUmber__c}"/>                       
+                                            </td>
+                                            
+                                            !-- Bundle: Type --
+                                            <td class="table-alternative-td table-alternative-column-type">  
+                                                <apex:outputField value="{!offer.FinalType__c}"/>                        
+                                            </td>
+                                            
+                                            !-- Bundle: Description --
+                                            <td class="table-alternative-td table-alternative-column-descr">
+                                                <apex:outputField value="{!offer.Description__c}"/>                                           
+                                            </td>
+                                            
+                                            !-- Bundle: Manufacturer --
+                                            <td class="table-alternative-td table-alternative-column-manufacturer">
+                                                <apex:outputField value="{!offer.Manufacturer__c}"/>
+                                            </td>
+                                            
+                                            !-- Bundle: Unit Price --
+                                            <td class="table-alternative-td table-alternative-column-unitPrice">
+                                                <apex:outputField value="{!offer.CataloguePrice__c}"/>                                    
+                                            </td>
+                                            
+                                            !-- Bundle: Expected Delivery Duration --
+                                            <td class="table-alternative-td table-alternative-column-expectedDelivery">
+                                                <apex:outputField value="{!offer.ExpectedDeliveryDuration__c}"/>
+                                            </td>
+                                            
+                                            !-- Bundle: Quantity --
+                                            <td class="table-alternative-td table-alternative-column-quantity">
+                                                <apex:outputField value="{!offer.Quantity__c}"/>                              
+                                            </td>
+                                            
+                                            !-- Bundle: Total Price --
+                                            <td class="table-alternative-td table-alternative-column-totalPrice">
+                                                <apex:outputField value="{!offer.Total__c}"/>                               
+                                            </td>
+                                            
+                                            !-- Bundle: BodyShop Discount --
+                                            <td class="table-alternative-td table-alternative-column-bsDiscount">
+                                                <apex:outputField value="{!offer.Discount__c}"/>                            
+                                            </td>
+                                            
+                                            !-- Bundle: BodyShop Unit Price --
+                                            <td class="table-alternative-td table-alternative-column-bsUnitPrice">
+                                                <apex:outputField value="{!offer.Price__c}"/>                            
+                                            </td>
+                                            
+                                            !-- Bundle: AXA Total Price --
+                                            <td class="table-alternative-td table-alternative-column-bsTotalPrice">
+                                                <apex:outputField value="{!offer.BSTotalPrice__c}"/>     
+                                            </td>
+                                        </tr>
+                                    </apex:outputPanel>
+                                    !-- Alternatives --
+                                    <apex:outputPanel layout="none" id="tableAlts" rendered="{!m_OfferId2HasSomeAlternatives[offer.Id]}">
+                                        <apex:repeat id="alternativesList" value="{!m_OfferId2ListBundleItems[offer.Id]}" var="alt" rendered="{!m_OfferId2HasSomeAlternatives[offer.Id]}">
+                                            <tr>
+                                                !-- Alternative: Part Number --
+                                                <td class="table-alternative-td table-alternative-column-name" >
+                                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/arrow-32-xxl.png')}" styleClass="table-alternative-column-name-alt-img"/>
+                                                    <apex:outputText value="{!alt.PartNumber}" />
+                                                </td>
+                                                
+                                                !-- Alternative: Type --
+                                                <td class="table-alternative-td table-alternative-column-type">
+                                                    <apex:outputText value="{!alt.Type}" />  
+                                                </td>
+                                                
+                                                !-- Alternative: Description --
+                                                <td class="table-alternative-td table-alternative-column-descr">
+                                                    <apex:outputText value="{!alt.Description}" />
+                                                </td>
+                                                
+                                                !-- Alternative: Manufacturer --
+                                                <td class="table-alternative-td table-alternative-column-manufacturer">
+                                                    <apex:outputText value="{!alt.Manufacturer}" />    
+                                                </td>
+                                                
+                                                !-- Alternative: Unit Price --
+                                                <td class="table-alternative-td table-alternative-column-unitPrice">
+                                                    <apex:outputText value="{!alt.UnitPrice}"/>     
+                                                </td>
+                                                
+                                                <td class="table-alternative-td table-alternative-column-expectedDelivery">
+                                                <apex:outputText value="{!alt.Delivery}"/>                                     
+                                                </td>
+                                                
+                                                !-- Alternative: Quantity --
+                                                <td class="table-alternative-td table-alternative-column-quantity">
+                                                    <apex:outputText value="{!alt.Quantity}"/>                              
+                                                </td>
+                                                
+                                                !-- Alternative: Total Price --
+                                                <td class="table-alternative-td table-alternative-column-totalPrice">
+                                                    <apex:outputText value="{!alt.TotalCPrice}"/>                               
+                                                </td>
+                                                
+                                                !-- Alternative: BodyShop Discount --
+                                                <td class="table-alternative-td table-alternative-column-bsDiscount">
+                                                    <apex:outputText value="{!alt.Discount}"/>                            
+                                                </td>
+                                                
+                                                !-- Alternative: BodyShop Unit Price --
+                                                <td class="table-alternative-td table-alternative-column-bsUnitPrice">
+                                                    <apex:outputText value="{!alt.Price}"/>                            
+                                                </td>
+                                                
+                                                !-- Alternative: AXA Total Price --
+                                                <td class="table-alternative-td table-alternative-column-bsTotalPrice">
+                                                    <apex:outputText value="{!alt.BSPrice}"/>     
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </apex:outputPanel>
+                                </table>    
+                            </apex:outputPanel>
+                        </apex:panelGrid>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:repeat>
+        <div style="display: none;">
+            {!PrerequisiteOrder__c.AcceptedLines__c}
+            {!PrerequisiteOrder__c.Status__c}
+        </div>
+    </apex:form>
+</apex:page>-->

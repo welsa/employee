@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>B2G - Appointment Slot Selection</masterLabel>
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+
+            <!-- [Out field] Search label [Input] -->
+
+            <property 
+                name="response" 
+                label="response"
+                type="String" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="country" 
+                label="country"
+                type="String" 
+                role="inputOnly"/>
+
+            <property 
+                name="timezones" 
+                label="timezones map"
+                type="String" 
+                role="inputOnly"/>
+
+            
+            <property 
+                name="slotOpenStatus" 
+                label="slotOpenStatus"
+                type="String" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="slotClosedStatus" 
+                label="slotClosedStatus"
+                type="String" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="slotExcpClosedStatus" 
+                label="slotExcpClosedStatus"
+                type="String" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="btnAppointmentLabel" 
+                label="btnAppointmentLabel"
+                type="String" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="noSlots_Body" 
+                label="No Slots : Body Message"
+                type="String" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="noSlots_Header" 
+                label="No Slots : Header Message"
+                type="String" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="isDebug" 
+                type="Boolean" 
+                label="Debug logs ?" 
+                default="false"
+                role="inputOnly"
+            />
+            
+        <!--Outputs-->
+            <property 
+                name="selectedSlotTime" 
+                label="selectedSlotTime"
+                type="datetime" 
+                role="outputOnly"
+            />
+
+            <property 
+                name="selectedBranchId" 
+                label="selectedBranchId"
+                type="String" 
+                role="outputOnly"
+            />
+
+            <property 
+                name="selectedSlotId" 
+                label="selectedSlotId"
+                type="String" 
+                role="outputOnly"
+            />
+
+            <property 
+                name="timezone" 
+                label="Timezone used"
+                type="String" 
+                role="outputOnly"
+            />
+
+        </targetConfig>
+    </targetConfigs>
+
+    
+</LightningComponentBundle>

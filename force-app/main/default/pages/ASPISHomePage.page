@@ -1,0 +1,455 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false"  docType="html-5.0" controller="ASPISHomePage" applyBodyTag="false" applyHtmlTag="false">
+	<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<head>
+            <title>{!$Label.ChatterFeedMsg3}</title>
+
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'css/bootstrap-iso.css')}" /> 
+            <apex:stylesheet value="{!URLFOR($Resource.VFP06, 'css/VFP06.css')}" />
+
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.MomentJS)}" />
+
+            <style>
+                .slds-grid.slds-grid--align-end{
+                    margin-bottom: 10px;
+                }
+
+                .slds .slds-card {
+                    overflow-x: hidden;
+                }
+
+                .classHeading{
+                    padding-bottom: 0px;
+                }
+
+                .bold{
+               		font-weight: bold;
+                }
+
+                .iframe-container {
+	              overflow: hidden;
+	              padding-top: 56.25%;
+	              position: relative;
+	            }
+
+	            .iframe-container iframe {
+	               border: 0;
+	               height: 100%;
+	               left: 0;
+	               position: absolute;
+	               top: 0;
+	               width: 100%;
+	            }
+
+	            .chatterDisplayLabel{
+	            	display:block;
+	            	margin-left: 25px;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    line-height: 21px;
+	            }
+
+                .pad-left {
+                    padding: 0 25px 0 0;
+                }
+
+                .bld-txt{
+                    font-weight: bold;
+                    font-size: 0.9rem;
+                }
+
+                .innerLabel{
+                    font-weight: 400;
+                    color: darkgrey;
+                    padding-left: 4px;
+                }
+
+                .slds-avatar1 {
+                    width: 1.7rem;
+                    height: 1.7rem;
+                    overflow: hidden;
+                    display: inline-block;
+                    vertical-align: middle;
+                    border-radius: .25rem;
+                    line-height: 1;
+                    color: #fff;
+                }
+
+                .slds-icon1{
+                    width: 2rem;
+                    height: 1.5rem;
+                }
+
+                .searchDateButton {
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    height: 32px;
+                }
+
+                .iconColor{
+                    height: 1.5rem;
+                    width: 1.5rem;
+                    fill: #fff;
+                }
+
+                button.slds-button.buttonClass{
+                    font-weight: 400 !important;
+                    width:10rem !important;
+                    text-align: left;
+                    display: block;
+                    margin: 12px 24px;
+                }
+                </style>
+
+            <script type="text/javascript">
+			     var __sfdcSessionId = '{!GETSESSIONID()}';
+			</script>
+			<script src="/soap/ajax/34.0/connection.js" type="text/javascript"></script>
+        </head>
+
+        <body  class="slds-scope">
+        		<div class="slds" style="min-width: 1300px;">
+                    <apex:form id="CasesForm">
+                	   <c:ASPISHeader />    
+                    </apex:form>
+
+                	<div class="slds-card">
+		                <div class="slds-card__header">             
+		                    <div class="slds-grid">
+    		                    <h2 class="classHeading slds-media slds-media_center slds-has-flexi-truncate slds-text-heading_small">
+    		                        {!$Label.ChatterFeedMsg4}
+    		                    </h2>
+    		                </div>
+    		            </div>
+    		        </div>  
+
+                    <div class="slds-grid slds-wrap" style="padding-top: 0.5rem;">
+                        <div class="slds-shrink">
+                            <div class="slds-form-element slds-form-element_readonly">               
+                                <button class="searchDateButton slds-button slds-button_brand buttonClass followClass" type="button">
+                                    <svg aria-hidden="true" class="slds-icon1 iconColor">
+                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#relate"></use>
+                                    </svg>
+                                    {!$Label.ChatterFeedMsg5}
+                                </button>
+
+                                <button class="searchDateButton slds-button slds-button_brand buttonClass meClass" type="button">
+                                    <svg aria-hidden="true" class="slds-icon1 iconColor">
+                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#feed"></use>
+                                    </svg>
+                                    {!$Label.ChatterFeedMsg6}
+                                </button>
+
+                                <button class="searchDateButton slds-button slds-button_brand buttonClass bookmarkedClass" type="button">
+                                    <svg aria-hidden="true" class="slds-icon1 iconColor">
+                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#richtextbulletedlist"></use>
+                                    </svg>
+                                    {!$Label.ChatterFeedMsg7}
+                                </button>
+
+                                <button class="searchDateButton slds-button slds-button_brand buttonClass mutedClass" type="button">
+                                    <svg aria-hidden="true" class="slds-icon1 iconColor">
+                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#turn_off_notifications"></use>
+                                    </svg>
+                                    {!$Label.ChatterFeedMsg8}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-grow" style="border-left-style:outset;">
+                            <div id="loadTable">
+                                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                    <span class="slds-assistive-text">{!$label.Loading}</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+
+                            <div class="contentDisplay" style="width:500px;margin-top:2.1rem;margin-left: 24px;">    
+
+                            </div>
+                        </div>
+                    </div>
+	            </div>
+
+        		<script>
+        			var $j = jQuery.noConflict();
+
+                    //ajax variables initialisation
+                    var SESSION_ID = '{!$Api.Session_ID}';
+                    var serverURL = '{!SUBSTITUTE(SUBSTITUTE(LEFT($Api.Partner_Server_URL_210, FIND( '/services', $Api.Partner_Server_URL_260)), 'visual.force', 'salesforce'), 'c.', '')}';
+
+                    // If its a mydomain enabled org, the mydomain name needs to be stripped 
+                    var splitURL = serverURL.split(/\./g);
+                    
+                    if(splitURL.length == 4) {
+                        splitURL[0] = 'https://';
+                        serverURL = splitURL.join(".").replace('.','');
+                    }
+
+                    var contentToBeAppended = '';
+
+                    $j(document).ready(function() {
+                        //initialise moment
+                        moment.locale("{!locale}");
+
+                        //load feed on initial load
+                        initiateRestCallOut('feeds/news/me/feed-elements?pageSize=' + '{!feedSize}','{!communityId}','flw','');
+
+                        //click on to follow me
+                        $j('.followClass').on('click',function(){
+                            //show loading
+                            $j('#loadTable').show();
+
+                            //clear display content first
+                            $j('.contentDisplay').empty();
+
+                            initiateRestCallOut('feeds/news/me/feed-elements?pageSize=' + '{!feedSize}','{!communityId}','flw','');
+                        });
+
+                        //click on me
+                        $j('.meClass').on('click',function(){
+                            //show loading
+                            $j('#loadTable').show();
+
+                            //clear display content first
+                            $j('.contentDisplay').empty();
+
+                            initiateRestCallOut('feeds/to/me/feed-elements?pageSize=' + '{!feedSize}','{!communityId}','me','');
+                        });
+
+                        //click on bookmarkedClass
+                        $j('.bookmarkedClass').on('click',function(){
+                            //show loading
+                            $j('#loadTable').show();
+
+                            //clear display content first
+                            $j('.contentDisplay').empty();
+
+                            initiateRestCallOut('feeds/bookmarks/me/feed-elements?pageSize=' + '{!feedSize}','{!communityId}','bk','');
+                        });
+
+                        //click on muted
+                        $j('.mutedClass').on('click',function(){
+                            //show loading
+                            $j('#loadTable').show();
+
+                            //clear display content first
+                            $j('.contentDisplay').empty();
+
+                            initiateRestCallOut('feeds/muted/me/feed-elements?pageSize=' + '{!feedSize}','{!communityId}','mt','');
+                        });
+                    });
+
+                    function initiateRestCallOut(pathParam,commId,section,newUrl){      
+                        console.log('>>>>'+('/services/data/v43.0/connect/communities/' + commId + '/chatter/' + pathParam));
+                        //show loading
+                        $j('#loadTable').show();
+
+                        //clear show more
+                        $j('.showMore').empty();
+
+                        $j(function(){
+                            var nextUrl = '';
+
+                            $j.ajax({
+                                cache: false,
+                                url: (newUrl == '') ? ('/services/data/v43.0/connect/communities/' + commId + '/chatter/' + pathParam) : newUrl,
+                                beforeSend: function(xhr){
+                                    xhr.setRequestHeader('Authorization', 'OAuth ' + SESSION_ID);
+                                },
+                                success: function(data,textStatus,jqXHR){
+                                    console.log('xxxdata',data);
+
+                                    if(data.elements.length > 0){
+                                        //clear variables
+                                        contentToBeAppended = '';
+
+                                        for(var i=0;i<data.elements.length;i++){
+                                            if(data.elements[i].body.text){
+                                                buildPost(data.elements[i]);
+                                            }
+                                        }
+
+                                        if(contentToBeAppended.length > 0){
+                                            //manage pagination
+                                            if(data.nextPageUrl){
+                                                nextUrl = data.nextPageUrl;
+                                            }
+
+                                            //add showmore
+                                            var showmore = '';
+                                            showmore += '<div class="showMore">';
+                                            showmore += '<div class="slds-grid slds-wrap" style="margin-top: 2.0rem;">';
+                                            
+                                            //previous btn
+                                            showmore += '<div class="slds-co slds-size_12-of-12" style="text-align:center;">';
+
+                                            if(!nextUrl){
+                                                showmore += '<button class="searchDateButton slds-button slds-button_brand slds-col--padded" disabled="disabled" type="button">';
+                                            }else{
+                                                showmore += '<button class="searchDateButton slds-button slds-button_brand slds-col--padded" type="button" onclick="initiateRestCallOut(\'\',\'\',\'\',\'' + decodeURI(nextUrl) + '\')">';
+                                            }
+                                            
+                                            showmore += '<svg aria-hidden="true" class="slds-icon1 iconColor">';
+                                            showmore += '<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#chevrondown"></use>';
+                                            showmore += '</svg>';
+                                            showmore += '{!$Label.ChatterFeedMsg12}'
+                                            showmore += '</button>';
+                                            showmore += '</div>';
+                                            showmore += '</div>';
+
+                                            //add to content
+                                            contentToBeAppended += showmore;
+
+                                            //add new content
+                                            $j('.contentDisplay').append(contentToBeAppended); 
+                                        }
+
+                                        //hide loading
+                                        $j('#loadTable').hide();
+                                    }else{
+                                        var newContent = '';
+                                        if(section == 'bk'){
+                                            newContent = '<h5 style="line-height: 28px;">{!$Label.ChatterFeedMsg9}</h5>';
+                                        }else if(section == 'mt'){
+                                            newContent = '<h5 style="line-height: 28px;">{!$Label.ChatterFeedMsg10}</h5>';
+                                        }else if(section == 'me' || section == 'flw'){
+                                            newContent = '<h5 style="line-height: 28px;">{!$Label.ChatterFeedMsg11}</h5>';
+                                        }
+
+                                        //add new content
+                                        $j('.contentDisplay').append(newContent); 
+
+                                        //hide loading
+                                        $j('#loadTable').hide();
+                                    }
+                                },
+                                failure: function(resp){
+                                    var errorMsg = '{!$Label.ChatterFeedMsg13}';
+
+                                    //add new content
+                                    $j('.contentDisplay').append(errorMsg); 
+
+                                    //hide loading
+                                    $j('#loadTable').hide();
+                                }
+                            });
+                        });
+                    }
+
+                    function buildPost(element){
+                        var content = '';
+
+                        content += '<div class="slds-grid slds-wrap" style="margin-top: 0.9rem;">';
+                        content += '<div class="slds-co slds-size_1-of-12">';
+                        content += '<span class="slds-avatar">';
+                        content += '<img src="' + element.actor.photo.smallPhotoUrl  + '" width="200" height="200"/>';
+                        content += '</span>';
+                        content += '</div>';
+
+                        content += '<div class="slds-co slds-size_11-of-12">';
+                        content += '<div class="slds-grid slds-wrap">';
+                        content += '<div class="slds-co slds-size_12-of-12">';
+
+                        if(element.actor.additionalLabel){
+                            content += '<h4 class="slds-text-body--medium slds-text-link" onclick="window.location=\'' + buildOnClick(element.parent.id) + '\'" style="cursor:pointer"> ' + element.header.messageSegments[0].text + ' - ' + element.actor.displayName + '<span class="innerLabel">(' + element.actor.additionalLabel + ')</span></h4>';
+                        }else{
+                            content += '<h4 class="slds-text-body--medium slds-text-link"> ' + element.header.messageSegments[0].text + ' - ' + element.actor.displayName + '</h4>';
+                        }
+
+                        content += '<h5 style="line-height: 28px;" class="slds-text-body--medium">' + element.body.text + '</h5>';
+                        content += '</div>';
+
+                        content += '<div class="slds-co slds-size_12-of-12">';
+                        content += '<div class="slds-grid slds-wrap">';
+                        content += '<div class="slds-co slds-size_12-of-12">';
+                        content += '<span class="innerLabel">' + moment(new Date(element.createdDate)).format('LLL') + '</span>';
+                        content += '</div>';
+                                            
+                        //comment here
+                        var itemsL = element.capabilities.comments.page.items.length;
+                        var itemVar = element.capabilities.comments.page.items;
+                        if(itemsL > 0){
+                            for(var y=0;y<itemsL;y++){
+                                if(itemVar[y].body){
+                                    content += buildComment(itemVar[y]);
+                                }
+                            }
+                        }
+
+                        content += '</div>';
+                        content += '</div>';
+                        content += '</div>';
+                        content += '</div>';
+                        content += '</div>';
+
+                        //add to content
+                        contentToBeAppended += content; 
+                    }
+
+                    function buildComment(item){
+                        var contentItem = '';
+
+                        contentItem += '<div class="slds-co slds-size_12-of-12" style="margin: 10px; background: #f4f6f9;">';
+                        contentItem += '<div class="slds-grid slds-wrap">';
+                        contentItem += '<div class="slds-co slds-size_1-of-12">';
+                        contentItem += '<span class="slds-avatar1">';
+                        contentItem += '<img src="' + item.user.photo.smallPhotoUrl  + '" width="200" height="200"/>';
+                        contentItem += '</span>';
+                        contentItem += '</div>';
+                        contentItem += '<div class="slds-co slds-size_11-of-12">';
+                        contentItem += '<div class="slds-grid slds-wrap">';
+                        contentItem += '<div class="slds-co slds-size_12-of-12">';
+
+                        if(item.user.additionalLabel){
+                            contentItem += '<h4 class="slds-text-body--medium" style="color:#0070d2;">' + item.user.displayName + '<span class="innerLabel">(' + item.user.additionalLabel + ')</span></h4>';
+                        }else{
+                            contentItem += '<h4 class="slds-text-body--medium"> style="color:#0070d2;"' + item.user.displayName + '</h4>';
+                        }
+
+                        contentItem += '<h5 style="line-height: 28px;" class="slds-text-body--medium">' + item.body.text + '</h5>';
+                        contentItem += '</div>';
+                        contentItem += '<div class="slds-co slds-size_12-of-12">';
+                        contentItem += '<div class="slds-grid slds-wrap">';
+                        contentItem += '<div class="slds-co slds-size_12-of-12">';
+                        contentItem += '<span class="innerLabel">' + moment(new Date(item.createdDate)).format('LLL') + '</span>';
+                        contentItem += '</div>';
+                        contentItem += '</div>';
+                        contentItem += '</div>';
+                        contentItem += '</div>';
+                        contentItem += '</div>';
+                        contentItem += '</div>';
+                        contentItem += '</div>';
+
+                        return contentItem;
+                    }
+
+                    function buildOnClick(pid){
+                        if(pid){
+                            //case
+                            if(pid.substring(0,3) == '{!caseObjPrefix}'){
+                                return '/apex/ASPISMyCaseDetail?id=' + btoa(pid);
+                            }else if(pid.substring(0,3) == '{!assObjPrefix}'){
+                                return '/OrderChooseAssessment?AssessmentId=' + btoa(pid);
+                            }else if(pid.substring(0,3) == '{!soObjPrefix}'){
+                                return '/apex/ASPISSalesOrder?id=' + btoa(pid);
+                            }else{
+                                return 'javascript:void(0);'
+                            }
+                        }//end check null value
+                        else{
+                            return 'javascript:void(0);'
+                        }
+                    }
+        		</script>	        	
+        </body>
+	</html>
+</apex:page>

@@ -1,0 +1,82 @@
+<aura:component>
+	<!-- ************************************************************* -->
+    <!-- **************** AUTHOR  : SC (DMG)         ***************** -->
+    <!-- **************** VERSION : 1.0              ***************** -->
+    <!-- **************** SINCE   : 04/04/2019       ***************** -->
+    <!-- ************************************************************* -->	
+	<aura:attribute name="glabel" type="String" />
+	<aura:attribute name="records" type="Object[]"/>
+	<aura:attribute name="showTable" type="boolean" default="true" />
+
+	<article class="slds-card">
+		<div class="slds-tabs_default">
+			<ul class="slds-tabs_default__nav" role="tablist">
+				<li class="slds-tabs_default__item slds-is-active" title="{!v.glabel}" role="presentation">
+					<a class="slds-tabs_default__link"  onclick="{!c.manageDisplay}" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-default-1" id="tab-default-1__item">{!v.glabel}</a>
+				</li>
+			</ul>
+			<div class="{! v.showTable ? 'slds-theme_shade' : 'slds-hide'}">
+			<table style="margin: 0.5%;">
+				<thead class="{! greaterthan(v.records.length,0) ? 'slds-hide' : ''}">
+					<tr class="slds-text-title--caps">
+						<th style="width:15%;">
+							{!$Label.c.NoRefFound}
+						</th>
+
+					</tr>
+				</thead>
+				<thead class="{! !greaterthan(v.records.length,0) ? 'slds-hide' : ''}">
+					<tr class="slds-text-title--caps">
+						<th style="width:15%;    text-align: center;">
+							{!$Label.c.IAMManufacturer}
+						</th>
+						<th style="width:15%;    text-align: center;">
+							{!$Label.c.IAMPartNumber}
+						</th>
+						<th style="width:25%;    text-align: center;">							
+							{!$Label.c.IAMDescription}
+						</th>
+						<th style="width:15%;    text-align: center;">							
+							{!$Label.c.Class}
+						</th>
+						<th style="width:15%;    text-align: center;">							
+							{!$Label.c.Certification}
+						</th>
+						<th style="width:15%;    text-align: center;">
+							{!$Label.c.YourPublicPrice}
+						</th>
+					</tr>
+				</thead>
+				<tbody class="{! !greaterthan(v.records.length,0) ? 'slds-hide' : ''}">
+						<aura:iteration items="{!v.records}" var="r">
+						<tr>
+							<td style="text-align: center;">
+								{!r.Manu}
+							</td>
+							<td style="text-align: center;">
+								{!r.Part}
+							</td>
+							<td style="text-align: center;">
+								{!r.Desc}
+							</td>
+							<td style="text-align: center;">
+								{!r.Class}
+							</td>
+							<td style="text-align: center;">
+								{!r.Cert}
+
+							</td>
+							<td style="text-align: center;">
+								{!r.Price}
+
+							</td>
+
+						</tr>					
+					</aura:iteration>
+				</tbody>
+			</table>	
+		</div>
+		</div>
+	</article>
+
+</aura:component>

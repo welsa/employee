@@ -1,0 +1,5 @@
+<apex:page >
+<script language="JavaScript">
+window.top.location="/apex/Search";
+</script>
+</apex:page>

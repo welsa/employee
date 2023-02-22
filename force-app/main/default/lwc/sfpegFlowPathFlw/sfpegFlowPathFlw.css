@@ -1,0 +1,32 @@
+/* Tab Display Override */
+.slds-tabs_default__content {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+.slds-scope .slds-button {
+    --sds-c-button-radius-border : 0px;
+}
+
+.slds-button {
+    --sds-c-button-radius-border : 0px;
+}
+
+.axa-button {
+    --sds-c-button-radius-border : 0px !important;
+    border: 1px solid var(--lwc-brandAccessible);
+    font-weight: 600; 
+    border-radius: 0px;
+    font-size : 1em;
+}
+
+.brand-button {
+    --sds-c-button-radius-border : 0px !important;
+    font-weight: 600; 
+    border-radius: 0px;
+    font-size : 1em;
+}
+
+.no-click{
+    pointer-events: none;  
+}

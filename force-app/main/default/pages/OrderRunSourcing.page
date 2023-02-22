@@ -1,0 +1,294 @@
+<apex:page controller="OrderRunSourcing" showHeader="false" sidebar="true" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <title>{!$Label.OrderRunSourcingTitle}</title>
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <!-- Initalise the global variable first as these values are used in the external javascript files -->
+        <!-- Initalise the global variable first as these values are used in the external javascript files -->
+        <script>
+            window.params = {
+                // URL For Icons
+                "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}",
+                "attentionSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#warning')}",
+                "attentionPNGUrl": "{!URLFOR($Resource.PagedeCommandeResources, '/PagedeCommandeResources/warningOrdered.png')}",
+                "alternativeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action-sprite/svg/symbols.svg#change_record_type')}",
+                "alternativePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/change_record_type_60.png')}",
+                "bundleSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/custom-sprite/svg/symbols.svg#custom57')}",
+                "bundlePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/custom/custom57_60.png')}",
+                "packageOrgSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#package_org')}",
+                "packageOrgPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/package_org_60.png')}",
+                "editFormSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#edit_form')}",
+                "editFormPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/edit_form_60.png')}",
+                "quickTextSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#quick_text')}",
+                "quickTextPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/quick_text_60.png')}",
+                "shipmentSVGUrl":"{!URLFOR($Resource.slds, '/assets/icons/standard-sprite/svg/symbols.svg#shipment')}",
+                "shipmentPNGUrl":"{!URLFOR($Resource.shipmentGrey)}"
+
+            };
+        </script>
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+            <style>
+                .searchDateButton {
+                background: #103184;
+                color: #fff;
+                font-size: 14px;
+                height: 32px;
+                }
+
+                .fixedHeader{
+                position: fixed;
+                width:100%;
+                background: #fdfdfd;
+                z-index:1;
+                }
+            </style>
+        </head>
+        <body>
+            <apex:form id="sourcingForm">
+                <div class="slds">
+                    <div  style="min-width: 1000px">
+                        <c:ASPISHeader />
+                        <!--<div class="slds-image slds-text-align_center slds-m-vertical_medium">-->
+                            <!--<object data="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}" type="image/svg+xml" width="250" />-->
+                        <!--</div>-->
+                    </div>
+                    <div class="slds-card" id="topCard">
+                        <div class="slds-card__header">
+                            <!-- <apex:outputText rendered="{!(encryptedSourceAssessmentId == null || encryptedSourceAssessmentId == encryptedText)}">
+                                <a  class="searchDateButton slds-button slds-button_brand" 
+                                    href="{!$Page.OrderChooseAssessment & '?AssessmentId=' & encryptedText}">
+                                    {!$Label.Back}
+                                </a>
+                            </apex:outputText> -->
+                            <!-- <apex:outputText rendered="{!(encryptedSourceAssessmentId != null && encryptedSourceAssessmentId != encryptedText)}">
+                                <a  class="searchDateButton slds-button slds-button_brand" 
+                                    href="{!$Page.OrderChooseAssessment & '?AssessmentId=' & encryptedSourceAssessmentId}">
+                                    {!$Label.Back}
+                                </a>
+                            </apex:outputText> -->
+                            
+                            &nbsp;&nbsp;
+                            <h2 class="slds-text-heading_small slds-truncate slds-show_inline">
+                                <apex:outputText rendered="{!assessmentToDisplay.BodyShop__r.Type == 'Expert'}">
+                                    {!$Label.AssessmentInProgress}
+                                </apex:outputText>
+                                <apex:outputText rendered="{!assessmentToDisplay.BodyShop__r.Type == 'Standard'}">
+                                    {!$Label.MyAssessment}
+                                </apex:outputText>
+                            </h2>
+                        </div>
+                        <table class="slds-table slds-table_bordered">
+                            <thead>
+                                <tr>
+                                    <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Assessment__c.fields.PlateNumber2__c.label}</th>
+                                    <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Assessment__c.fields.VINNumber__c.label}</th>
+                                    <th class="slds-text-heading_label slds-text-align_center">{!$Label.Brand}</th>
+                                    <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Assessment__c.fields.ModelV2__c.label}</th>
+                                    <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Assessment__c.fields.ClaimReference__c.label}</th>
+                                    <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Assessment__c.fields.ASReference__c.label}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="slds-text-body_regular slds-text-align_center">
+                                        {!assessmentToDisplay.PlateNumber2__c}
+                                    </td>
+                                    <td class="slds-text-body_regular slds-text-align_center">
+                                        {!assessmentToDisplay.VINNumber__c}
+                                    </td>
+                                    <td class="slds-text-body_regular slds-text-align_center">
+                                        {!assessmentToDisplay.Manufacturer__c}
+                                    </td>
+                                    <td class="slds-text-body_regular slds-text-align_center">
+                                        {!assessmentToDisplay.ModelV2__c}
+                                    </td>
+                                    <td class="slds-text-body_regular slds-text-align_center">
+                                        {!assessmentToDisplay.ClaimReference__c}
+                                    </td>
+                                    <td class="slds-text-body_regular slds-text-align_center">
+                                        <strong>{!assessmentToDisplay.ASReference__c}</strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+
+
+                    <div class="slds-m-around_medium">
+                        <apex:outputPanel layout="block" rendered="{!assessmentToDisplay != null && assessmentToDisplay.PartsLists__r.size > 0}">
+                            <div class="slds-card">
+                                <div class="slds-card__header">
+                                    <h2 class="slds-text-heading_small slds-truncate">{!$Label.ListOfParts}</h2>
+                                </div>
+                                <table class="slds-table slds-table_bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="slds-text-heading_label">{!$ObjectType.PartList__c.fields.PartNumber__c.label}</th>
+                                            <th class="slds-text-heading_label">{!$ObjectType.PartList__c.fields.Description__c.label}</th>
+                                            <th class="slds-text-heading_label">{!$ObjectType.PartList__c.fields.Quantity__c.label}</th>
+                                        </tr>
+                                    </thead>
+                                    <body>
+                                        <apex:repeat value="{!assessmentToDisplay.PartsLists__r}" var="part">
+                                            <tr>
+                                                <td class="slds-text-body_small">
+                                                    {!part.PartNumber__c}
+                                                </td>
+                                                <td class="slds-text-body_small">
+                                                    {!part.Description__c}
+                                                </td>
+                                                <td class="slds-text-body_small">
+                                                    {!part.Quantity__c}
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </body>
+                                </table>
+                                <div class="slds-card__footer"><h2 class="slds-text-heading_small"> </h2></div>
+                            </div>
+                        </apex:outputPanel>
+                    </div>
+
+
+
+
+
+                <div class="slds-grid">
+                    <div class="slds-p-around_medium slds-size--1-of-2 slds-col--padded"></div>
+                    <div class="slds-p-around_medium slds-size--1-of-2 slds-col--padded">
+                        <div class="slds-card">
+                            <div class="slds-card__header">
+                                <h2 class="slds-text-heading_small">{!$Label.Quote}</h2>
+                            </div>
+                            <div class="slds-card__body">
+                                <table class="slds-table">
+                                    <tr>
+                                        <td class="slds-text-align_center">
+                                            <span class="commentIcon slds-icon_container">
+                                                <!-- <svg aria-hidden="true" class="slds-icon--small slds-icon-text-default">
+                                                    <use xlink:href="{!URLFOR($Resource.slds, "/assets/icons/utility-sprite/svg/symbols.svg#quick_text")}"></use>
+                                                </svg> -->
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputTextarea styleclass="slds-textarea slds-cell-wrap slds-truncate" html-placeholder="{!$Label.Comment}... ({!$Label.CommentWarning})" value="{!comment}" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <apex:outputPanel rendered="{!assessmentToDisplay != null && assessmentToDisplay.PartsLists__r.size > 0}">
+                                <div class="slds-card__footer">
+                                    <div class="slds-grid">
+                                        <div class="slds-size--1-of-2" style="text-align: left">
+                                            <apex:outputText rendered="{!(encryptedSourceAssessmentId == null || encryptedSourceAssessmentId == encryptedText)}">
+                                                <a  class="searchDateButton slds-button slds-button_brand" 
+                                                    href="{!$Page.OrderChooseAssessment & '?AssessmentId=' & encryptedText}">
+                                                    {!$Label.Back}
+                                                </a>
+                                            </apex:outputText>
+                                            <apex:outputText rendered="{!(encryptedSourceAssessmentId != null && encryptedSourceAssessmentId != encryptedText)}">
+                                                <a  class="searchDateButton slds-button slds-button_brand" 
+                                                    href="{!$Page.OrderChooseAssessment & '?AssessmentId=' & encryptedSourceAssessmentId}">
+                                                    {!$Label.Back}
+                                                </a>
+                                            </apex:outputText>
+                                        </div>
+                                        <div class="slds-size--1-of-2">
+                                            <!--<apex:commandButton action="{!createClaimOrderAssessment}" value="{!$Label.ValidateQuoting}" styleclass="btn slds-button slds-button_neutral" status="statusSpinner" reRender="sourcingForm" />-->
+                                            <button type="button" class="searchDateButton slds-button slds-button_brand" id="validateQuotingBtn" onclick="validateForm();">{!$Label.ValidateQuoting}</button>
+                                        </div>
+                                    </div>                  
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                </div>
+
+                    <div id="spinner" class="slds-spinner_container hide positionFixed">
+                        <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                    <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+
+                    <div id="toastMessage" class="slds-notify_container slds-hide">
+                        <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" title="{!$Label.Close}" type="button" onclick="hideError();">
+                            </button>
+                            <div class="slds-notify__content">
+                                <p class="slds-text-align_center customErrorMsg"></p>
+                                <apex:pagemessages id="toastErrorMessage" escape="false" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="errorModal" class="slds-modal slds-modal_prompt" aria-hidden="false" role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <p class="slds-m-bottom_medium">
+                                    {!$Label.ErrorModalBody}
+                                </p>
+                                <apex:pagemessages escape="false" />
+                            </div>
+                            <div class="slds-modal__footer slds-theme_default">
+                                <input type="button" class="slds-button slds-button_destructive" value="{!$Label.Close}" onclick="hideError();" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                </div>
+
+            <apex:actionfunction name="createClaimOrderAssessment" action="{!createClaimOrderAssessment}" rerender="sourcingForm" status="statusSpinner" />
+                <script>
+                    var headerHeight = $j('.fixedHeader').height();
+                    $j('#topCard').css('padding-top',headerHeight+5);
+
+                    renderIcons();
+                    showError({!hasErrors}, {!isToastError});
+                    checkPageMessage({!hasErrors});
+
+                    function verifyComment()
+                    {
+                        if ($j('.commentfield').length > 0 && $j('.commentfield').val().length > 255) {
+                            $j(".commentfield").parent().addClass("slds-has-error");
+                            $j(".customErrorMsg").html("{!JSENCODE($Label.CommentErrorMsg)}");
+                            showError(true, true);
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                    function validateForm()
+                    {
+                        clearError();
+
+                        if(verifyComment()){
+                            $j('#validateQuotingBtn').prop('disabled',true);
+                            createClaimOrderAssessment();
+                        }
+                    }
+
+                    function clearError() {
+                        $j(".commentfield").parent().removeClass("slds-has-error");
+                    }
+                </script>
+            </apex:form>
+        </body>
+    </html>
+</apex:page>

@@ -1,0 +1,1621 @@
+<apex:page standardcontroller="PurchaseOrder__c">
+	<h1>Delete this page</h1>
+</apex:page>
+<!--<apex:page standardController="PurchaseOrder__c" extensions="VFC04_POManageOrderLines_V3" tabStyle="OrderLine__c" sidebar="false" showHeader="false" applyHtmlTag="false">
+<apex:includeScript value="{!URLFOR($Resource.SF1,'Jquery/jquery-2.1.0.min.js')}"/> 
+<apex:includeScript value="{!URLFOR($Resource.SF1,'Jquery/jquery-ui.js')}"/>
+    <head>
+        <style>
+            body {
+                display: table;
+                width: 100%;
+                margin: 0;
+            }
+            body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {
+            background:none;
+            }
+            .table-original-header {
+            background: #D0D0D8;
+            }  
+            .table-original-column {
+            border: none;
+            border-top: 0.8px;
+            }
+            .list td.table-original-alternative-column, body .pbBody table.list tr.dataRow td.table-original-alternative-column{
+            padding-top: 0px;
+            padding: 0px;
+            //padding-left: 90px;
+            border: none;
+            }
+            .input-small {
+            width: 50px;
+            text-align: right;
+            }  
+            .input-smaller {
+            width: 35px;
+            }
+            .table-alternative {
+            font-size: 11px;
+            border-spacing: 1px 0px;
+            width: 100%;
+            border: 0.1em solid lavender;
+            border-size: 0.1em 0 0.1em 0;
+            }
+            th.table-alternative-header {
+            background: lavender;
+            font-weight: bold;
+            font-size: 11px;
+            border-right: 1px solid white;
+            }
+            .table-alternative-td {
+            //border: 1px solid lavender;
+            border-spacing: 0px;
+            padding: 3px;
+            border-width: 1px 0 0px 0;
+            }
+            .table-alternative input, .table-alternative select, .myform input, .myform select{
+            font-size: 11px;
+            line-height: 11px;
+            //   text-align: right;
+            }
+            .alternative-grid {
+            float: right;
+            width: 98%;
+            padding-bottom: 5px;
+            }
+            td.alternative-grid-td {
+            border: 0px;
+            padding: 0px;
+            border-width: 0px;
+            }
+            body .pbBody table.list tr.dataRow td.alternative-grid-td {
+            border:none;
+            }
+            body .pbBody table.list tr.dataRow td{
+            border-width: 1px 0 0px 0;
+            }
+            .alternative-bundle-img {
+            width: 40px;
+            padding-right: 5px;
+            }
+            .footer-text {
+                text-align: right;
+                font-size: 10px;
+            width: 40px;
+            }
+            .input-medium {
+                width: 90px;
+                text-align: left;
+            }
+            .myform{
+            width: 100%;
+            position: relative;
+            font-size: 11px;
+            line-height: 11px;
+            }
+            .table-original {
+            table-layout: auto;
+            width: 99%;
+            white-space: nowrap;
+            }          
+            .table-original-column-type span, .table-original-column-quantity span, .table-original-column-type select, .table-original-column-quantity input, .table-original-column-type, .table-original-column-quantity td, 
+            .table-alternative-column-type span, .table-alternative-column-quantity span, .table-alternative-column-type select, .table-alternative-column-quantity input, .table-alternative-column-type, .table-alternative-column-quantity {
+            width: 40px;
+            text-align: center;
+            }            
+            .table-original-column-bsDiscount input, .table-original-column-axaTotalPrice input, .table-original-column-axaDiscount input, .table-original-column-totalPrice input, .table-original-column-unitPrice input, .table-original-column-expectedDelivery input,
+            .table-original-column-bsDiscount, .table-original-column-axaTotalPrice, .table-original-column-axaDiscount, .table-original-column-totalPrice, .table-original-column-unitPrice, .table-original-column-expectedDelivery,
+            .table-alternative-column-bsDiscount, .table-alternative-column-axaTotalPrice, .table-alternative-column-axaDiscount, .table-alternative-column-totalPrice, .table-alternative-column-unitPrice, .table-alternative-column-expectedDelivery,
+            .table-alternative-column-bsDiscount input, .table-alternative-column-axaTotalPrice input, .table-alternative-column-axaDiscount input, .table-alternative-column-totalPrice input, .table-alternative-column-unitPrice input, .table-alternative-column-expectedDelivery input{
+            width: 50px;
+            text-align: right;
+            }
+            .table-original-column-addAlternative, .table-original-column-suppliable{
+            width: 15px;
+            text-align: center;
+            }
+            .table-original-column-name input, .table-original-column-manufacturer input, .table-original-column-partNb input, .table-original-column-descr input,
+            .table-alternative-column-name input, .table-alternative-column-manufacturer input, .table-alternative-column-partNb input, .table-alternative-column-descr input{
+                width: 90px;
+                text-align: left;
+            }
+            .table-original-column-compliantPart{
+            width: 15px;
+            text-align: center;
+            }
+            .table-original-suppliable-img{
+            width: 15px;
+            margin-left: 3px;
+            }
+            .table-original-addAlternative-img {
+            width: 12px;
+            text-align: center;
+            }  
+            
+            .table-alternative-bundle-img{
+            width: 24px;
+            }
+            .table-alternative-column-name-alt-img{
+            width: 12px;
+            vertical-align: text-bottom;
+            margin-right:5px;
+            }
+            .table-alternative-delete-img{
+            width: 10px;
+            }
+            .errorStyle, .errorMsg, .importantWarning, .pbBody .errorStyle a, .pbBody .errorMsg a {
+            color: #d74c3b;
+            width: inherit;
+            font-size: 0px;
+            line-height: 0px;
+            }
+            .status-loading-img{
+            width: 15px;
+            position: absolute;
+            padding-left: 5px;
+            top: 9px;
+            }
+            .status-notsaved-img{
+            position: absolute;
+            right: 1px;
+            }
+            
+            
+            /* button border */
+            .styleClassValidateButtonActive {
+                display: inline-block !important;
+                border: 3px solid #17DC7D !important;
+            }
+            .styleClassValidateButtonPassive {
+                display: inline-block !important;
+                border: 1px solid #ffffff !important;
+            }
+            .header-page{
+                text-align: center;
+                margin: 15px;
+            }
+            body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+                background-color: #f8f8f8;
+                border-bottom: 1px solid #eaeaea;
+                border-left: 1px solid #eaeaea;
+                border-right: 1px solid #eaeaea;
+                -moz-border-radius: 4px;
+                -webkit-border-radius: 4px;
+                border-radius: 4px;
+                border-top: 3px solid #bdbd75;
+                padding :10px;
+            }
+
+        </style>
+        
+        <script>
+        function sum(id){
+            alert('test');
+            var table = document.getElementById(id+"_nestedTableBundle");
+            var bundle = table.getElementsByClassName("input-sum-bundle-CatPrice"); 
+            var rows = table.getElementsByClassName("input-sum-alt-CatPrice");
+            var sum = 0;
+            
+            // start with 2 to skip first row, which is col headers and second row, which is the bundle.
+            for (var i = 0; i < rows.length; i++) {
+                sum+=parseFloat(rows[i].value);
+            }
+            bundle[0].value = sum;
+        }
+        </script>
+        
+    !-- NEW DEV --
+    <script type="text/javascript">__sfdcSessionId = '{!$Api.Session_Id}';</script>
+    <script src="/soap/ajax/34.0/connection.js"></script>
+
+
+!-- jQuery UI theme 
+    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.10.4/themes/south-street/jquery-ui.css" /> 
+    jQuery UI theme --
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.jQueryUICustomTheme,'jquery-ui.css')}" /> 
+    
+<script type="text/javascript">
+    if(typeof jQuery != 'undefined'){ 
+        j$ =jQuery.noConflict(); 
+    }
+
+    function modalErrorPopup(mess) {   
+    var j$modalDialog3 = j$('<div></div>')
+         .html(mess)// 'Do you want to send...'
+         .dialog({             
+              autoOpen: true,
+              title: "{!$Label.ConfirmJSFailure}" ,
+              resizable: false,
+              width: 400,
+              height: 150,
+              autoResize: true,
+              modal: true,
+              draggable: true,
+              open: function(event, ui) { j$(".ui-dialog-titlebar-close").hide();},
+              buttons: [
+                {
+                    text: "OK",
+                    icons: {
+                        primary: "ui-icon-check"
+                    },
+                    click: function() {
+                        j$modalDialog3.dialog('close');
+                    }
+                } 
+              ] // buttons ends here
+          });
+    }
+
+    function modalPopup() {                                    
+
+    var j$modalDialog2 = j$('<div></div>')
+         .html("{!$Label.ConfirmJS}") // 'Do you want to send...'
+         .dialog({
+              autoOpen: false,
+              title: "{!$Label.ConfirmJSTitle}",
+              resizable: false,
+              width: 400,
+              height: 150,
+              autoResize: true,
+              modal: true,
+              draggable: true,
+              open: function(event, ui) { j$(".ui-dialog-titlebar-close").hide(); },
+              buttons: [
+                {
+                    text: "OK",
+                    icons: {
+                        primary: "ui-icon-check"
+                    },
+                    click: function() {
+                        record = j$(this).data('record');
+                        record.Status__c = 'RESPONDED';
+                        var purchaseOrderId = j$(this).data('actualPurchaseOrder');
+                        record.id= purchaseOrderId ;
+
+                        //update status
+                        result = sforce.connection.update([record]);
+                        
+                        //test operation result
+                        //if(1==1){
+                        if(result[0].getBoolean("success")){
+                            //inform if succeed
+                             //alert("{!$Label.ConfirmJSSuccess}");
+                             //window.location.href ='/'+purchaseOrderId+'';
+                             window.parent.location.href ='/'+purchaseOrderId+'';
+                             
+                            //reload page so new state becomes visible
+                        }   
+                        else{
+                            console.log(result[0].get('errors'));
+                            modalErrorPopup(result[0].get('errors').get('message'));
+                            //alert("{!$Label.ConfirmJSFailure}: " + result[0].get('errors').get('message'));
+                        }
+                        j$modalDialog2.dialog('close');
+                    }
+                }, // added ,
+                {
+                    text: "Cancel",
+                    icons: {
+                        primary: "ui-icon-closethick"
+                    },
+                    click: function() {
+                        j$modalDialog2.dialog('close');
+                    }
+                }
+              ] // buttons ends here
+          }); // j$modalDialog ends here
+
+
+
+
+
+
+    var actualPurchaseOrderList = actualPurchaseOrder = sforce.connection.query("Select Id, Status__c,UnfilledLines__c From PurchaseOrder__c where Id = '{!PurchaseOrder__c.Id}'"); 
+    var po = actualPurchaseOrderList.getArray("records"); 
+
+    for(var i=0; i< po.length; i++) { 
+        actualPurchaseOrder = po[i];
+        /*
+         //****** ASE 13/10/15: C-001272*******if(actualPurchaseOrder.Status__c =='ISSUED' ||
+            actualPurchaseOrder.Status__c=='UNSUPPLIEDQUOTE')
+
+         //****** DUN 12/02/16: C-001522*******if(actualPurchaseOrder.Status__c =='ISSUED' ||
+            (actualPurchaseOrder.Status__c=='REJECTED' && actualPurchaseOrder.Reason__c=='UNSUPPLIEDQUOTE'))*/
+
+        if(actualPurchaseOrder.Status__c =='ISSUED' ||
+            (actualPurchaseOrder.Status__c=='CANCELED' && actualPurchaseOrder.Reason__c=='UNSUPPLIEDQUOTE'))
+        {
+               setTimeout(function(){
+                   alert('This Order was already Validated!');
+              });
+        }else{
+            var record = new sforce.SObject("PurchaseOrder__c");
+
+
+
+    j$modalDialog2
+            .data({
+                'actualPurchaseOrder':actualPurchaseOrder.Id,
+                'record':record
+            })
+            .dialog('open'); 
+            } // else ends
+        } // for loop ends
+    } // click function modalPopup ends
+</script>
+    !-- NEW DEV ENDS --
+    
+        
+    </head>
+    !------------------------------- NEW VERSION --------------------------------
+    <apex:form rendered="true" styleClass="myform" id="myForm" >   
+		<apex:inputhidden value="{!PurchaseOrder__c.TECH_AssessmentCountryCode__c}"/>
+        <apex:outputPanel id="pbOrig" >
+            <apex:outputPanel id="pbButtons" rendered="{!NOT(isAlwaysReadOnly)}" layout="block" style="text-align:center;margin: 15px;">
+                <apex:commandButton action="{!goToEditMode}" value="{!$Label.EditMode}" reRender="pbOrig" status="actStatusId" rendered="{!NOT(isAlwaysReadOnly||isEditMode)}" />
+                <apex:commandLink value="{!$Label.SaveAllChanges}" action="{!saveAllChanges}" target="_self" styleClass="btn" rendered="{!isEditMode}"  style="text-decoration:none;padding:4px;" status="actStatusId">
+                !--apex:commandButton action="{!saveAllChanges}" value="Save All Changes" status="actStatusId" rendered="{!isEditMode}" reRender="refreshPanel,errMsgs"--
+                    !--apex:actionSupport event="onmouseover" reRender="tableAlt" /--
+                </apex:commandLink>
+
+                <apex:commandLink action="{!addSuppliableAndDelivery}" value="{!$Label.SuppliableButton}" title="{!$Label.DuplicateDeliveryAndOthers}"  style="text-decoration:none;padding:4px;" styleClass="btn" status="actStatusId" rendered="{!isEditMode}" >
+                    <apex:outputPanel rendered="{!l_OriginalWrappers.size > 0}" >
+                    <apex:param name="selectedOrderItem" value="{!l_OriginalWrappers[0].originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                    </apex:outputPanel>
+                </apex:commandLink>
+
+                <apex:commandButton styleClass="{!styleClassValidateButton}" value="Validate" onclick="modalPopup();" reRender="pbOrig" status="actStatusId" disabled="{!isDisabled}" />
+
+
+                <apex:actionStatus id="actStatusId" >
+                    <apex:facet name="start" >
+                        <img src="/img/loading.gif" class="status-loading-img" />
+                    </apex:facet>
+                </apex:actionStatus>
+
+                <apex:outputPanel id="needSave" style="float: right;">
+                    <apex:image id="imgNotSaved" styleClass="status-notsaved-img" url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/save-xxl-red.png')}" rendered="{!hasSomeChangesNotSaved}" title="{!$Label.VFWARNINGCHANGESNEEDSAVE}" width="20" />
+                    !-- apex:image id="imgSaved" url="http://www.iconsdb.com/icons/preview/moth-green/save-xxl.png" rendered="{!NOT(hasSomeChangesNotSaved)}" width="20" / --
+                </apex:outputPanel>
+
+            </apex:outputPanel>
+
+            <apex:pageMessages escape="false" id="errMsgs" showDetail="false"/>
+
+            <apex:outputPanel id="suppId">
+            <apex:outputPanel rendered="{!l_OriginalWrappers.size > 0}">
+                <apex:pageBlock id="pbOrig2" mode="maindetail"  title="{!$Label.SuppliedBy}">
+                    <apex:outputPanel id="tableAlt" >
+                        !------------------------------------------ ORIGINAL ITEM ------------------------------------------
+                        <apex:pageBlockTable id="allOri" value="{!l_OriginalWrappers}" var="oriwrap" align="center" styleClass="table-original" headerClass="table-original-header" columnClasses="table-original-column">
+
+
+                            !-------------------- Original: Name --------------------------------
+                            <apex:column value="{!oriwrap.originalItem.PartNumber__c}" styleClass="table-original-column-partNb" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}"/>
+                            <apex:column value="{!oriwrap.originalItem.Type__c}" styleClass="table-original-column-type"  rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}"/>
+                            <apex:column value="{!oriwrap.originalItem.Description__c}" styleClass="table-original-column-descr" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}"/>
+                            <apex:column value="{!oriwrap.originalItem.Manufacturer__c}" styleClass="table-original-column-manufacturer" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}"/>
+
+                            !-------------------- Original: Expected Delivery Duration --------------------------------
+                            <apex:column headerValue="{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}" styleClass="table-original-column-expectedDelivery"  rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                <apex:inputField value="{!oriwrap.originalItem.ExpectedDeliveryDuration__c}"  rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}">
+                                    <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                        <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                    </apex:actionSupport>
+                                </apex:inputField>
+                                <apex:outputField value="{!oriwrap.originalItem.ExpectedDeliveryDuration__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                            </apex:column>
+
+                            !-------------------- Original: Unit Price --------------------------------
+                            <apex:column rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}" headerValue="{!$Label.VFORDERLINEFIELDUNITPRICE}" id="origCatPrice" styleClass="table-original-column-unitPrice" >
+                                <apex:inputField value="{!oriwrap.originalItem.CataloguePrice__c}"  rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}" styleClass="priceOri">
+                                    <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,OrigItemTotalPrice,OrigItemAXATotalPrice,errMsgs">
+                                        <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                    </apex:actionSupport>
+                                    <script type="text/javascript">
+                                        if(typeof jQuery != 'undefined'){
+                                            $j =jQuery.noConflict();
+                                        }
+
+                                        //calculate total price when price change
+                                        $j('.priceOri').change(function() {
+                                            var price = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                            /* if(price < 0){
+                                                alert('Price cannot be negative.')
+                                            }*/
+
+                                        });
+                                    </script>
+                                </apex:inputField>
+                                <apex:outputField value="{!oriwrap.originalItem.CataloguePrice__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                            </apex:column>
+
+                            !-------------------- Original: Quantity --------------------------------
+                            <apex:column headerValue="{!$Label.VFORDERLINEFIELDQUANTITY}" id="origQuantity" footerClass="footer-text" styleClass="table-original-column-quantity" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                !-- apex:facet name="footer">
+                                    {!$Label.VFORDERLINEFOOTERTOTAL}
+                                </apex:facet --
+                                <apex:inputField value="{!oriwrap.originalItem.Quantity__c}" rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}" styleClass="oriQty">
+                                    <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,OrigItemTotalPrice,OrigItemAXATotalPrice,errMsgs">
+                                        <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                    </apex:actionSupport>
+                                    <script type="text/javascript">
+                                        if(typeof jQuery != 'undefined'){
+                                            $j =jQuery.noConflict();
+                                        }
+
+                                        //calculate total price when price change
+                                        $j('.oriQty').change(function() {
+
+                                            var qty = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                            /*    if(qty < 0){
+                                                alert('Quantity cannot be negative.')
+                                            }*/
+
+                                        });
+                                    </script>
+
+                                </apex:inputField>
+                                <apex:outputField value="{!oriwrap.originalItem.Quantity__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                            </apex:column>
+
+                            !-------------------- Original: Total Price --------------------------------
+                            <apex:column headerValue="{!$Label.VFORDERLINEFIELDTOTALPRICE}" styleClass="table-original-column-totalPrice" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                !-- apex:facet name="footer">
+                                    <apex:outputField value="{!PurchaseOrder__c.TotalPrice__c}" />
+                                </apex:facet --
+                                <apex:outputText id="OrigItemTotalPrice" value="{!oriwrap.ItemTotalNetPrice} €" styleClass="input-small"  rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}"/>
+                                <apex:outputField value="{!oriwrap.originalItem.TotalPrice__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                            </apex:column>
+
+                            !-------------------- Original: AXA Discount --------------------------------
+                            <apex:column headerValue="{!$Label.VFORDERLINEFIELDAXADISCOUNT}" id="origAXADiscount" styleClass="table-original-column-axaDiscount" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                <apex:inputField value="{!oriwrap.originalItem.AXADiscount__c}" rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}" styleClass="axaDisOri"  onchange="changeAS('{!oriwrap.originalItem.Id}','Original','')">
+                                    !--<apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,OrigItemAXATotalPrice,errMsgs">
+                                        <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                    </apex:actionSupport>--
+                                    <script type="text/javascript">
+                                        if(typeof jQuery != 'undefined'){
+                                            $j =jQuery.noConflict();
+                                        }
+
+                                        //calculate total price when price change
+                                        $j('.axaDisOri').change(function() {
+                                            var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                            /*    if(axaDis < 0){
+                                                alert('AXA Discount cannot be negative.')
+                                            }*/
+
+                                        });
+                                    </script>
+                                </apex:inputField>
+                                <apex:outputField value="{!oriwrap.originalItem.AXADiscount__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                            </apex:column>
+
+                            !-------------------- Original: BodyShop Discount --------------------------------
+                            <apex:column headerValue="{!$Label.VFORDERLINEFIELDBSDISCOUNT}" id="origBSDiscount" footerClass="footer-text" styleClass="table-original-column-bsDiscount" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                <apex:facet name="footer">
+                                    {!$Label.VFORDERLINEFOOTERAXATOTAL}
+                                </apex:facet>
+                                <apex:inputField value="{!oriwrap.originalItem.BodyShopDiscount__c}"  rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}"  styleClass="bsDisOri">
+                                    <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsgs">
+                                        <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                    </apex:actionSupport>
+                                    <script type="text/javascript">
+                                        if(typeof jQuery != 'undefined'){
+                                            $j =jQuery.noConflict();
+                                        }
+
+                                        //calculate total price when price change
+                                        $j('.bsDisOri').change(function() {
+                                            var bsDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                            /*   if(bsDis < 0){
+                                                alert('Body Shop Discount cannot be negative.')
+                                            }*/
+
+                                        });
+                                    </script>
+                                </apex:inputField>
+                                <apex:outputField value="{!oriwrap.originalItem.BodyShopDiscount__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                            </apex:column>
+
+                            !-------------------- Original: AXA Total Price --------------------------------
+                            <apex:column headerValue="{!$Label.VFORDERLINEFIELDAXATOTALPRICE}" styleClass="table-original-column-axaTotalPrice" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                <apex:facet name="footer">
+                                    <apex:outputField value="{!PurchaseOrder__c.TotalAXAPrice__c}" />
+                                </apex:facet>
+                                <apex:outputText id="OrigItemAXATotalPrice" value="{!oriwrap.ItemAXATotalNetPrice} €" rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}"/>
+                                <apex:outputField value="{!oriwrap.originalItem.AXATotalPrice__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                            </apex:column>
+
+                            !-------------------- Original: Compliant Part --------------------------------
+                            <apex:column value="{!oriwrap.originalItem.PartList__r.CompliantPart__c}" styleClass="table-original-column-compliantPart" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}"/>
+
+                            !-------------------- Original: Suppliable --------------------------------
+                            <apex:column headerValue="{!$Label.VFORDERLINEFIELDSUPPLIABLE}" id="oColSuppliable" rowspan="2" styleClass="table-original-column-suppliable" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                <apex:outputPanel rendered="{!isEditMode}">
+                                    <apex:commandLink action="{!currOrderItemIsSuppliable}" rendered="{!oriwrap.originalItem.Suppliable__c!='YES'}"  reRender="unsuppanelId,suppId,allOri,needSave,errMsgs,allOriUn" status="actStatusId">
+                                        <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl.png')}" styleClass="table-original-suppliable-img"/>
+                                        <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                    </apex:commandLink>
+                                    <apex:commandLink action="{!currOrderItemIsSuppliable}" rendered="{!oriwrap.originalItem.Suppliable__c=='YES'}" reRender="unsuppanelId,suppId,allOri,needSave,errMsgs,allOriUn" status="actStatusId">
+                                        <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl-green.png')}" styleClass="table-original-suppliable-img"/>
+                                        <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                    </apex:commandLink>
+                                    <apex:commandLink action="{!currOrderItemIsNotSuppliable}" rendered="{!oriwrap.originalItem.Suppliable__c!='NO'}" reRender="unsuppanelId,suppId,allOri,needSave,errMsgs,allOriUn" status="actStatusId">
+                                        <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl.png')}" styleClass="table-original-suppliable-img"/>
+                                        <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                    </apex:commandLink>
+                                    <apex:commandLink action="{!currOrderItemIsNotSuppliable}" rendered="{!oriwrap.originalItem.Suppliable__c=='NO'}" reRender="unsuppanelId,suppId,allOri,needSave,errMsgs,allOriUn" status="actStatusId">
+                                        <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl-red.png')}" styleClass="table-original-suppliable-img"/>
+                                        <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                    </apex:commandLink>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!NOT(isEditMode)}">
+                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl.png')}" styleClass="table-original-suppliable-img" rendered="{!oriwrap.originalItem.Suppliable__c!='YES'}" />
+                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl-green.png')}" styleClass="table-original-suppliable-img" rendered="{!oriwrap.originalItem.Suppliable__c=='YES'}"/>
+                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl.png')}" styleClass="table-original-suppliable-img" rendered="{!oriwrap.originalItem.Suppliable__c!='NO'}"/>
+                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl-red.png')}" styleClass="table-original-suppliable-img" rendered="{!oriwrap.originalItem.Suppliable__c=='NO'}"/>
+                                    <apex:image title="Additionnal Discount: {!oriwrap.originalItem.AdditionnalDiscount__c}%" styleClass="table-extraDiscount-img" url="/img/msg_icons/warning16.png" rendered="{!oriwrap.originalItem.AdditionnalDiscount__c != null && oriwrap.originalItem.AdditionnalDiscount__c != 0}" />
+                                </apex:outputPanel>
+                            </apex:column>
+
+                            !-------------------- Original: Add an alternative or a bundle  --------------------------------
+                            <apex:column headerValue="" id="oColAlternative" rowspan="2" rendered="{!(isEditMode)}" styleClass="table-original-column-addAlternative">
+                                <apex:commandLink action="{!addNewAlternative}" reRender="needSave,allOri,errMsgs,pbButtons" title="Add an Alternative or a Bundle" status="actStatusId" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/plus-7-xxl.png')}" styleClass="table-original-addAlternative-img" title="Add an Alternative or a Bundle"/>
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:commandLink>
+                            </apex:column>
+
+                            !------------------------------------------ BUNDLE & ALTERNATIVE ITEMS ------------------------------------------
+                            <apex:column breakBefore="true" colspan="12" styleClass="table-original-alternative-column" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                <apex:outputPanel layout="none" id="tableAlts" rendered="{!AND(oriwrap.hasAlternatives,oriwrap.originalItem.Suppliable__c != 'NO')}">
+                                !-- {!oriwrap.hasAlternatives}
+                                {!oriwrap.originalItem.Suppliable__c} --
+                                    <apex:panelGrid columns="2" styleClass="alternative-grid" cellspacing="0px" columnClasses="alternative-grid-td">
+                                        <apex:outputPanel styleclass="alternative-bundle-img" >
+                                            <apex:image title="Bundle" styleClass="table-alternative-bundle-img" url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/stackoverflow-6-xxl.png')}" rendered="{!oriwrap.nbAlternatives>=1}" width="24px" />
+                                        </apex:outputPanel>
+                                        <apex:outputPanel >
+                                            <table id="{!oriwrap.originalItem.Id}_nestedTableBundle" class="table-alternative">
+                                                <tr>
+                                                    <th class="table-alternative-header">{!$ObjectType.OrderLine__c.fields.PartNumber__c.label}</th>
+                                                    <th class="table-alternative-header">{!$ObjectType.OrderLine__c.fields.Type__c.label}</th>
+                                                    <th class="table-alternative-header">{!$ObjectType.OrderLine__c.fields.Description__c.label}</th>
+                                                    <th class="table-alternative-header">{!$ObjectType.OrderLine__c.fields.Manufacturer__c.label}</th>
+                                                    <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDUNITPRICE}</th>
+                                                    <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}</th>
+                                                    <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDQUANTITY}</th>
+                                                    <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDTOTALPRICE}</th>
+                                                    <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDAXADISCOUNT}</th>
+                                                    <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDBSDISCOUNT}</th>
+                                                    <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDAXATOTALPRICE}</th>
+                                                    <th class="table-alternative-header"></th>
+                                                </tr>
+
+                                                !-- Bundle display --
+                                                <apex:outputText rendered="{!!oriwrap.bundleItem.TechGeneratedFinal__c}">
+                                                <tr>
+                                                    !-- Bundle: Part Number --
+                                                    <td class="table-alternative-td table-alternative-column-partNb">
+                                                        <apex:inputField value="{!oriwrap.bundleItem.PartNumber__c}" rendered="{!isEditMode}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.PartNumber__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Bundle: Type --
+                                                    <td class="table-alternative-td table-alternative-column-type">
+                                                        <apex:inputField value="{!oriwrap.bundleItem.Type__c}" rendered="{!isEditMode}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.Type__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                    </td>
+
+                                                    !-- Bundle: Description --
+                                                    <td class="table-alternative-td table-alternative-column-descr">
+                                                        <apex:inputField value="{!oriwrap.bundleItem.Description__c}" rendered="{!isEditMode}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.Description__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Bundle: Manufacturer --
+                                                    <td class="table-alternative-td table-alternative-column-manufacturer">
+                                                        <apex:inputField value="{!oriwrap.bundleItem.Manufacturer__c}"  rendered="{!isEditMode}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.Manufacturer__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                    </td>
+
+                                                    !-- Bundle: Unit Price --
+                                                    <td class="table-alternative-td table-alternative-column-unitPrice" id="{!oriwrap.originalItem.Id}_bundleCatPrice">
+                                                        <apex:inputField id="bundleCatalogPrice" value="{!oriwrap.bundleItem.CataloguePrice__c}" styleClass="input-sum-bundle-CatPrice"  rendered="{!isEditMode}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemTotalPrice,bundleItemAXATotalPrice">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+
+                                                            <script type="text/javascript">
+                                                                    if(typeof jQuery != 'undefined'){
+                                                                        $j =jQuery.noConflict();
+                                                                    }
+
+                                                                    //calculate total price when price change
+                                                                    $j('.input-sum-bundle-CatPrice').change(function() {
+
+                                                                        var qty = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                        /*  if(qty < 0){
+                                                                            alert('Price cannot be negative.')
+                                                                        }*/
+
+                                                                    });
+                                                                </script>
+
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.CataloguePrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Bundle: Expected Delivery Duration --
+                                                    <td class="table-alternative-td table-alternative-column-expectedDelivery">
+                                                        <apex:inputField value="{!oriwrap.bundleItem.ExpectedDeliveryDuration__c}" rendered="{!isEditMode}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.ExpectedDeliveryDuration__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Bundle: Quantity --
+                                                    <td class="table-alternative-td table-alternative-column-quantity">
+                                                        <apex:inputField value="{!oriwrap.bundleItem.Quantity__c}"  rendered="{!isEditMode}" styleClass="bundleQuantity">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemNetPrice,bundleItemTotalPrice,bundleItemAXATotalPrice">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+
+                                                            <script type="text/javascript">
+                                                                    if(typeof jQuery != 'undefined'){
+                                                                        $j =jQuery.noConflict();
+                                                                    }
+
+                                                                    //calculate total price when price change
+                                                                    $j('.bundleQuantity').change(function() {
+
+                                                                        var qty = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                        /*    if(qty < 0){
+                                                                            alert('Quantity cannot be negative.')
+                                                                        }*/
+
+                                                                    });
+                                                                </script>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.Quantity__c}" rendered="{!NOT(isEditMode)}" styleClass="input-smaller" />
+                                                    </td>
+
+                                                    !-- Bundle: Total Price --
+                                                    <td class="table-alternative-td table-alternative-column-totalPrice">
+                                                        <apex:outputText id="bundleItemTotalPrice" value="{!oriwrap.ItemTotalNetPrice} €" rendered="{!isEditMode}"/>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.TotalPrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Bundle: AXA Discount --
+                                                    <td class="table-alternative-td table-alternative-column-axaDiscount">
+                                                        <apex:inputField value="{!oriwrap.bundleItem.AXADiscount__c}" rendered="{!isEditMode}" styleClass="bundleAxaDis"  onchange="changeAS('{!oriwrap.originalItem.Id}','Bundle','')">
+                                                            !--<apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemAXATotalPrice">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>--
+                                                            <script type="text/javascript">
+                                                                if(typeof jQuery != 'undefined'){
+                                                                    $j =jQuery.noConflict();
+                                                                }
+
+                                                                //calculate total price when price change
+                                                                $j('.bundleAxaDis').change(function() {
+                                                                    var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                    /*      if(axaDis < 0){
+                                                                        alert('AXA Discount cannot be negative.')
+                                                                    }*/
+
+                                                                });
+                                                            </script>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.AXADiscount__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Bundle: BodyShop Discount --
+                                                    <td class="table-alternative-td table-alternative-column-bsDiscount">
+                                                        <apex:inputField value="{!oriwrap.bundleItem.BodyShopDiscount__c}" rendered="{!isEditMode}" styleClass="bsAltDisBundle">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                            <script type="text/javascript">
+                                                                    if(typeof jQuery != 'undefined'){
+                                                                        $j =jQuery.noConflict();
+                                                                    }
+
+                                                                    //calculate total price when price change
+                                                                    $j('.bsAltDisBundle').change(function() {
+                                                                        var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                        /*     if(axaDis < 0){
+                                                                            alert('BodyShop Discount cannot be negative.')
+                                                                        }*/
+
+                                                                    });
+                                                                </script>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.BodyShopDiscount__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Bundle: AXA Total Price --
+                                                    <td class="table-alternative-td table-alternative-column-axaTotalPrice">
+                                                        <apex:outputText id="bundleItemAXATotalPrice" value="{!oriwrap.ItemAXATotalNetPrice} €" rendered="{!isEditMode}"/>
+                                                        <apex:outputField value="{!oriwrap.bundleItem.AXATotalPrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Bundle: Remove the bundle --
+                                                    <td>
+                                                        <apex:outputPanel rendered="{!isEditMode}">
+                                                            <apex:commandLink action="{!removeBundle}" reRender="needSave,tableAlts,allOri,errMsgs" title="Remove the Bundle and its elements." status="actStatusId">
+                                                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/minus-6-xxl.png')}" width="10" title="Remove the Bundle and its elements"/>
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:commandLink>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                </tr>
+                                                </apex:outputText>
+
+                                                !-- Alternatives --
+                                                <apex:variable value="{!1}" var="rowNum"/>
+                                                <apex:repeat id="alternativesList" value="{!oriwrap.l_AlternativeWrappers}" var="alt" rendered="{!oriwrap.nbAlternatives>=1}">
+                                                    <tr>
+                                                        !-- Alternative: Part Number --
+                                                        <td class="table-alternative-td table-alternative-column-partNb">
+
+                                                            <apex:inputField value="{!alt.alternative.PartNumber__c}" rendered="{!isEditMode}" styleClass="input-medium">
+                                                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                </apex:actionSupport>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!alt.alternative.PartNumber__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                        </td>
+
+                                                        !-- Alternative: Type --
+                                                        <td class="table-alternative-td table-alternative-column-type">
+                                                            <apex:inputField value="{!alt.alternative.Type__c}" rendered="{!isEditMode}">
+                                                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                </apex:actionSupport>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!alt.alternative.Type__c}" rendered="{!NOT(isEditMode)}" />
+                                                        </td>
+
+                                                        !-- Alternative: Description --
+                                                        <td class="table-alternative-td table-alternative-column-descr">
+                                                            <apex:inputField value="{!alt.alternative.Description__c}" rendered="{!isEditMode}" styleClass="input-medium">
+                                                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                </apex:actionSupport>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!alt.alternative.Description__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                        </td>
+
+                                                        !-- Alternative: Manufacturer --
+                                                        <td class="table-alternative-td table-alternative-column-manufacturer">
+                                                            <apex:inputField value="{!alt.alternative.Manufacturer__c}" rendered="{!isEditMode}" styleClass="input-medium">
+                                                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                </apex:actionSupport>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!alt.alternative.Manufacturer__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                        </td>
+
+                                                        !-- Alternative: Unit Price --
+                                                        <td class="table-alternative-td table-alternative-column-unitPrice">
+                                                            <apex:inputField id="altCatprice" value="{!alt.alternative.CataloguePrice__c}" styleClass="input-sum-alt-CatPrice{!rowNum}"  rendered="{!isEditMode}">
+                                                                <apex:actionSupport event="onchange" immediate="true"  reRender="bundleCatalogPrice,tableAlts,altCatprice,needSave">
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                </apex:actionSupport>
+
+                                                                <script type="text/javascript">
+                                                                    if(typeof jQuery != 'undefined'){
+                                                                        $j =jQuery.noConflict();
+                                                                    }
+
+                                                                    //calculate total price when price change
+                                                                    $j('.input-sum-alt-CatPrice{!rowNum}').change(function() {
+                                                                        //alert($j(this).val());
+                                                                        //alert($j('.qty{!rowNum}').val());
+
+                                                                        var price = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                        /*  if(price < 0){
+                                                                            alert('Price cannot be negative.')
+                                                                        }*/
+
+                                                                        /*var quantity = $j('.qty{!rowNum}').val() == null ||$j('.qty{!rowNum}').val() == '' ? 0 : $j('.qty{!rowNum}').val();
+
+                                                                        var totalPrice = price * quantity;
+                                                                        alert(totalPrice);
+
+                                                                        $j('.total{!rowNum}').html(totalPrice);*/
+
+                                                                    });
+                                                                </script>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!alt.alternative.CataloguePrice__c}" rendered="{!NOT(isEditMode)}" styleClass="input-small" />
+                                                        </td>
+
+                                                        !-- Alternative: Expected Delivery Duration --
+                                                        <td class="table-alternative-td table-alternative-column-expectedDelivery">
+                                                            <apex:inputField value="{!alt.alternative.ExpectedDeliveryDuration__c}" rendered="{!isEditMode}">
+                                                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                </apex:actionSupport>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!alt.alternative.ExpectedDeliveryDuration__c}" rendered="{!NOT(isEditMode)}" />
+                                                        </td>
+
+                                                        !-- Alternative: Quantity --
+                                                        <td class="table-alternative-td table-alternative-column-quantity">
+                                                            <apex:inputField value="{!alt.alternative.Quantity__c}"  rendered="{!isEditMode}" styleClass="quantity{!rowNum}">
+                                                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemNetPrice,bundleItemTotalPrice,bundleItemAXATotalPrice">
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                </apex:actionSupport>
+
+                                                                <script type="text/javascript">
+                                                                    if(typeof jQuery != 'undefined'){
+                                                                        $j =jQuery.noConflict();
+                                                                    }
+
+                                                                    //calculate total price when price change
+                                                                    $j('.quantity{!rowNum}').change(function() {
+                                                                        //alert($j(this).val());
+                                                                        //alert($j('.qty{!rowNum}').val());
+
+                                                                        var qty = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                        /*   if(qty < 0){
+                                                                            alert('Quantity cannot be negative.')
+                                                                        }*/
+
+                                                                        /*var quantity = $j('.qty{!rowNum}').val() == null ||$j('.qty{!rowNum}').val() == '' ? 0 : $j('.qty{!rowNum}').val();
+
+                                                                        var totalPrice = price * quantity;
+                                                                        alert(totalPrice);
+
+                                                                        $j('.total{!rowNum}').html(totalPrice);*/
+
+                                                                    });
+                                                                </script>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!alt.alternative.Quantity__c}" rendered="{!NOT(isEditMode)}" styleClass="input-smaller" />
+                                                        </td>
+
+                                                        !-- Alternative: Total Price --
+                                                        <td class="table-alternative-td table-alternative-column-totalPrice">
+                                                            <apex:outputText id="bundleItemTotalPrice" value="{!alt.ItemTotalNetPrice} €" rendered="{!isEditMode}"/>
+                                                            <apex:outputField value="{!alt.alternative.TotalPrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                        </td>
+
+                                                        !-- Alternative: AXA Discount --
+                                                        <td class="table-alternative-td table-alternative-column-axaDiscount">
+                                                            <apex:inputField value="{!alt.alternative.AXADiscount__c}" rendered="{!isEditMode}" styleClass="altAxaDis{!rowNum}"  onchange="changeAS('{!oriwrap.originalItem.Id}','Alternative', '{!rowNum}')">
+                                                                !--<apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemAXATotalPrice">
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                </apex:actionSupport>--
+                                                                 <script type="text/javascript">
+                                                                    if(typeof jQuery != 'undefined'){
+                                                                        $j =jQuery.noConflict();
+                                                                    }
+
+                                                                    //calculate total price when price change
+                                                                    $j('.altAxaDis{!rowNum}').change(function() {
+                                                                        var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                        /*   if(axaDis < 0){
+                                                                            alert('AXA Discount cannot be negative.')
+                                                                        }*/
+
+                                                                    });
+                                                                </script>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!alt.alternative.AXADiscount__c}" rendered="{!NOT(isEditMode)}" />
+                                                        </td>
+
+                                                        !-- Alternative: BodyShop Discount --
+                                                        <td class="table-alternative-td table-alternative-column-bsDiscount">
+                                                            <apex:inputField value="{!alt.alternative.BodyShopDiscount__c}" rendered="{!isEditMode}" styleClass="bsAltDis{!rowNum}">
+                                                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg">
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                </apex:actionSupport>
+                                                                <script type="text/javascript">
+                                                                    if(typeof jQuery != 'undefined'){
+                                                                        $j =jQuery.noConflict();
+                                                                    }
+
+                                                                    //calculate total price when price change
+                                                                    $j('.bsAltDis{!rowNum}').change(function() {
+                                                                        var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                        /*    if(axaDis < 0){
+                                                                            alert('BodyShop Discount cannot be negative.')
+                                                                        }*/
+
+                                                                    });
+                                                                </script>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!alt.alternative.BodyShopDiscount__c}" rendered="{!NOT(isEditMode)}" />
+                                                        </td>
+
+                                                        !-- Alternative: AXA Total Price --
+                                                        <td class="table-alternative-td table-alternative-column-axaTotalPrice">
+                                                            <apex:outputText id="bundleItemAXATotalPrice" value="{!alt.ItemAXATotalNetPrice} €" rendered="{!isEditMode}"/>
+                                                            <apex:outputField value="{!alt.alternative.AXATotalPrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                        </td>
+
+                                                        !-- Alternative: Remove the line --
+                                                        <td>
+                                                            <apex:outputPanel rendered="{!isEditMode}">
+                                                                <apex:commandLink action="{!removeAlternative}" reRender="needSave,allOri,errMsgs" title="Remove the current Order Line" status="actStatusId" >
+                                                                    <apex:image styleClass="table-alternative-delete-img" url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/minus-6-xxl.png')}" title="Remove the current Order Line"/>
+                                                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                    <apex:param name="selectedAltItem" value="{!alt.index}" assignTo="{!selectedAltItem}"/>
+                                                                </apex:commandLink>
+                                                            </apex:outputPanel>
+                                                        </td>
+                                                    </tr>
+                                                    <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                                                </apex:repeat>
+                                            </table>
+                                        </apex:outputPanel>
+                                    </apex:panelGrid>
+                                </apex:outputPanel>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:outputPanel>
+                </apex:pageBlock>
+            </apex:outputPanel>
+            </apex:outputPanel>
+            !-- Unsuppliable --
+            <apex:outputPanel id="unsuppanelId">
+            <apex:outputPanel rendered="{!l_OriginalWrappersUnSupp.size > 0}">
+            <apex:pageBlock id="pbOrigUN" mode="maindetail"  title="{!$Label.NotSupplied}">
+                <apex:outputPanel id="tableAltUN" >
+                    !------------------------------------------ ORIGINAL ITEM ------------------------------------------
+                    <apex:pageBlockTable id="allOriUn" value="{!l_OriginalWrappersUnSupp}" var="oriwrap" align="center" styleClass="table-original" headerClass="table-original-header" columnClasses="table-original-column">
+                        !-------------------- Original: Name --------------------------------
+                        <apex:column value="{!oriwrap.originalItem.PartNumber__c}" styleClass="table-original-column-partNb" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}"/>
+                        <apex:column value="{!oriwrap.originalItem.Type__c}" styleClass="table-original-column-type"  rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}"/>
+                        <apex:column value="{!oriwrap.originalItem.Description__c}" styleClass="table-original-column-descr" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}"/>
+                        <apex:column value="{!oriwrap.originalItem.Manufacturer__c}" styleClass="table-original-column-manufacturer" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}"/>
+
+                        !-------------------- Original: Expected Delivery Duration --------------------------------
+                        <apex:column headerValue="{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}" styleClass="table-original-column-expectedDelivery"  rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}">
+                            <apex:inputField value="{!oriwrap.originalItem.ExpectedDeliveryDuration__c}"  rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}">
+                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:actionSupport>
+                            </apex:inputField>
+                            <apex:outputField value="{!oriwrap.originalItem.ExpectedDeliveryDuration__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                        </apex:column>
+
+                        !-------------------- Original: Unit Price --------------------------------
+                        <apex:column headerValue="{!$Label.VFORDERLINEFIELDUNITPRICE}" id="origCatPriceUn" styleClass="table-original-column-unitPrice" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}">
+                            <apex:inputField value="{!oriwrap.originalItem.CataloguePrice__c}"  rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}" styleClass="priceOri">
+                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,OrigItemTotalPrice,OrigItemAXATotalPrice,errMsgs">
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:actionSupport>
+                                <script type="text/javascript">
+                                    if(typeof jQuery != 'undefined'){
+                                        $j =jQuery.noConflict();
+                                    }
+
+                                    //calculate total price when price change
+                                    $j('.priceOri').change(function() {
+                                        var price = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                        /* if(price < 0){
+                                            alert('Price cannot be negative.')
+                                        }*/
+
+                                    });
+                                </script>
+                            </apex:inputField>
+                            <apex:outputField value="{!oriwrap.originalItem.CataloguePrice__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                        </apex:column>
+
+                        !-------------------- Original: Quantity --------------------------------
+                        <apex:column headerValue="{!$Label.VFORDERLINEFIELDQUANTITY}" id="origQuantity" footerClass="footer-text" styleClass="table-original-column-quantity" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}">
+                            !-- apex:facet name="footer">
+                                {!$Label.VFORDERLINEFOOTERTOTAL}
+                            </apex:facet --
+                            <apex:inputField value="{!oriwrap.originalItem.Quantity__c}" rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}" styleClass="oriQty">
+                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,OrigItemTotalPrice,OrigItemAXATotalPrice,errMsgs">
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:actionSupport>
+                                <script type="text/javascript">
+                                    if(typeof jQuery != 'undefined'){
+                                        $j =jQuery.noConflict();
+                                    }
+
+                                    //calculate total price when price change
+                                    $j('.oriQty').change(function() {
+
+                                        var qty = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                        /*    if(qty < 0){
+                                            alert('Quantity cannot be negative.')
+                                        }*/
+
+                                    });
+                                </script>
+
+                            </apex:inputField>
+                            <apex:outputField value="{!oriwrap.originalItem.Quantity__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                        </apex:column>
+
+                        !-------------------- Original: Total Price --------------------------------
+                        <apex:column headerValue="{!$Label.VFORDERLINEFIELDTOTALPRICE}" styleClass="table-original-column-totalPrice" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}">
+                            !-- apex:facet name="footer">
+                                <apex:outputField value="{!PurchaseOrder__c.TotalPrice__c}" />
+                            </apex:facet --
+                            <apex:outputText id="OrigItemTotalPrice" value="{!oriwrap.ItemTotalNetPrice} €" styleClass="input-small"  rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}"/>
+                            <apex:outputField value="{!oriwrap.originalItem.TotalPrice__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                        </apex:column>
+
+                        !-------------------- Original: AXA Discount --------------------------------
+                        <apex:column headerValue="{!$Label.VFORDERLINEFIELDAXADISCOUNT}" id="origAXADiscount" styleClass="table-original-column-axaDiscount" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}">
+                            <apex:inputField value="{!oriwrap.originalItem.AXADiscount__c}" rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}" styleClass="axaDisOri">
+                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,OrigItemAXATotalPrice,errMsgs">
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:actionSupport>
+                                <script type="text/javascript">
+                                    if(typeof jQuery != 'undefined'){
+                                        $j =jQuery.noConflict();
+                                    }
+
+                                    //calculate total price when price change
+                                    $j('.axaDisOri').change(function() {
+                                        var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                        /*    if(axaDis < 0){
+                                            alert('AXA Discount cannot be negative.')
+                                        }*/
+
+                                    });
+                                </script>
+                            </apex:inputField>
+                            <apex:outputField value="{!oriwrap.originalItem.AXADiscount__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                        </apex:column>
+
+                        !-------------------- Original: BodyShop Discount --------------------------------
+                        <apex:column headerValue="{!$Label.VFORDERLINEFIELDBSDISCOUNT}" id="origBSDiscount" footerClass="footer-text" styleClass="table-original-column-bsDiscount" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}">
+                            <apex:facet name="footer">
+                                {!$Label.VFORDERLINEFOOTERAXATOTAL}
+                            </apex:facet>
+                            <apex:inputField value="{!oriwrap.originalItem.BodyShopDiscount__c}"  rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}"  styleClass="bsDisOri">
+                                <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsgs">
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:actionSupport>
+                                <script type="text/javascript">
+                                    if(typeof jQuery != 'undefined'){
+                                        $j =jQuery.noConflict();
+                                    }
+
+                                    //calculate total price when price change
+                                    $j('.bsDisOri').change(function() {
+                                        var bsDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                        /*   if(bsDis < 0){
+                                            alert('Body Shop Discount cannot be negative.')
+                                        }*/
+
+                                    });
+                                </script>
+                            </apex:inputField>
+                            <apex:outputField value="{!oriwrap.originalItem.BodyShopDiscount__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                        </apex:column>
+
+                        !-------------------- Original: AXA Total Price --------------------------------
+                        <apex:column headerValue="{!$Label.VFORDERLINEFIELDAXATOTALPRICE}" styleClass="table-original-column-axaTotalPrice" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}">
+                            <apex:facet name="footer">
+                                <apex:outputField value="{!PurchaseOrder__c.TotalAXAPrice__c}" />
+                            </apex:facet>
+                            <apex:outputText id="OrigItemAXATotalPrice" value="{!oriwrap.ItemAXATotalNetPrice} €" rendered="{!AND(oriwrap.bundleitem == null,isEditMode,oriwrap.originalItem.Suppliable__c != 'NO')}"/>
+                            <apex:outputField value="{!oriwrap.originalItem.AXATotalPrice__c}" rendered="{!OR(oriwrap.bundleitem != null,!isEditMode,oriwrap.originalItem.Suppliable__c == 'NO')}" />
+                        </apex:column>
+
+                        !-------------------- Original: Compliant Part --------------------------------
+                        <apex:column value="{!oriwrap.originalItem.PartList__r.CompliantPart__c}" styleClass="table-original-column-compliantPart" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}"/>
+
+                        !-------------------- Original: Suppliable --------------------------------
+                        <apex:column headerValue="{!$Label.VFORDERLINEFIELDSUPPLIABLE}" id="oColSuppliable" rowspan="2" styleClass="table-original-column-suppliable" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}">
+                            <apex:outputPanel rendered="{!isEditMode}">
+                                <apex:commandLink action="{!currOrderItemIsSuppliable}" rendered="{!oriwrap.originalItem.Suppliable__c!='YES'}"  reRender="unsuppanelId,suppId,allOriUn,needSave,errMsgs,allOri" status="actStatusId">
+                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl.png')}" styleClass="table-original-suppliable-img"/>
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:commandLink>
+                                <apex:commandLink action="{!currOrderItemIsSuppliable}" rendered="{!oriwrap.originalItem.Suppliable__c=='YES'}" reRender="unsuppanelId,suppId,allOriUn,needSave,errMsgs,allOri" status="actStatusId">
+                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl-green.png')}" styleClass="table-original-suppliable-img"/>
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:commandLink>
+                                <apex:commandLink action="{!currOrderItemIsNotSuppliable}" rendered="{!oriwrap.originalItem.Suppliable__c!='NO'}" reRender="unsuppanelId,suppId,allOriUn,needSave,errMsgs,allOri" status="actStatusId">
+                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl.png')}" styleClass="table-original-suppliable-img"/>
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:commandLink>
+                                <apex:commandLink action="{!currOrderItemIsNotSuppliable}" rendered="{!oriwrap.originalItem.Suppliable__c=='NO'}" reRender="unsuppanelId,suppId,allOriUn,needSave,errMsgs,allOri" status="actStatusId">
+                                    <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl-red.png')}" styleClass="table-original-suppliable-img"/>
+                                    <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                </apex:commandLink>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!NOT(isEditMode)}">
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl.png')}" styleClass="table-original-suppliable-img" rendered="{!oriwrap.originalItem.Suppliable__c!='YES'}" />
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/check-mark-11-xxl-green.png')}" styleClass="table-original-suppliable-img" rendered="{!oriwrap.originalItem.Suppliable__c=='YES'}"/>
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl.png')}" styleClass="table-original-suppliable-img" rendered="{!oriwrap.originalItem.Suppliable__c!='NO'}"/>
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/x-mark-3-xxl-red.png')}" styleClass="table-original-suppliable-img" rendered="{!oriwrap.originalItem.Suppliable__c=='NO'}"/>
+                                <apex:image title="Additionnal Discount: {!oriwrap.originalItem.AdditionnalDiscount__c}%" styleClass="table-extraDiscount-img" url="/img/msg_icons/warning16.png" rendered="{!oriwrap.originalItem.AdditionnalDiscount__c != null && oriwrap.originalItem.AdditionnalDiscount__c != 0}" />
+                            </apex:outputPanel>
+                        </apex:column>
+
+                        !-------------------- Original: Add an alternative or a bundle  --------------------------------
+                        !--<apex:column headerValue="" id="oColAlternative" rowspan="2" rendered="{!(isEditMode &&oriwrap.originalItem.Suppliable__c == 'NO')}" styleClass="table-original-column-addAlternative">
+                            <apex:commandLink action="{!addNewAlternative}" reRender="needSave,allOriUn,errMsgs,pbButtons" title="Add an Alternative or a Bundle" status="actStatusId" rendered="{!oriwrap.originalItem.Suppliable__c != 'NO'}">
+                                <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/plus-7-xxl.png')}" styleClass="table-original-addAlternative-img" title="Add an Alternative or a Bundle"/>
+                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                            </apex:commandLink>
+                        </apex:column>--
+
+                        !------------------------------------------ BUNDLE & ALTERNATIVE ITEMS ------------------------------------------
+                        <apex:column breakBefore="true" colspan="11" styleClass="table-original-alternative-column" rendered="{!oriwrap.originalItem.Suppliable__c == 'NO'}">
+                            <apex:outputPanel layout="none" id="tableAlts" rendered="{!AND(oriwrap.hasAlternatives,oriwrap.originalItem.Suppliable__c != 'NO')}">
+                                <apex:panelGrid columns="2" styleClass="alternative-grid" cellspacing="0px" columnClasses="alternative-grid-td">
+                                    <apex:outputPanel styleclass="alternative-bundle-img" >
+                                        <apex:image title="Bundle" styleClass="table-alternative-bundle-img" url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/stackoverflow-6-xxl.png')}" rendered="{!oriwrap.nbAlternatives>=1}" width="24px" />
+                                    </apex:outputPanel>
+                                    <apex:outputPanel >
+                                        <table id="{!oriwrap.originalItem.Id}_nestedTableBundle" class="table-alternative">
+                                            <tr>
+                                                <th class="table-alternative-header">{!$ObjectType.OrderLine__c.fields.PartNumber__c.label}</th>
+                                                <th class="table-alternative-header">{!$ObjectType.OrderLine__c.fields.Type__c.label}</th>
+                                                <th class="table-alternative-header">{!$ObjectType.OrderLine__c.fields.Description__c.label}</th>
+                                                <th class="table-alternative-header">{!$ObjectType.OrderLine__c.fields.Manufacturer__c.label}</th>
+                                                <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDUNITPRICE}</th>
+                                                <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}</th>
+                                                <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDQUANTITY}</th>
+                                                <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDTOTALPRICE}</th>
+                                                <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDAXADISCOUNT}</th>
+                                                <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDBSDISCOUNT}</th>
+                                                <th class="table-alternative-header">{!$Label.VFORDERLINEFIELDAXATOTALPRICE}</th>
+                                                <th class="table-alternative-header"></th>
+                                            </tr>
+
+                                            !-- Bundle display --
+                                            <apex:outputText rendered="{!!oriwrap.bundleItem.TechGeneratedFinal__c}">
+                                            <tr>
+                                                !-- Bundle: Part Number --
+                                                <td class="table-alternative-td table-alternative-column-partNb">
+                                                    <apex:inputField value="{!oriwrap.bundleItem.PartNumber__c}" rendered="{!isEditMode}">
+                                                        <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:actionSupport>
+                                                    </apex:inputField>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.PartNumber__c}" rendered="{!NOT(isEditMode)}" />
+                                                </td>
+
+                                                !-- Bundle: Type --
+                                                <td class="table-alternative-td table-alternative-column-type">
+                                                    <apex:inputField value="{!oriwrap.bundleItem.Type__c}" rendered="{!isEditMode}">
+                                                        <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:actionSupport>
+                                                    </apex:inputField>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.Type__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                </td>
+
+                                                !-- Bundle: Description --
+                                                <td class="table-alternative-td table-alternative-column-descr">
+                                                    <apex:inputField value="{!oriwrap.bundleItem.Description__c}" rendered="{!isEditMode}">
+                                                        <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:actionSupport>
+                                                    </apex:inputField>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.Description__c}" rendered="{!NOT(isEditMode)}" />
+                                                </td>
+
+                                                !-- Bundle: Manufacturer --
+                                                <td class="table-alternative-td table-alternative-column-manufacturer">
+                                                    <apex:inputField value="{!oriwrap.bundleItem.Manufacturer__c}"  rendered="{!isEditMode}">
+                                                        <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:actionSupport>
+                                                    </apex:inputField>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.Manufacturer__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                </td>
+
+                                                !-- Bundle: Unit Price --
+                                                <td class="table-alternative-td table-alternative-column-unitPrice" id="{!oriwrap.originalItem.Id}_bundleCatPrice">
+                                                    <apex:inputField id="bundleCatalogPrice" value="{!oriwrap.bundleItem.CataloguePrice__c}" styleClass="input-sum-bundle-CatPrice"  rendered="{!isEditMode}">
+                                                        <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemTotalPrice,bundleItemAXATotalPrice">
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:actionSupport>
+
+                                                        <script type="text/javascript">
+                                                                if(typeof jQuery != 'undefined'){
+                                                                    $j =jQuery.noConflict();
+                                                                }
+
+                                                                //calculate total price when price change
+                                                                $j('.input-sum-bundle-CatPrice').change(function() {
+
+                                                                    var qty = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                    /*  if(qty < 0){
+                                                                        alert('Price cannot be negative.')
+                                                                    }*/
+
+                                                                });
+                                                            </script>
+
+                                                    </apex:inputField>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.CataloguePrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                </td>
+
+                                                !-- Bundle: Expected Delivery Duration --
+                                                <td class="table-alternative-td table-alternative-column-expectedDelivery">
+                                                    <apex:inputField value="{!oriwrap.bundleItem.ExpectedDeliveryDuration__c}" rendered="{!isEditMode}">
+                                                        <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:actionSupport>
+                                                    </apex:inputField>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.ExpectedDeliveryDuration__c}" rendered="{!NOT(isEditMode)}" />
+                                                </td>
+
+                                                !-- Bundle: Quantity --
+                                                <td class="table-alternative-td table-alternative-column-quantity">
+                                                    <apex:inputField value="{!oriwrap.bundleItem.Quantity__c}"  rendered="{!isEditMode}" styleClass="bundleQuantity">
+                                                        <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemNetPrice,bundleItemTotalPrice,bundleItemAXATotalPrice">
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:actionSupport>
+
+                                                        <script type="text/javascript">
+                                                                if(typeof jQuery != 'undefined'){
+                                                                    $j =jQuery.noConflict();
+                                                                }
+
+                                                                //calculate total price when price change
+                                                                $j('.bundleQuantity').change(function() {
+
+                                                                    var qty = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                    /*    if(qty < 0){
+                                                                        alert('Quantity cannot be negative.')
+                                                                    }*/
+
+                                                                });
+                                                            </script>
+                                                    </apex:inputField>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.Quantity__c}" rendered="{!NOT(isEditMode)}" styleClass="input-smaller" />
+                                                </td>
+
+                                                !-- Bundle: Total Price --
+                                                <td class="table-alternative-td table-alternative-column-totalPrice">
+                                                    <apex:outputText id="bundleItemTotalPrice" value="{!oriwrap.ItemTotalNetPrice} €" rendered="{!isEditMode}"/>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.TotalPrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                </td>
+
+                                                !-- Bundle: AXA Discount --
+                                                <td class="table-alternative-td table-alternative-column-axaDiscount">
+                                                    <apex:inputField value="{!oriwrap.bundleItem.AXADiscount__c}" rendered="{!isEditMode}" styleClass="bundleAxaDis">
+                                                        <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemAXATotalPrice">
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:actionSupport>
+                                                        <script type="text/javascript">
+                                                            if(typeof jQuery != 'undefined'){
+                                                                $j =jQuery.noConflict();
+                                                            }
+
+                                                            //calculate total price when price change
+                                                            $j('.bundleAxaDis').change(function() {
+                                                                var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                /*      if(axaDis < 0){
+                                                                    alert('AXA Discount cannot be negative.')
+                                                                }*/
+
+                                                            });
+                                                        </script>
+                                                    </apex:inputField>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.AXADiscount__c}" rendered="{!NOT(isEditMode)}" />
+                                                </td>
+
+                                                !-- Bundle: BodyShop Discount --
+                                                <td class="table-alternative-td table-alternative-column-bsDiscount">
+                                                    <apex:inputField value="{!oriwrap.bundleItem.BodyShopDiscount__c}" rendered="{!isEditMode}" styleClass="bsAltDisBundle">
+                                                        <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg">
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:actionSupport>
+                                                        <script type="text/javascript">
+                                                                if(typeof jQuery != 'undefined'){
+                                                                    $j =jQuery.noConflict();
+                                                                }
+
+                                                                //calculate total price when price change
+                                                                $j('.bsAltDisBundle').change(function() {
+                                                                    var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                    /*     if(axaDis < 0){
+                                                                        alert('BodyShop Discount cannot be negative.')
+                                                                    }*/
+
+                                                                });
+                                                            </script>
+                                                    </apex:inputField>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.BodyShopDiscount__c}" rendered="{!NOT(isEditMode)}" />
+                                                </td>
+
+                                                !-- Bundle: AXA Total Price --
+                                                <td class="table-alternative-td table-alternative-column-axaTotalPrice">
+                                                    <apex:outputText id="bundleItemAXATotalPrice" value="{!oriwrap.ItemAXATotalNetPrice} €" rendered="{!isEditMode}"/>
+                                                    <apex:outputField value="{!oriwrap.bundleItem.AXATotalPrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                </td>
+
+                                                !-- Bundle: Remove the bundle --
+                                                <td>
+                                                    <apex:outputPanel rendered="{!isEditMode}">
+                                                        <apex:commandLink action="{!removeBundle}" reRender="needSave,tableAlts,allOriUn,errMsgs" title="Remove the Bundle and its elements." status="actStatusId">
+                                                            <apex:image url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/minus-6-xxl.png')}" width="10" title="Remove the Bundle and its elements"/>
+                                                            <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                        </apex:commandLink>
+                                                    </apex:outputPanel>
+                                                </td>
+                                            </tr>
+                                            </apex:outputText>
+
+                                            !-- Alternatives --
+                                            <apex:variable value="{!1}" var="rowNum"/>
+                                            <apex:repeat id="alternativesList" value="{!oriwrap.l_AlternativeWrappers}" var="alt" rendered="{!oriwrap.nbAlternatives>=1}">
+                                                <tr>
+                                                    !-- Alternative: Part Number --
+                                                    <td class="table-alternative-td table-alternative-column-partNb">
+
+                                                        <apex:inputField value="{!alt.alternative.PartNumber__c}" rendered="{!isEditMode}" styleClass="input-medium">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!alt.alternative.PartNumber__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                    </td>
+
+                                                    !-- Alternative: Type --
+                                                    <td class="table-alternative-td table-alternative-column-type">
+                                                        <apex:inputField value="{!alt.alternative.Type__c}" rendered="{!isEditMode}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!alt.alternative.Type__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Alternative: Description --
+                                                    <td class="table-alternative-td table-alternative-column-descr">
+                                                        <apex:inputField value="{!alt.alternative.Description__c}" rendered="{!isEditMode}" styleClass="input-medium">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!alt.alternative.Description__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                    </td>
+
+                                                    !-- Alternative: Manufacturer --
+                                                    <td class="table-alternative-td table-alternative-column-manufacturer">
+                                                        <apex:inputField value="{!alt.alternative.Manufacturer__c}" rendered="{!isEditMode}" styleClass="input-medium">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!alt.alternative.Manufacturer__c}" rendered="{!NOT(isEditMode)}" styleClass="input-medium" />
+                                                    </td>
+
+                                                    !-- Alternative: Unit Price --
+                                                    <td class="table-alternative-td table-alternative-column-unitPrice">
+                                                        <apex:inputField id="altCatprice" value="{!alt.alternative.CataloguePrice__c}" styleClass="input-sum-alt-CatPrice{!rowNum}"  rendered="{!isEditMode}">
+                                                            <apex:actionSupport event="onchange" immediate="true"  reRender="bundleCatalogPrice,tableAlts,altCatprice,needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+
+                                                            <script type="text/javascript">
+                                                                if(typeof jQuery != 'undefined'){
+                                                                    $j =jQuery.noConflict();
+                                                                }
+
+                                                                //calculate total price when price change
+                                                                $j('.input-sum-alt-CatPrice{!rowNum}').change(function() {
+                                                                    //alert($j(this).val());
+                                                                    //alert($j('.qty{!rowNum}').val());
+
+                                                                    var price = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                    /*  if(price < 0){
+                                                                        alert('Price cannot be negative.')
+                                                                    }*/
+
+                                                                    /*var quantity = $j('.qty{!rowNum}').val() == null ||$j('.qty{!rowNum}').val() == '' ? 0 : $j('.qty{!rowNum}').val();
+
+                                                                    var totalPrice = price * quantity;
+                                                                    alert(totalPrice);
+
+                                                                    $j('.total{!rowNum}').html(totalPrice);*/
+
+                                                                });
+                                                            </script>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!alt.alternative.CataloguePrice__c}" rendered="{!NOT(isEditMode)}" styleClass="input-small" />
+                                                    </td>
+
+                                                    !-- Alternative: Expected Delivery Duration --
+                                                    <td class="table-alternative-td table-alternative-column-expectedDelivery">
+                                                        <apex:inputField value="{!alt.alternative.ExpectedDeliveryDuration__c}" rendered="{!isEditMode}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!alt.alternative.ExpectedDeliveryDuration__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Alternative: Quantity --
+                                                    <td class="table-alternative-td table-alternative-column-quantity">
+                                                        <apex:inputField value="{!alt.alternative.Quantity__c}"  rendered="{!isEditMode}" styleClass="quantity{!rowNum}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemNetPrice,bundleItemTotalPrice,bundleItemAXATotalPrice">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+
+                                                            <script type="text/javascript">
+                                                                if(typeof jQuery != 'undefined'){
+                                                                    $j =jQuery.noConflict();
+                                                                }
+
+                                                                //calculate total price when price change
+                                                                $j('.quantity{!rowNum}').change(function() {
+                                                                    //alert($j(this).val());
+                                                                    //alert($j('.qty{!rowNum}').val());
+
+                                                                    var qty = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                    /*   if(qty < 0){
+                                                                        alert('Quantity cannot be negative.')
+                                                                    }*/
+
+                                                                    /*var quantity = $j('.qty{!rowNum}').val() == null ||$j('.qty{!rowNum}').val() == '' ? 0 : $j('.qty{!rowNum}').val();
+
+                                                                    var totalPrice = price * quantity;
+                                                                    alert(totalPrice);
+
+                                                                    $j('.total{!rowNum}').html(totalPrice);*/
+
+                                                                });
+                                                            </script>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!alt.alternative.Quantity__c}" rendered="{!NOT(isEditMode)}" styleClass="input-smaller" />
+                                                    </td>
+
+                                                    !-- Alternative: Total Price --
+                                                    <td class="table-alternative-td table-alternative-column-totalPrice">
+                                                        <apex:outputText id="bundleItemTotalPrice" value="{!alt.ItemTotalNetPrice} €" rendered="{!isEditMode}"/>
+                                                        <apex:outputField value="{!alt.alternative.TotalPrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Alternative: AXA Discount --
+                                                    <td class="table-alternative-td table-alternative-column-axaDiscount">
+                                                        <apex:inputField value="{!alt.alternative.AXADiscount__c}" rendered="{!isEditMode}" styleClass="altAxaDis{!rowNum}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg,bundleItemAXATotalPrice">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                             <script type="text/javascript">
+                                                                if(typeof jQuery != 'undefined'){
+                                                                    $j =jQuery.noConflict();
+                                                                }
+
+                                                                //calculate total price when price change
+                                                                $j('.altAxaDis{!rowNum}').change(function() {
+                                                                    var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                    /*   if(axaDis < 0){
+                                                                        alert('AXA Discount cannot be negative.')
+                                                                    }*/
+
+                                                                });
+                                                            </script>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!alt.alternative.AXADiscount__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Alternative: BodyShop Discount --
+                                                    <td class="table-alternative-td table-alternative-column-bsDiscount">
+                                                        <apex:inputField value="{!alt.alternative.BodyShopDiscount__c}" rendered="{!isEditMode}" styleClass="bsAltDis{!rowNum}">
+                                                            <apex:actionSupport event="onchange" action="{!currentLineNeedUpdate}" reRender="needSave,errMsg">
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                            </apex:actionSupport>
+                                                            <script type="text/javascript">
+                                                                if(typeof jQuery != 'undefined'){
+                                                                    $j =jQuery.noConflict();
+                                                                }
+
+                                                                //calculate total price when price change
+                                                                $j('.bsAltDis{!rowNum}').change(function() {
+                                                                    var axaDis = $j(this).val() == null || $j(this).val() == '' ? 0 : $j(this).val();
+
+                                                                    /*    if(axaDis < 0){
+                                                                        alert('BodyShop Discount cannot be negative.')
+                                                                    }*/
+
+                                                                });
+                                                            </script>
+                                                        </apex:inputField>
+                                                        <apex:outputField value="{!alt.alternative.BodyShopDiscount__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Alternative: AXA Total Price --
+                                                    <td class="table-alternative-td table-alternative-column-axaTotalPrice">
+                                                        <apex:outputText id="bundleItemAXATotalPrice" value="{!alt.ItemAXATotalNetPrice} €" rendered="{!isEditMode}"/>
+                                                        <apex:outputField value="{!alt.alternative.AXATotalPrice__c}" rendered="{!NOT(isEditMode)}" />
+                                                    </td>
+
+                                                    !-- Alternative: Remove the line --
+                                                    <td>
+                                                        <apex:outputPanel rendered="{!isEditMode}">
+                                                            <apex:commandLink action="{!removeAlternative}" reRender="needSave,allOriUnUN,errMsgs" title="Remove the current Order Line" status="actStatusId" >
+                                                                <apex:image styleClass="table-alternative-delete-img" url="{!URLFOR($Resource.POManageOrderLinesResources, '/img/minus-6-xxl.png')}" title="Remove the current Order Line"/>
+                                                                <apex:param name="selectedOrderItem" value="{!oriwrap.originalItem.Id}" assignTo="{!selectedOrderItem}"/>
+                                                                <apex:param name="selectedAltItem" value="{!alt.index}" assignTo="{!selectedAltItem}"/>
+                                                            </apex:commandLink>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                </tr>
+                                                <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                                            </apex:repeat>
+                                        </table>
+                                    </apex:outputPanel>
+                                </apex:panelGrid>
+                            </apex:outputPanel>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:outputPanel>
+            </apex:pageBlock>
+            </apex:outputPanel>
+            </apex:outputPanel>
+            !--end suppliable--
+
+        </apex:outputPanel>
+        <div style="display: none;">
+            {!PurchaseOrder__c.Status__c}{!PurchaseOrder__c.TECH_AssessmentCountryCode__c}
+        </div>
+        <apex:outputPanel id="refreshPanel" rendered="{!refreshPage}">
+            !-- This panel is only shown when the controller wants the parent page to perform a 'reload' --
+            <script>
+                // force the browser to reload the 'top' page using the current URL
+                window.top.location.href = window.top.location.href;
+            </script>
+        </apex:outputPanel>
+        <apex:actionFunction action="{!addBSValue}" name="changeAS" reRender="needSave,pbOrig" status="actStatusId">
+            <apex:param name="OriginalId" value="" assignTo="{!selectedOrderItem}"/>
+            <apex:param name="OlType" value="" assignTo="{!TypeOrderLine}"/>
+            <apex:param name="rowIndex" value="" assignTo="{!rowIndex}"/>
+        </apex:actionFunction>
+    </apex:form>
+</apex:page>-->

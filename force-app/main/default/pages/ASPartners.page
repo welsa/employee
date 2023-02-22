@@ -1,0 +1,351 @@
+<apex:page controller="VFC29_ASPartners" showHeader="false" sidebar="true" standardStylesheets="false" applyBodyTag="false" docType="html-5.0" applyHtmlTag="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <meta charset="utf-8" />
+      		<meta http-equiv="x-ua-compatible" content="ie=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>{!$label.ASPartners}</title>
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'css/bootstrap-iso.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.BootstrapDatePicker, 'css/bootstrap-datepicker3.css')}" />
+
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.MomentJS)}" />
+            <apex:includescript value="{!URLFOR($Resource.Bootstrap, 'js/bootstrap.js')}" />
+           
+            <apex:includeScript value="{!URLFOR($Resource.FixedHeader, 'floatThead-2.0.0/dist/jquery.floatThead.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/FileSaver.min.js')}" />
+            
+            <style>
+             	#serviceType {
+                    /*height: 2em;
+                    line-height: 1em;*/
+                }
+
+                #refContainer {
+                    padding: 0.3125em;
+                    display: flex;
+                    justify-content: center;
+                    /*width:100%;*/
+                }
+                
+                .referenceOEMTrue{
+                    padding-right:0.3125em;
+                }
+                
+                 
+                #logoDistri{
+                text-align: center;
+                overflow: hidden;
+                height: 10em;
+                width:100%;
+                }
+                 
+                #logoDistri_child img{
+                max-width: 100%;
+                max-height: 5em;
+                display: block;
+                margin: auto;
+                margin-top:1em;
+                margin-bottom:1em;
+                }
+                 
+                 
+                .fontStyle{
+                font-size: 0.8em;
+                color: black;
+                font-weight: bold;
+                }
+                 
+                html{
+                    background-color:#F4F6F9;
+                    width:100%;
+                }
+
+                body .slds-card{
+                    background-color:white;
+
+                }
+
+                #refOEM{
+                    background-color:#e3e5ed;
+                }
+
+                .container{
+                    width:100%;
+                }
+
+                .logo{
+                    margin:12.5%;
+                    max-width: 100%;
+                    max-height: 2em;
+                }
+                .errorDisplay{
+                    color: red;
+                }
+                @media screen and (max-width: 1440px) {
+                    .card-title-m-top {
+                        margin-top:0.5rem;
+                    }
+                }
+                @media screen and (min-width: 1440px) {
+                    .card-title-m-top {
+                        margin-top:1.5rem;
+                    }
+                }
+
+                 
+            </style>
+            <script>
+                window.params = {
+                                    // URL For Icons
+                                    "closeSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                                    "closePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                                };
+            </script>
+
+  			
+        </head>
+        <body>
+            <!-- REQUIRED SLDS WRAPPER -->
+     		<div class="slds-scope">
+           		<apex:form id="AsPartnersFrm">
+                    <!--<div class="slds" style="min-width: 1300px;">-->
+                         
+                    <c:ASPISHeader />
+                         
+                 	<div class = "container">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <apex:variable var="counter" value="{!0}"/> 
+                            <apex:repeat value="{!lstResult}" var="distributor">
+                              
+                      			<div class = "slds-size_3-of-12 slds-p-around_medium">    
+                                    <div class="slds-card">
+                                
+                                        <div class="slds-p-around_medium">
+                                            <div class = "slds-grid slds-wrap" id = "logoTypeService">
+                                                <div class = "slds-col slds-size_3-of-12" id = "logoPicture">
+                                                    <div class = "logo">
+                                                        <apex:image value="{!URLFOR($Resource.typeServiceDistributeur,'LOGOASPARTNER.png')}" rendered="{!IF(distributor.distributor.TypeOfService__c == "Ferron",true,false)}"/><!-- RRJ 31/08/2022-->
+                                                        <apex:image value="{!URLFOR($Resource.typeServiceDistributeur,'paraPeinture.png')}" rendered="{!IF(distributor.distributor.TypeOfService__c == "Para peinture",true,false)}"/>
+                                                        <apex:image value="{!URLFOR($Resource.typeServiceDistributeur,'FERRON_LOGO.png')}" rendered="{!IF(distributor.distributor.TypeOfService__c == "Pieces et Pneus",true,false)}"/> <!-- RRJ 31/08/2022-->
+                                                        <apex:image value="{!URLFOR($Resource.typeServiceDistributeur,'pieceReEmploi.PNG')}" rendered="{!IF(distributor.distributor.TypeOfService__c == "Pièce de Ré emploi",true,false)}"/>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div id="serviceType" class = "slds-col slds-size_9-of-12 card-title-m-top slds-p-left_x-small" >
+                                            
+                                                    <span style = "color: black;font-weight: bold;font-size:1.2em">{!distributor.distributor.TypeOfService__c}</span>
+                                                    
+                                                   
+                                                </div>
+                                            </div>
+                                            
+                                            <div id = "logoDistri" class = "slds-p-around_small">
+                                                <div id = "logoDistri_child">
+                                                    <img src="data:image/png;base64,{!distributor.distributorLogo}" alt = "Logo du distributeur"/>
+                                                </div>
+                                            </div>
+                                            
+                                            
+                                            <div id = "refContainer">
+                                                <div class = "referenceOEMTrue" style ="{!IF(distributor.distributor.ReferenceOEM__c,'display:block', 'display:none')}">
+                                    
+                                                    <input type="text" id ="refOEM{!counter}" placeholder="{!$Label.Reference_OEM}" required="" class="slds-input refOemText" />
+                                                </div>
+                                               
+                                                <button type="button" class="slds-button slds-button_brand" onclick="opendis('{!distributor.distributor.Tech_Distributor__c}','{!counter}','{!distributor.distributor.E_part_Order_Link__c}'); " target="_blank" rerender="none" oncomplete="return false;"  >{!$Label.ASPatnerCommander}</button>
+
+                                            </div>
+                                        </div>
+                                    </div>   
+                                </div>
+                                <apex:variable value="{!counter+1}" var="counter"/>   
+                            </apex:repeat>
+                    	</div>
+                	</div> 
+                    <div id="spinner" class="slds-spinner_container hide positionFixed">
+                        <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                    <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+
+                    <apex:outputPanel id="errorMessage">
+                    <div id="toastMessage" class="slds-notify_container slds-hide">
+                        <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                           <button class="slds-button slds-notify__close slds-button_icon-inverse" title="{!$Label.Close}" type="button" onclick="hideError();">
+                                </button>
+                            <div class="slds-notify__content">
+                                <p class="slds-text-align_center customErrorMsg" id="ErrMsgCustomP"></p>
+                                <apex:pagemessages id="toastErrorMessage" escape="false" />
+                            </div>
+                        </div>
+                    </div>                   
+                </apex:outputPanel>
+
+                <!-- <apex:actionfunction name="authenticateOP" action="{!authenticateOPis}" rerender="none" status="statusSpinner" /> -->
+    
+                    <!--</div>-->
+                    <script>
+
+                        if (typeof jQuery != "undefined") {
+                            $j = jQuery.noConflict();
+                        }
+                        var hasAlreadyRun = '{!hasAlreadyRunAsP}';
+                        var distNames = '{!distNames}';
+
+                        $j(document).ready(function(){
+                            //show spinner until distributor integration does not finish
+                            $j('#spinner').show();
+                            
+                            // authenticateOP(); 
+                            VFC29_ASPartners.authenticateRem(distNames,function(result,event){
+                                if(event.status){
+                                    console.log('result ok ');
+                                    //loadResult();
+                            }
+                            },false); 
+                           $j('#spinner').hide();
+                           
+
+                        });
+                     
+                        function handleOemVal(component)
+                        {
+                            if(!$j('[id$="refOEM"]').val()){
+                                return false;
+                            }else{
+                                console.log('##click search');
+                                console.log('reference value '+ $j('[id$="refOEM"]').val());
+                            } 
+                        }
+
+                        function opendis(techDis, refOemId, linkIfany){
+                                
+                            console.log('techDisRLA', techDis);
+                            console.log('refOemId', refOemId);
+                            console.log('linkIfany', linkIfany);
+                            $j('#spinner').show();
+                            console.log('here 1');
+                            if (techDis == 'OPISTO'){
+                                console.log('in O');
+                                
+                                var oemman = document.getElementById("refOEM"+refOemId).value ;
+                                if(true){                                    
+                                    console.log('oemman 1',oemman);
+                                    if (oemman){
+                                        VFC29_ASPartners.callDistributor(techDis,oemman,function(result,event){
+                                            if (event.status) {
+                                                $j('#spinner').hide();
+                                                console.log('issucc', result);
+                                                if (result != 'Error' ){
+                                                    
+                                                    
+                                                    var urlToGo = result;
+                                                
+                                                    //window.open(urlToGo,"_blank");
+                                                    let newTab = window.open();
+                                                    newTab.location.href = urlToGo;
+                                                    
+                                                }
+                                                else{
+                                                    console.log('here 2');
+                                                    document.getElementById("ErrMsgCustomP").innerHTML = "{!JSENCODE($Label.ErrorCancelButton)}";
+                                                    
+
+                                                    showError(true, true);
+                                                    
+                                                }
+                                            }
+                                            else{
+                                                $j('#spinner').hide();
+                                                console.log('here 3');
+                                                document.getElementById("ErrMsgCustomP").innerHTML = "{!JSENCODE($Label.ErrorCancelButton)}";
+                                                
+
+                                                showError(true, true);
+
+                                            }
+                                        },{escape: false});
+                                    }
+                                    else{
+                                        $j('#spinner').hide();
+                                        document.getElementById("ErrMsgCustomP").innerHTML = "{!JSENCODE($Label.noReference)}";
+                                        showError(true, true);
+
+                                    }
+                                    
+                                    return false;
+                                }
+                                
+                            }
+                            else if(techDis == 'FBS'){ //RRJ 30/08/2022 C-004781
+                                $j('#spinner').hide();
+                                console.log('FBS');
+                                //window.open(linkIfany,"_blank"); -->
+                                let newTab = window.open();
+ 								newTab.location.href = linkIfany;
+                                
+                            } 
+                            //RRJ 30/08/2022 C-004781
+                            else if(techDis == 'FERRON'){
+                                if (true){
+                                   // var oemman = document.getElementById("refOEM"+refOemId).value ;
+                                    VFC29_ASPartners.callDistributor(techDis,null,function(result,event){
+                                            if (event.status) {
+                                                $j('#spinner').hide();
+                                                console.log('issucc', result);
+                                                if (result != 'Error' ){
+                                                    
+                                                    
+                                                    var urlToGo = result;
+                                                
+                                                    //window.open(urlToGo,"_blank");
+                                                    let newTab = window.open();
+                                                    newTab.location.href = urlToGo;
+                                                    
+                                                }
+                                                else{
+                                                    console.log('here 2');
+                                                    document.getElementById("ErrMsgCustomP").innerHTML = "{!JSENCODE($Label.ErrorCancelButton)}";
+                                                    
+
+                                                    showError(true, true);
+                                                    
+                                                }
+                                            }
+                                            else{
+                                                $j('#spinner').hide();
+                                                console.log('here 3');
+                                                document.getElementById("ErrMsgCustomP").innerHTML = "{!JSENCODE($Label.ErrorCancelButton)}";
+                                                
+
+                                                showError(true, true);
+
+                                            }
+                                        },{escape: false});
+                                }
+                            } 
+                        }
+
+                        renderIcons();
+
+                        showError({!hasErrors
+                        }, {!isToastError
+                        });
+                        checkPageMessage({!hasErrors
+                        });
+                     
+                    </script>
+          		</apex:form>
+            </div>
+        </body>
+    </html>
+</apex:page>

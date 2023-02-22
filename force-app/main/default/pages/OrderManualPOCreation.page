@@ -1,0 +1,211 @@
+<apex:page controller="OrderManualPOCreation" showHeader="false" sidebar="true" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+   
+    <head>
+    <!-- change this -->
+        <title>{!$Label.OrderManualPOCreationTitle}</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+
+        <!-- Initalise the global variable first as these values are used in the external javascript files -->
+        <script>
+            window.params = {
+                // URL For Icons
+                "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+            };
+        </script>
+
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" /> 
+        
+    </head>
+
+    <body>
+        <apex:form id="OrderManualPOCreationFrm">
+            <div class="slds">
+                <c:ASPISHeader />
+
+                <apex:outputText rendered="{!manualSourcing}">
+                    <div class="slds-p-around_medium">
+                        <apex:variable value="{!0}" var="noOfSelectedParts" />
+                        <div class="slds-card">
+                            <div class="slds-card__header">
+                                <h2 class="slds-text-heading_small">
+                                    <apex:commandbutton action="{!back}" value="{!$Label.Back}" styleclass="slds-button slds-button_neutral" rerender="OrderManualPOCreationFrm" status="statusSpinner" /> &nbsp;&nbsp; {!$Label.ChoosePartLists} 
+                                </h2>
+                            </div>
+                            <div class="slds-card__body">
+                                <table class="slds-table slds-table_bordered">
+                                    <thead>
+                                        <tr>
+                                            <th  class="slds-text-heading_label" width="33%">
+                                                {!$ObjectType.PartList__c.fields.PartNumber__c.label}
+                                            </th>
+                                            <th  class="slds-text-heading_label slds-text-align_center" width="33%">
+                                                {!$ObjectType.PartList__c.fields.Description__c.label}
+                                            </th>
+                                            <th class="slds-text-heading_label slds-text-align_center" width="33%">
+                                                {!$Label.Select}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="hoverParentAndChild">
+                                        <apex:repeat value="{!partLists}" var="partList">                                                  
+                                                <tr>
+                                                    <td class="slds-text-body_regular">
+                                                        {!partList.PartNumber__c}
+                                                    </td>
+                                                    <td class="slds-text-align_center">
+                                                        {!partList.Description__c}
+                                                    </td>
+                                                                                                                                                                               
+                                                    <td class="slds-text-body_regular slds-text-align_center">
+                                                        <div class="slds-checkbox_add-button" style="display:inline-block; vertical-align:middle;">
+                                                            <apex:inputCheckbox value="{!partList.SelectedByBS__c}" styleclass="slds-assistive-text acceptedCheckbox partId-{!partList.id}" id="fauxCheckboxId"
+                                                            html-partList="{!partList}"/>
+                                                            <label class="slds-checkbox_faux" for="{!$Component.fauxCheckboxId}">
+                                                            </label>
+                                                        </div>
+                                                    </td>                                                        
+                                                </tr>                                                                                                    
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="slds-card__footer">
+                                <h2 class="slds-text-heading_small"><span id="noOfSelectedParts">{!noOfSelectedParts}</span> {!$Label.PartSelected} {!noOfParts} {!$Label.Parts}</h2>
+                            </div> 
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                             <h2 class="slds-text-heading_small slds-text-align_center">
+                                <button type="button" class="slds-button slds-button_brand clickOnce" onclick="validate();">{!$Label.Validate}
+                                </button>
+                            </h2> 
+                        </div>
+                    </div>
+
+                    <apex:actionFunction name="validateChanges" action="{!validate}" reRender="OrderManualPOCreationFrm" status="statusSpinner"/>
+
+                </apex:outputText>
+                        
+                <div id="spinner" class="slds-spinner_container slds-hide positionFixed">
+                    <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+
+                <!-- Error Manager -->
+                <apex:outputPanel id="errorMessage">
+                    <div id="toastMessage" class="slds-notify_container slds-hide">
+                        <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" title="{!$Label.Close}" type="button" onclick="hideError();">
+                                </button>
+                            <div class="slds-notify__content">
+                                <p class="slds-text-align_center customErrorMsg"></p>
+                                <apex:pagemessages id="toastErrorMessage" escape="false" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="errorModal" class="slds-modal slds-modal_prompt" aria-hidden="false" role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <apex:outputText rendered="{!!redirectionInErrorModal}">
+                                    <p class="slds-m-bottom_medium">
+                                        {!$Label.ErrorModalBody}
+                                    </p>
+                                </apex:outputText>
+                                <p class="customErrorMsg"></p>
+                                <apex:pagemessages escape="false" />
+                            </div>
+                            <div class="slds-modal__footer slds-theme_default">
+                                <apex:outputText rendered="{!!redirectionInErrorModal}">
+                                    <input type="button"
+                                        class="slds-button slds-button_destructive"
+                                        value="{!$Label.Close}"
+                                        onclick="hideError();" />
+                                </apex:outputText>
+                                <apex:outputText rendered="{!redirectionInErrorModal}">
+                                    <apex:commandButton action="{!back}" 
+                                                        value="{!$Label.ModalOK}" 
+                                                        styleClass="slds-button slds-button_destructive"
+                                                        reRender="OrderManualPOCreationFrm" 
+                                                        status="statusSpinner"/>
+                                </apex:outputText>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                </apex:outputPanel>
+            </div>          
+
+            <script>
+                if (typeof jQuery != "undefined") {
+                    $j = jQuery.noConflict();
+                }
+
+                $j("#confirmationModal").hide();
+                renderIcons();
+                setButtonLocking();
+
+                if({!!manualSourcing}){
+                    $j(".customErrorMsg").html("{!JSENCODE($Label.ErrorNoPermission)}");
+                    showError(true, false);
+                }
+                function validate(){
+                    if($j("#noOfSelectedParts").html() > 0){
+                        validateChanges();
+                    }     
+                    else{
+                        $j(".customErrorMsg").html("{!JSENCODE($Label.ErrorNoPLSelected)}");
+                        showError(true, true);
+                    }       
+                    console.log('##in validate');        
+                }
+
+                $j(".acceptedCheckbox").change(function() {
+
+                    var checked = $j(this).is(":checked");
+                    var partId = $j(this).prop("class").match(/partId-(\w+|\s|$)/)[0];
+
+                    $j("." + partId).prop("checked", false);
+
+                    if (checked) {
+                        $j(this).prop("checked", true);
+                    }
+
+                    // loop in the accepted checkbox to set the number of selected parts
+                    calculateNumberOfSelectedParts();
+                });
+
+                function calculateNumberOfSelectedParts() {
+                    var noOfAcceptedPL = 0;
+
+                    $j(".acceptedCheckbox").each(function(index, element) {
+                        if ($j(element).is(":checked")) {
+                            noOfAcceptedPL++;
+                        }
+                    });
+
+                    $j("#noOfSelectedParts").html(noOfAcceptedPL);
+                }
+
+                showError({!hasErrors}, {!isToastError});
+                checkPageMessage({!hasErrors});
+            </script>
+        </apex:form> 
+    </body>
+
+    </html>
+</apex:page>

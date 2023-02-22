@@ -1,0 +1,344 @@
+<!--
+  @description       : 
+  @author            : JPI
+  @group             : 
+  @last modified on  : 22/01/2021
+  @last modified by  : JPI
+  Modifications Log 
+  Ver   Date         Author   Modification
+  1.0   11/01/2021   JPI   Initial Version
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="public" controller="SVR_AP102_GetRecordTypePlanAction">
+    
+    <aura:attribute name="isOpen" type="boolean" default="true" />
+    <aura:attribute name="isCM" type="boolean" default="false" />
+    <aura:attribute name="recordTypeId" type="String" />
+    <aura:attribute name="type" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="responsableSecteur" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!v.isOpen}">
+        <div role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open">
+            <div class="container slds-modal__container">
+                <lightning:recordEditForm recordTypeId="{!v.recordTypeId}" objectApiName="Audit_Plan_Action__c" onsuccess="{!c.handleSuccess}">
+                    <lightning:messages />
+                    <!--Header-->
+                    <div class="slds-modal__header">
+                        <button class="closeButton slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModal}">
+                            <span class="slds-assistive-text">Cancel</span>
+                            <img src='{!$Resource.SVR_CloseButton}' />
+                        </button>
+                        <aura:if isTrue="{!v.isCM}">
+                            <h2 id="header43" class="slds-text-heading--medium">Créer un plan d'action coût moyen.</h2>
+                            <aura:set attribute="else">
+                                <h2 id="header43" class="slds-text-heading--medium">Créer un plan d'action qualite.</h2>
+                            </aura:set>
+                        </aura:if>
+                        
+                    </div>
+
+                    <!--Body-->
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Information Générale</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AuditReseau__c"  value='{!v.recordId}'/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_ResponsableSecteur__c"  value='{!v.responsableSecteur}'/>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Action n°1</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_ActionIdentifie1__c" />
+                                </div>
+                                <aura:if isTrue="{!v.isCM}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="SVR_CMStatut1__c" />
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <lightning:inputField fieldName="SVR_QUAStatut1__c" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AICommentaire1__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Action n°2</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_ActionIdentifie2__c" />
+                                </div>
+                                <aura:if isTrue="{!v.isCM}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="SVR_CMStatut2__c" />
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <lightning:inputField fieldName="SVR_QUAStatut2__c" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AICommentaire2__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Action n°3</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_ActionIdentifie3__c" />
+                                </div>
+                                <aura:if isTrue="{!v.isCM}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="SVR_CMStatut3__c" />
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <lightning:inputField fieldName="SVR_QUAStatut3__c" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AICommentaire3__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Action n°4</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_ActionIdentifie4__c" />
+                                </div>
+                                <aura:if isTrue="{!v.isCM}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="SVR_CMStatut4__c" />
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <lightning:inputField fieldName="SVR_QUAStatut4__c" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AICommentaire4__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Action n°5</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_ActionIdentifie5__c" />
+                                </div>
+                                <aura:if isTrue="{!v.isCM}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="SVR_CMStatut5__c" />
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <lightning:inputField fieldName="SVR_QUAStatut5__c" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AICommentaire5__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Action n°6</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_ActionIdentifie6__c" />
+                                </div>
+                                <aura:if isTrue="{!v.isCM}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="SVR_CMStatut6__c" />
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <lightning:inputField fieldName="SVR_QUAStatut6__c" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AICommentaire6__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Action n°7</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_ActionIdentifie7__c" />
+                                </div>
+                                <aura:if isTrue="{!v.isCM}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="SVR_CMStatut7__c" />
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <lightning:inputField fieldName="SVR_QUAStatut7__c" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AICommentaire7__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                </div>
+                            </div>
+                        </div>
+                        <aura:if isTrue="{!v.isCM}">
+                            <div>
+                                <h3  class="test-id__section-header-container slds-section__title">
+                                    <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                        <span class="test-id__section-header-title slds-truncate">Engagement Chiffré</span>
+                                    </button>
+                                </h3>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning:inputField fieldName="SVR_CMGlobalEngagement__c" />
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning:inputField fieldName="SVR_MOCMTranchesBetCengagement__c" />
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning:inputField fieldName="SVR_CMUtilisationsubstitutionAengagement__c" />
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning:inputField fieldName="SVR_UtilisationSubstitutionBEngagement__c" />
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning:inputField fieldName="SVR_CMUtilisationsubstitutionCengagement__c" />
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning:inputField fieldName="SVR_CMUtilisationsubstitutionEengagement__c" />
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning:inputField fieldName="SVR_TauxCommandeEngagement__c" />
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Prochaines étapes</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_DateDuProchainPoint__c" />
+                                </div>
+                                <aura:if isTrue="{!v.isCM}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="SVR_DateformationAlphaScale__c" />
+                                    </div>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_EngagementReparateur__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_EngagementChefSecteur__c" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Commentaires</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:inputField fieldName="SVR_Commentaire__c" />
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:inputField fieldName="SVR_Commentaire_Interne_Prefikar__c" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Footer-->
+                    <div class="slds-modal__footer">
+                        <lightning:button name="Save" label="Annuler" onclick="{!c.closeModal}" class="slds-m-top_medium"/>
+                        <lightning:button type="submit" name="Save" label="Créer" class="slds-m-top_medium slds-button--brand"/>
+                    </div>
+                </lightning:recordEditForm>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

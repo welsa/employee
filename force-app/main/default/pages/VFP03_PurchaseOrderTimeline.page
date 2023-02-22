@@ -1,0 +1,173 @@
+<apex:page showHeader="false"
+            standardStylesheets="false"
+            standardcontroller="PurchaseOrder__c"
+            extensions="VFC03_PurchaseOrderTimeline"
+            sidebar="false"
+            applyHtmlTag="false"
+            applyBodyTag="false"
+            docType="html-5.0"
+            action="{!updateLastViewed}">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.css')}" />
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includeScript value="{!URLFOR($Resource.Countdown, 'kinetic.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.Countdown, 'jquery.final-countdown.js')}"/>
+            <style>
+                .slds-wizard__progress-bar.failure
+                {
+                    background: #df3535;
+                    z-index: 1;
+                }
+
+                .slds-wizard__progress-bar
+                {
+                    z-index: 2;
+                }
+
+                .slds-wizard .slds-is-canceled .slds-wizard__marker
+                {
+                    background: #df3535;
+                }
+
+                .timeline
+                {
+                    height:120px;
+                }
+
+                .logo
+                {
+                    padding-bottom: 35px; 
+                    padding-left: 10px;
+                    text-align: center;
+                }
+
+                .countdown
+                {
+                    height:120px;
+                    width:120px;
+                    text-align: center;
+                    text-align: -webkit-center;
+                }
+
+                .countdown .clock
+                {
+                    position: relative;
+                }
+
+                .countdown .clock .text
+                {
+                    width: 100%;
+                    position: absolute;
+                    text-align: center;
+                    text-align: -webkit-center;
+                    top: 25%;
+                }
+            </style>
+        </head>
+
+        <body>
+
+             <apex:form >
+                <apex:inputHidden value="{!PurchaseOrder__c.DistributorContact__c}" />               
+                <apex:inputHidden value="{!PurchaseOrder__c.PObeenviewed__c}"/>               
+            </apex:form>
+             
+            <apex:outputfield value="{!PurchaseOrder__c.Status__c}"
+                              rendered="false" />
+            <apex:outputfield value="{!PurchaseOrder__c.PreviousStatus__c}"
+                              rendered="false" />
+            <apex:outputfield value="{!PurchaseOrder__c.SLAQuotationEntryDate__c}"
+                              rendered="false" />
+            <apex:outputfield value="{!PurchaseOrder__c.SLAQuotationLevel1__c}"
+                              rendered="false" />
+            <apex:outputfield value="{!PurchaseOrder__c.SLAQuotationLevel2__c}"
+                              rendered="false" />
+            <apex:outputfield value="{!PurchaseOrder__c.SLAQuotationLevel3__c}"
+                              rendered="false" />
+            <apex:outputfield value="{!PurchaseOrder__c.AgencyMode__c}"
+                              rendered="false" />
+            
+            <div class="slds">
+                <table>
+                    <tr>
+                        <td class="timeline">
+                            <div class="slds-wizard" role="navigation">
+                                <ol class="slds-wizard__list">
+                                    <apex:repeat var="stepNumber" value="{!mapStepTranslatedStatus}">
+                                        <li class="slds-wizard__item {!IF(stepNumber <= purchaseOrderCurrentStepNumber, 'slds-is-active', '')}">
+                                            <span class="slds-wizard__link">
+                                                <span class="slds-wizard__marker"></span>
+                                                <span class="slds-wizard__label slds-text-title--caps">{!mapStepTranslatedStatus[stepNumber]}</span>
+                                            </span>
+                                        </li>
+                                        <apex:outputText rendered="{!hasFailed && (stepNumber == purchaseOrderCurrentStepNumber)}">
+                                            <li class="slds-wizard__item {!IF(stepNumber <= purchaseOrderCurrentStepNumber, 'slds-is-canceled', '')}">
+                                                <span class="slds-wizard__link">
+                                                    <span class="slds-wizard__marker"></span>
+                                                    <span class="slds-wizard__label slds-text-title--caps">{!mapStatusTranslatedValue['CANCELED']}</span>
+                                                </span>
+                                            </li>
+                                        </apex:outputText>
+                                    </apex:repeat>
+                                </ol>
+                                <span class="slds-wizard__progress">
+                                    <span class="slds-wizard__progress-bar" style="width:{!calculateSuccessfulLineWidth}%;"></span>
+                                    <span class="slds-wizard__progress-bar failure" style="width:{!calculateFailureLineWidth}%;"></span>
+                                </span>
+                            </div>
+                        </td>
+                        <apex:outputText rendered="{!PurchaseOrder__c.AgencyMode__c}">
+                            <td class="logo">
+                                <apex:image url="{!$Resource.AgencyLogo}" width="70" height="70"/>
+                            </td>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!PurchaseOrder__c.Status__c == 'DRAFTQUOTE' && PurchaseOrder__c.SLAQuotationLevel3__c != null}">
+                            <td class="countdown">
+                                <div class="countdown">
+                                    <div class="clock">
+                                        <div id="canvas" style="width:100px;height:100px;"></div>
+                                        <div class="text">  
+                                            <p class="slds-text-heading--large val"></p>
+                                            <p class="slds-text-heading--small label"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script type="text/javascript">  
+                                    $('document').ready(function() {
+                                        'use strict';
+
+                                        $('.countdown').final_countdown({
+                                            start: {!startTimerInMillisecond},
+                                            end: {!endTimerInMillisecond},
+                                            now: Date.now(),
+                                            seconds: {
+                                                label: 'seconds'
+                                                {!IF(hasPassedLevel2, ',borderColor: "#f00"', IF(hasPassedLevel1, ',borderColor: "#FF9900"', ',borderColor: "#0076de"'))}
+                                            },
+                                            minutes: {
+                                                label: 'minutes'
+                                                {!IF(hasPassedLevel2, ',borderColor: "#f00"', IF(hasPassedLevel1, ',borderColor: "#FF9900"', ',borderColor: "#0076de"'))}
+                                            },
+                                            hours: {
+                                                label: 'hours'
+                                                {!IF(hasPassedLevel2, ',borderColor: "#f00"', IF(hasPassedLevel1, ',borderColor: "#FF9900"', ',borderColor: "#0076de"'))}
+                                            },
+                                            days: {
+                                                label: 'days'
+                                                {!IF(hasPassedLevel2, ',borderColor: "#f00"', IF(hasPassedLevel1, ',borderColor: "#FF9900"', ',borderColor: "#0076de"'))}
+                                            }
+                                        });
+                                    });
+                                </script>
+                            </td>
+                        </apex:outputText>
+                    </tr>
+                </table>
+            </div>
+        </body>
+
+    </html>
+</apex:page>

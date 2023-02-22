@@ -1,0 +1,1957 @@
+<apex:page standardcontroller="PrerequisiteOrder__c"
+           extensions="VFC06_SOManageOffers"
+           tabstyle="PrerequisiteOrder__c"
+           sidebar="false"
+           showheader="false"
+           standardstylesheets="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.MultiSwitch, 'multi-switch.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'css/bootstrap-iso.css')}" /> 
+            <apex:stylesheet value="{!URLFOR($Resource.BootstrapDatePicker, 'css/bootstrap-datepicker3.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.VFP06, 'css/VFP06.css')}" />
+
+            <!-- Initalise the global variable first as these values are used in the external javascript files -->
+            <script>
+                window.params = {
+                                    "salesOrderStatus" : "{!JSENCODE(currentSalesOrder.Status__c)}",
+                                    "userProfileName" : "{!JSENCODE($Profile.Name)}",
+                                    "locale" : "{!locale}",
+                                    "locale2" : "{!locale2}",//vsu Added for locale Dutch(Belgium)
+                                    "respondedMsg" : "{!JSENCODE($Label.SalesOrderAlreadyResponded)}",
+                                    "acceptedSwitchYes" : "{!JSENCODE($Label.AcceptedSwitchYes)}",
+                                    "acceptedSwitchNo" : "{!JSENCODE($Label.AcceptedSwitchNo)}",
+                                    // URL For Icons
+                                    "alternativeSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action-sprite/svg/symbols.svg#change_record_type')}",
+                                    "alternativePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/change_record_type_60.png')}",
+                                    "bundleSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/custom-sprite/svg/symbols.svg#custom57')}",
+                                    "bundlePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/custom/custom57_60.png')}",
+                                    "addDiscountSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#info')}",
+                                    "addDiscountPNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility/info_60.png')}",
+                                    "complianceSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#warning')}",
+                                    "compliancePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility/warning_60.png')}",
+                                    "infoSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#info')}",
+                                    "infoPNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility/info_60.png')}",
+                                    "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                                    "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                                };
+            </script>
+            
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.CurrencyFormatter, 'JsWorld.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.CurrencyFormatter, 'fr_FR_EURO.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.MultiSwitch, 'multi-switch.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.MomentJS)}" />
+            <apex:includescript value="{!URLFOR($Resource.Bootstrap, 'js/bootstrap.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'js/bootstrap-datepicker.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.en-GB.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.es.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.fr.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.it.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.de.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.nl-BE.min.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.VFP06, 'js/VFP06_Icons.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.VFP06, 'js/VFP06_Process.js')}" />
+            <style>
+            .searchDateButton {
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    height: 32px;
+            }
+            </style>
+        </head>
+        <body>
+            <apex:form id="frm">
+                <apex:outputfield value="{!PrerequisiteOrder__c.OfferType__c}"
+                                  rendered="false" />
+                <apex:outputfield value="{!PrerequisiteOrder__c.Status__c}"
+                                  rendered="false" />
+                <apex:outputfield value="{!PrerequisiteOrder__c.RecordTypeId}"
+                                  rendered="false" />
+                <apex:outputfield value="{!PrerequisiteOrder__c.BodyShop__c}"
+                                  rendered="false" />
+                <apex:outputfield value="{!PrerequisiteOrder__c.BodyShop__r.ParentId}"
+                                  rendered="false" />
+                <apex:outputfield value="{!PrerequisiteOrder__c.Assessment__c}"
+                                  rendered="false" />
+                <apex:outputfield value="{!PrerequisiteOrder__c.TECH_BodyshopCountryCode__c}"
+                                  rendered="false" />
+                <apex:outputfield value="{!PrerequisiteOrder__c.Assessment__r.OrderOrigin__c}"
+                                  rendered="false" />               
+                                  
+                <div class="slds">
+                    <div class="slds-form-element">
+                        <div class="slds-card">
+                            <!--<div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-3"></div>
+                                <div class="slds-col slds-size_1-of-3 slds-text-align_center">
+                                    <div class="slds-button-group slds-grid_align-center" role="group">
+                                        <apex:outputtext rendered="{!!isInDelivery}">
+                                            <apex:outputtext rendered="{!!isPageReadOnly}">
+                                                <apex:commandbutton action="{!setAllOfferAccepted}"
+                                                                    value="{!$Label.AcceptAll}"
+                                                                    styleclass="searchDateButton slds-button slds-button_brand"
+                                                                    rerender="frm"
+                                                                    status="statusSpinner" />
+                                            </apex:outputtext>
+                                        </apex:outputtext>
+                                        <apex:outputtext rendered="{!isInDelivery}">
+                                            <apex:outputtext rendered="{!!isPageReadOnly}">
+                                                <apex:commandbutton action="{!setAllOfferDeliverable}"
+                                                                    value="{!$Label.SETDELIVEREDBTN}"
+                                                                    styleclass="searchDateButton slds-button slds-button_brand"
+                                                                    rerender="frm"
+                                                                    status="statusSpinner" />
+                                            </apex:outputtext>
+                                        </apex:outputtext>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3 slds-text-align_right">
+                                    <div class="slds-button-group slds-grid_align-end" role="group">
+                                        <apex:outputtext rendered="{!!isInDelivery}">
+                                            <apex:outputtext rendered="{!!isPageReadOnly}">
+                                                <apex:commandbutton action="{!saveAllChanges}"
+                                                                    value="{!$Label.SaveAllChanges}"
+                                                                    styleclass="searchDateButton slds-button slds-button_brand"
+                                                                    rerender="frm"
+                                                                    status="statusSpinner" />
+                                                <apex:outputtext rendered="{!accountSelectOptionList.size > 1}">
+                                                    <input type="button"
+                                                        class="searchDateButton slds-button slds-button_brand"
+                                                        value="{!$Label.ChangeHierarchy}"
+                                                        onclick="showHierarchyModal();" />
+                                                </apex:outputtext>
+                                                <apex:outputtext rendered="{!!canBeResponded}">
+                                                    <input type="button"
+                                                        class="searchDateButton slds-button slds-button_brand"
+                                                        value="{!$Label.Respond}"
+                                                        disabled="disabled" /> 
+                                                </apex:outputtext>
+                                                <apex:outputtext rendered="{!canBeResponded}">
+                                                    <input type="button"
+                                                        class="searchDateButton slds-button slds-button_brand"
+                                                        value="{!$Label.Respond}"
+                                                        onclick="showModal();" />
+                                                </apex:outputtext>
+                                            </apex:outputtext>
+                                        </apex:outputtext>
+                                        <apex:outputtext rendered="{!isInDelivery}">
+                                            <apex:outputtext rendered="{!!isPageReadOnly}">
+                                                <apex:commandbutton action="{!saveAllChanges}"
+                                                                    value="{!$Label.ConfirmDelivered}"
+                                                                    styleclass="searchDateButton slds-button slds-button_brand"
+                                                                    rerender="frm"
+                                                                    status="statusSpinner" />
+                                            </apex:outputtext>
+                                        </apex:outputtext>
+                                    </div>
+                                </div>
+                            </div>-->
+                            <div class="slds-grid slds-grid_align-center">
+                                <div class="slds-button-group" role="group">
+                                    <apex:outputtext rendered="{!!isInDelivery}">
+                                        <apex:outputtext rendered="{!!isPageReadOnly}">
+                                            <apex:commandbutton action="{!saveAllChanges}"
+                                                                value="{!$Label.SaveAllChanges}"
+                                                                styleclass="searchDateButton slds-button slds-button_brand clickOnce"
+                                                                rerender="frm"
+                                                                status="statusSpinner" disabled="{!!canBeSavedAndValidated}"/>
+                                            <apex:commandbutton action="{!setAllOfferAccepted}"
+                                                                value="{!$Label.AcceptAll}"
+                                                                styleclass="searchDateButton slds-button slds-button_brand"
+                                                                rerender="frm"
+                                                                status="statusSpinner" disabled="{!!canBeSavedAndValidated}"/>
+                                            <apex:outputtext rendered="{!accountSelectOptionList.size > 1}">
+                                                <input type="button"
+                                                       class="searchDateButton slds-button slds-button_brand"
+                                                       value="{!$Label.ChangeHierarchy}"
+                                                       onclick="showHierarchyModal();" />
+                                            </apex:outputtext>
+                                            <apex:outputtext rendered="{!!canBeResponded}">
+                                                <input type="button"
+                                                       class="searchDateButton slds-button slds-button_brand"
+                                                       value="{!$Label.Respond}"
+                                                       disabled="disabled" /> 
+                                            </apex:outputtext>
+                                            <apex:outputtext rendered="{!canBeResponded}">
+                                                <input type="button"
+                                                       class="searchDateButton slds-button slds-button_brand"
+                                                       value="{!$Label.Respond}"
+                                                       onclick="showModal();" />
+                                            </apex:outputtext>
+                                        </apex:outputtext>
+                                    </apex:outputtext>
+
+                                    <apex:outputtext rendered="{!isInDelivery}">
+                                        <apex:outputtext rendered="{!!isPageReadOnly}">
+                                            <!--
+                                                AMI 06/07/18 : Commmunity Rollout
+                                                             : Removing rerender attribute and adding js refresh so as to be able to cater for /R3 in case connected user has a communiyt license
+
+                                                AMI 19/09/18 : Updating button type from apex command to input type
+                                            -->
+                                            <input type="button"
+                                                   class="searchDateButton slds-button slds-button_brand clickOnce"
+                                                   value="{!$Label.ConfirmDelivered}"
+                                                   onclick="saveChgs();" />
+
+                                            <apex:actionFunction action="{!saveAllChanges}" name="saveChgs" onComplete="refresh();" status="statusSpinner"/>
+
+                                            <apex:commandbutton action="{!setAllOfferDeliverable}"                   onComplete=" setRealDeliveryDate();"
+                                                                value="{!$Label.SETDELIVEREDBTN}"
+                                                                styleclass="searchDateButton slds-button slds-button_brand"
+                                                                rerender="frm"
+                                                                status="statusSpinner" />
+                                        </apex:outputtext>
+                                    </apex:outputtext> 
+                                </div>
+                            </div>
+
+                            <div class="slds-card__body">
+                                <apex:variable var="numberOfWrapperInSelectedByBodyShop" value="{!0}" />
+                                <apex:variable var="numberOfWrapperInNotSelectedByBodyShop" value="{!0}" />
+                                <apex:variable var="numberOfWrapperInCanceledByDistributor" value="{!0}" />
+                                <apex:variable var="numberOfWrapperInNotSelectedByDistributor" value="{!0}" />
+
+                                <apex:repeat var="parentOfferId" value="{!mapOfferWrapper}">
+                                    <apex:variable var="numberOfWrapperInSelectedByBodyShop" 
+                                                    value="{!IF(mapOfferWrapper[parentOfferId].isSelectedByBodyShop &&
+                                                                (currentSalesOrder.OfferType__c == null || isInDelivery || (!isInDelivery && currentSalesOrder.OfferType__c != null && mapOfferWrapper[parentOfferId].parentOffer.Type__c == currentSalesOrder.OfferType__c)), numberOfWrapperInSelectedByBodyShop + 1, numberOfWrapperInSelectedByBodyShop)}" />
+
+                                    <apex:variable var="numberOfWrapperInNotSelectedByBodyShop" 
+                                                    value="{!IF(mapOfferWrapper[parentOfferId].isNotSelectedByBodyShop &&
+                                                                (currentSalesOrder.OfferType__c == null || isInDelivery || (!isInDelivery && currentSalesOrder.OfferType__c != null && mapOfferWrapper[parentOfferId].parentOffer.Type__c == currentSalesOrder.OfferType__c)), numberOfWrapperInNotSelectedByBodyShop + 1, numberOfWrapperInNotSelectedByBodyShop)}" />
+
+                                    <apex:variable var="numberOfWrapperInCanceledByDistributor" 
+                                                    value="{!IF(mapOfferWrapper[parentOfferId].isCanceledByDistributor &&
+                                                                (currentSalesOrder.OfferType__c == null || isInDelivery || (!isInDelivery && currentSalesOrder.OfferType__c != null && mapOfferWrapper[parentOfferId].parentOffer.Type__c == currentSalesOrder.OfferType__c)), numberOfWrapperInCanceledByDistributor + 1, numberOfWrapperInCanceledByDistributor)}" />
+
+                                    <apex:variable var="numberOfWrapperInNotSelectedByDistributor" 
+                                                    value="{!IF(mapOfferWrapper[parentOfferId].isNotSelectedByDistributor &&
+                                                                (currentSalesOrder.OfferType__c == null || isInDelivery || (!isInDelivery && currentSalesOrder.OfferType__c != null && mapOfferWrapper[parentOfferId].parentOffer.Type__c == currentSalesOrder.OfferType__c)), numberOfWrapperInNotSelectedByDistributor + 1, numberOfWrapperInNotSelectedByDistributor)}" />
+                                </apex:repeat>
+
+                                <apex:outputtext rendered="{!!isInDelivery}">
+                                    <div class="slds-card__header slds-grid grid_flex-spread">
+                                        <label>
+                                            <div class="slds-text-heading_small inlineClass">{!$ObjectType.PrerequisiteOrder__c.fields.OfferType__c.label} : &nbsp;</div>
+                                            <apex:selectlist value="{!currentSalesOrder.OfferType__c}"
+                                                             size="1"
+                                                             onchange="changeDisplayingOffer();">
+                                                <apex:selectoptions value="{!offerTypeOptionsList}" />
+                                            </apex:selectlist>
+                                        </label>
+                                    </div>
+                                </apex:outputtext>
+
+                                <apex:outputText rendered="{!numberOfWrapperInSelectedByBodyShop > 0}">
+                                    <div class="slds-card__header slds-grid grid_flex-spread">
+                                        <h2 class="slds-text-heading_small slds-truncate">{!$Label.SuppliedBy}</h2>
+                                    </div>
+                                    <table class="slds-table slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <td class="slds-text-heading_label" colspan="2">{!$ObjectType.Offer__c.fields.PartNUmber__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Distributor__c.label}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.OrderLine__c.fields.Type__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Description__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Manufacturer__c.label}</td>
+                                                <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                    <td class="slds-text-heading_label">{!$Label.POOL_Brand}</td>
+                                                </apex:outputtext>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}</td>
+                                                <apex:outputText rendered="{!isNONAXA}">
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$Label.GrossUnitPriceNonAXA}</td>
+                                                </apex:outputText>
+                                                <apex:outputText rendered="{!!isNONAXA}">
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDUNITPRICE}</td>
+                                                </apex:outputText>
+                                                
+                                                
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDQUANTITY}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Offer__c.fields.Discount__c.label}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDBSTOTALPRICE}</td>
+                                                <apex:outputtext rendered="{!!isInDelivery}">
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$Label.Accepted}</td>
+                                                </apex:outputtext>
+                                                <apex:outputtext rendered="{!isInDelivery}">
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Offer__c.fields.DeliveryStatus__c.label}</td>
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Offer__c.fields.RealDeliveryDate__c.label}</td>
+                                                </apex:outputtext>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="hoverParentAndChild">
+                                            <apex:variable var="noOfAcceptedRows" value="{!0}" />
+                                            <!-- Repeat in the wrapper and display the offers -->
+                                            <apex:repeat var="parentOfferId" value="{!mapOfferWrapper}">
+                                                <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isSelectedByBodyShop &&
+                                                                            (currentSalesOrder.OfferType__c == null || isInDelivery || (!isInDelivery && currentSalesOrder.OfferType__c != null && mapOfferWrapper[parentOfferId].parentOffer.Type__c == currentSalesOrder.OfferType__c))}">
+                                                    <tr class="rowId-{!parentOfferId}">
+                                                        <td colspan="2"
+                                                            class="slds-text-body_regular">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.PartNUmber__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalPartNumber__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular">
+                                                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c}">
+                                                                <div class="popOverParent">
+                                                                    <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                        role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.AgencyDistributor}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>  
+                                                            </apex:outputText>
+                                                            <apex:outputText rendered="{!(currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' ||
+                                                                                        mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c == null)
+                                                                                        && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST'}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}
+                                                                </span>
+                                                            </apex:outputText>
+                                                            <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' &&
+                                                                                        mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c != null && 
+                                                                                        mapOfferWrapper[parentOfferId].parentOffer.OrderType__c != 'SHIPPING COST'}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}
+                                                                </span>
+                                                            </apex:outputText>
+
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputtext rendered="{!(!mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.FinalType__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!(mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalType__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-truncate">
+                                                            <apex:outputtext rendered="{!(!mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Description__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.Description__c}
+                                                                </span>
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!(mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.OriginalDescription__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.OriginalDescription__c}
+                                                                </span>
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-truncate">
+                                                            <apex:outputtext rendered="{!(!mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.Manufacturer__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!(mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalManufacturer__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <!-- RRJ 25/10/2022 C-004824 : Manufacturer ("Marca") should be introduced for each line of paint/annexes products -->
+                                                        <apex:outputtext rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != null && currentSalesOrder.TECH_BodyshopCountryCode__c == 'ES'}"><!-- WCH 09/02/2021 C-004160 -->
+                                                            <apex:repeat var="KeyId" value="{!mapManufRef}">
+                                                                <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].parentOffer.PartNUmber__c == KeyId && mapManufRef[KeyId].RecordType.Name == 'Store Item' && activateFamilyBrand}">
+                                                                <td class="slds-text-body_regular slds-truncate">
+                                                                    <apex:outputtext rendered="{!(!mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                        {!mapManufRef[KeyId].Brand__c}
+                                                                    </apex:outputtext>
+                                                                </td>
+                                                                </apex:outputtext>
+                                                                <apex:outputtext rendered="{!activateFamilyBrand && mapManufRef[KeyId].RecordType.Name == 'Painting'}"><!-- WCH 09/02/2021 C-004160 -->
+                                                                    <td class="slds-text-body_regular slds-truncate">
+                                                                        <apex:outputtext rendered="{!(!mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                            {!mapOfferWrapper[parentOfferId].parentOffer.OrderLine__r.BrandOfSparePart__c}
+                                                                        </apex:outputtext>
+                                                                    </td>
+                                                                </apex:outputtext>
+                                                            </apex:repeat>
+                                                        </apex:outputtext>    
+                                                        
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputText rendered="{!(!mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDuration__c}" />
+                                                                <br/>
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDate__c}" />
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.OriginalCatalogPrice__c}"
+                                                                            styleclass="cataloguePrice"
+                                                                            rendered="{!(mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}" />
+
+                                                            <apex:outputtext rendered="{!(!mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                        role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Total__c}"
+                                                                                            styleclass="totalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'totalPriceWithoutDiscount', '')}" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Quantity__c}"
+                                                                            rendered="{!(!mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}" />
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Discount__c}"
+                                                                            rendered="{!(!mapOfferWrapper[parentOfferId].isOfferOriginal && mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST')}" />
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'bsGrandTotal', '')}" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                        role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <apex:outputtext rendered="{!!isInDelivery}">
+                                                            <td class="slds-text-body_regular slds-text-align_center"
+                                                                rowspan="{!mapOfferWrapper[parentOfferId].rowSpan}">
+                                                                <input type="checkbox"
+                                                                    class="multi-switch"
+                                                                    unchecked-value="NO"
+                                                                    checked-value="YES"
+                                                                    value="{!mapOfferWrapper[parentOfferId].parentOffer.Accepted__c}"
+                                                                    wrapperid="{!parentOfferId}" />
+                                                            </td>
+                                                        </apex:outputtext>
+                                                        <apex:outputtext rendered="{!isInDelivery}">
+                                                            <td class="slds-text-body_regular slds-text-align_center"
+                                                                rowspan="{!mapOfferWrapper[parentOfferId].rowSpan}">
+                                                                <apex:inputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.DeliveryStatus__c}"
+                                                                                onchange="toggleReason('{!mapOfferWrapper[parentOfferId].parentOffer.Id}', $j(this).val());fillRealDeliveryDate('{!mapOfferWrapper[parentOfferId].parentOffer.Id}', $j(this).val());"
+                                                                                rendered="{!mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST'}"
+                                                                                html-class="deliveryStatus" />
+                                                                <span id="deliveryStatusReason_{!mapOfferWrapper[parentOfferId].parentOffer.Id}"
+                                                                    style="{!IF(AND(mapOfferWrapper[parentOfferId].parentOffer.DeliveryStatus__c != 'RETURNED',
+                                                                                    mapOfferWrapper[parentOfferId].parentOffer.DeliveryStatus__c != 'ERROR'), 'display:none;','')}">
+                                                                    <br />
+                                                                    <br />
+                                                                    {!$Label.Reason}: &nbsp;
+                                                                    <apex:inputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.DeliveryStatusReason__c}"
+                                                                    rendered="{!mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST'}" />
+                                                                </span>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center"
+                                                                rowspan="{!mapOfferWrapper[parentOfferId].rowSpan}">
+                                                                <apex:inputText value="{!mapOfferWrapper[parentOfferId].parentOffer.RealDeliveryDate__c}"
+                                                                                styleclass="dateField realDeliveryDate realDeliveryDate_{!mapOfferWrapper[parentOfferId].parentOffer.Id}" 
+                                                                                rendered="{!mapOfferWrapper[parentOfferId].parentOffer.OrderType__c !='SHIPPING COST'}"/>
+                                                            </td>
+                                                        </apex:outputtext>
+                                                    </tr>
+                                                    <apex:variable var="noOfAcceptedRows" value="{!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', noOfAcceptedRows + 1, noOfAcceptedRows)}" />
+                                                    <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                                        <tr class="rowId-{!parentOfferId}">
+                                                            <td class="alternative"></td>
+                                                            <td class="slds-text-body_regular">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.PartNUmber__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular">
+                                                                <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c}">
+                                                                    <div class="popOverParent">
+                                                                        <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                        <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                            <div class="slds-popover__body">
+                                                                                {!$Label.AgencyDistributor}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' ||
+                                                                                            mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c == null}">
+                                                                    <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}">
+                                                                        {!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' &&
+                                                                                            mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c != null}">
+                                                                    <span title="{!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}">
+                                                                        {!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.FinalType__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Description__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.Description__c}
+                                                                </span>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.Manufacturer__c}
+                                                            </td>
+                                                            <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                                <td class="slds-text-body_regular slds-truncate">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.OrderLine__r.BrandOfSparePart__c}
+                                                                </td>
+                                                            </apex:outputtext>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDuration__c}" />
+                                                                <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDate__c != null}">
+                                                                    <br />
+                                                                    <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDate__c}" />
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                        role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Total__c}"
+                                                                                            styleclass="totalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'totalPriceWithoutDiscount', '')}" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Quantity__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Discount__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'bsGrandTotal', '')}" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                        role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </apex:outputtext>
+
+                                                    <apex:repeat var="childOffer" value="{!mapOfferWrapper[parentOfferId].childOfferList}">
+                                                        <tr class="rowId-{!parentOfferId}">
+                                                            <td class="bundle"></td>
+                                                            <td class="slds-text-body_regular">
+                                                                {!childOffer.PartNUmber__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular">
+                                                                <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c}">
+                                                                    <div class="popOverParent">
+                                                                        <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                        <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                            <div class="slds-popover__body">
+                                                                                {!$Label.AgencyDistributor}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' ||
+                                                                                            childOffer.TargetedDistributor__c == null}">
+                                                                    <span title="{!childOffer.Distributor__c}">
+                                                                        {!childOffer.Distributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' &&
+                                                                                            childOffer.TargetedDistributor__c != null}">
+                                                                    <span title="{!childOffer.TargetedDistributor__c}">
+                                                                        {!childOffer.TargetedDistributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                {!childOffer.FinalType__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                <span title="{!childOffer.Description__c}">
+                                                                    {!childOffer.Description__c}
+                                                                </span>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                {!childOffer.Manufacturer__c}
+                                                            </td>
+                                                            <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                                <td class="slds-text-body_regular slds-truncate">
+                                                                    {!childOffer.OrderLine__r.BrandOfSparePart__c}
+                                                                </td>
+                                                            </apex:outputtext>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!childOffer.ExpectedDeliveryDuration__c}" />
+                                                                <apex:outputText rendered="{!childOffer.ExpectedDeliveryDate__c != null}">
+                                                                    <br />
+                                                                    <apex:outputfield value="{!childOffer.ExpectedDeliveryDate__c}" />
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!childOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!childOffer.Total__c}"
+                                                                                            styleclass="totalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'totalPriceWithoutDiscount', '')}" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!childOffer.Quantity__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!childOffer.Discount__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!childOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'bsGrandTotal', '')}" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                        role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!childOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </apex:repeat>
+                                                </apex:outputtext>
+                                            </apex:repeat>
+                                        </tbody>
+                                        <apex:outputtext rendered="{!noOfAcceptedRows > 0}">
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="{!IF(activateFamilyBrand,8,7)}"
+                                                        class="slds-text-body_regular slds-text-align_right">
+                                                        {!$Label.VFORDERLINEFOOTERAXATOTAL}:
+                                                    </td>
+                                                    <td class="slds-text-body_regular slds-text-align_center">
+                                                        <span id="grandTotalPriceWithoutDiscount"></span>
+                                                    </td>
+                                                    <td colspan="2"
+                                                        class="slds-text-body_regular slds-text-align_right">
+                                                    </td>
+                                                    <td class="slds-text-body_regular slds-text-align_center">
+                                                        <span id="bsGrandTotalPrice"></span>
+                                                    </td>
+                                                    <td colspan="{!IF(!isInDelivery, 1, 2)}"></td>
+                                                </tr>
+                                            </tfoot>
+                                        </apex:outputtext>
+                                    </table>
+                                </apex:outputText>
+
+                                <apex:outputText rendered="{!numberOfWrapperInNotSelectedByBodyShop > 0}">
+                                    <div class="slds-card__header slds-grid grid_flex-spread">
+                                        <h2 class="slds-text-heading_small slds-truncate">{!$Label.NotSelected}</h2>
+                                    </div>
+                                    <table class="slds-table slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <td class="slds-text-heading_label" colspan="2">{!$ObjectType.Offer__c.fields.PartNUmber__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Distributor__c.label}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.OrderLine__c.fields.Type__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Description__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Manufacturer__c.label}</td>
+                                                <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                    <td class="slds-text-heading_label">{!$Label.POOL_Brand}</td>
+                                                </apex:outputtext>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}</td>
+                                                <apex:outputText rendered="{!isNONAXA}">
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$Label.GrossUnitPriceNonAXA}</td>
+                                                </apex:outputText>
+                                                <apex:outputText rendered="{!!isNONAXA}">
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDUNITPRICE}</td>
+                                                </apex:outputText>
+                                                
+                                                
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDQUANTITY}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Offer__c.fields.Discount__c.label}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDBSTOTALPRICE}</td>
+                                                <apex:outputtext rendered="{!!isInDelivery}">
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$Label.Accepted}</td>
+                                                </apex:outputtext>
+                                                <apex:outputtext rendered="{!$ObjectType.Offer__c.fields.CancelReason__c.Accessible}">
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Offer__c.fields.CancelReason__c.label}</td>
+                                                </apex:outputtext>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="hoverParentAndChild">
+                                            <!-- Repeat in the wrapper and display the offers -->
+                                            <apex:repeat var="parentOfferId" value="{!mapOfferWrapper}"><!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isNotSelectedByBodyShop &&
+                                                                             (currentSalesOrder.OfferType__c == null || isInDelivery || (!isInDelivery && currentSalesOrder.OfferType__c != null && mapOfferWrapper[parentOfferId].parentOffer.Type__c == currentSalesOrder.OfferType__c))}">
+                                                    <tr class="rowId-{!parentOfferId}">
+                                                        <td colspan="2"
+                                                            class="slds-text-body_regular">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.PartNUmber__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalPartNumber__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular">
+                                                            <!-- WCH 09/01/2019 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c && !isMultiSourcing}">
+                                                                <div class="popOverParent">
+                                                                    <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                        role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.AgencyDistributor}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputText>
+                                                            <apex:outputText rendered="{!(currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' || mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c == null) && !isMultiSourcing}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}
+                                                                </span>
+                                                            </apex:outputText>
+                                                            <apex:outputText rendered="{!(currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' && mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c != null) && !isMultiSourcing}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}
+                                                                </span>
+                                                            </apex:outputText>
+
+                                                            <!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputText rendered="{!isMultiSourcing}">
+                                                                <span title="{!$Label.multipleDistributors}">
+                                                                    {!$Label.multipleDistributors}
+                                                                </span>
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.FinalType__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalType__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-truncate">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">  
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Description__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.Description__c}
+                                                                </span>
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}">   
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.OriginalDescription__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.OriginalDescription__c}
+                                                                </span>
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-truncate">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.Manufacturer__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalManufacturer__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                <apex:outputtext >
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.OrderLine__r.BrandOfSparePart__c}
+                                                                </apex:outputtext>
+                                                            </td>
+                                                        </apex:outputtext>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputText rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal && !isMultiSourcing}">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDuration__c}" />
+                                                                <br />
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDate__c}" />
+                                                            </apex:outputText> 
+                                                            <!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputText rendered="{!isMultiSourcing}">
+                                                                <span title="{!$Label.multipleDistributors}">
+                                                                    --
+                                                                </span>
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.OriginalCatalogPrice__c}"
+                                                                            styleclass="cataloguePrice"
+                                                                            rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal && !isMultiSourcing}" />
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal && !isMultiSourcing}">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Total__c}"
+                                                                                            styleclass="totalPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputtext> 
+                                                            <!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputText rendered="{!isMultiSourcing}">
+                                                                <span title="{!$Label.multipleDistributors}">
+                                                                    --
+                                                                </span>
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Quantity__c}"
+                                                                                rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}" />
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Discount__c }"
+                                                                                rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal && !isMultiSourcing}" />
+                                                            <!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputText rendered="{!isMultiSourcing}">
+                                                                <span title="{!$Label.multipleDistributors}">
+                                                                    --
+                                                                </span>
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal && !isMultiSourcing}">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'bsGrandTotal', '')}" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputtext>
+                                                            <!-- WCH 20/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                                                            <apex:outputText rendered="{!isMultiSourcing}">
+                                                                <span title="{!$Label.multipleDistributors}">
+                                                                    --
+                                                                </span>
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <apex:outputtext rendered="{!!isInDelivery}">
+                                                            <td class="slds-text-body_regular slds-text-align_center"
+                                                                rowspan="{!mapOfferWrapper[parentOfferId].rowSpan}">
+                                                                <input type="checkbox"
+                                                                        class="{!IF(isMultiSourcing,'multi-switch inputCheckboxInNotSelected','multi-switch')}"
+                                                                        unchecked-value="NO"
+                                                                        checked-value="YES"
+                                                                        value="{!mapOfferWrapper[parentOfferId].parentOffer.Accepted__c}"
+                                                                        wrapperid="{!parentOfferId}"/>
+                                                            </td>
+                                                        </apex:outputtext>
+                                                        <apex:outputtext rendered="{!$ObjectType.Offer__c.fields.CancelReason__c.Accessible}">
+                                                            <td class="slds-text-body_regular slds-text-align_center"
+                                                                rowspan="{!mapOfferWrapper[parentOfferId].rowSpan}">
+                                                                <apex:inputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.CancelReason__c}"
+                                                                                styleclass="cancelReason"
+                                                                                rendered="{!!isInDelivery}" />
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.CancelReason__c}"
+                                                                                styleclass="cancelReason"
+                                                                                rendered="{!isInDelivery}" />
+                                                            </td>
+                                                        </apex:outputtext>
+                                                    </tr>
+                                                    <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                                        <tr class="rowId-{!parentOfferId}">
+                                                            <td class="alternative"></td>
+                                                            <td class="slds-text-body_regular">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.PartNUmber__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular">
+                                                                <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c}">
+                                                                    <div class="popOverParent">
+                                                                        <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                        <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                            <div class="slds-popover__body">
+                                                                                {!$Label.AgencyDistributor}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' ||
+                                                                                            mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c == null}">
+                                                                    <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}">
+                                                                        {!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' &&
+                                                                                            mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c != null}">
+                                                                    <span title="{!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}">
+                                                                        {!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.FinalType__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Description__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.Description__c}
+                                                                </span>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.Manufacturer__c}
+                                                            </td>
+                                                            <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                                <td class="slds-text-body_regular slds-truncate">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.OrderLine__r.BrandOfSparePart__c}
+                                                                </td>
+                                                            </apex:outputtext>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDuration__c}" />
+                                                                <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDate__c != null}">
+                                                                    <br />
+                                                                    <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDate__c}" />
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Total__c}"
+                                                                                            styleclass="totalPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Quantity__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Discount__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'bsGrandTotal', '')}" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </apex:outputtext>
+                                                    <apex:repeat var="childOffer" value="{!mapOfferWrapper[parentOfferId].childOfferList}">
+                                                        <tr class="rowId-{!parentOfferId}">
+                                                            <td class="bundle"></td>
+                                                            <td class="slds-text-body_regular">
+                                                                {!childOffer.PartNUmber__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular">
+                                                                <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c}">
+                                                                    <div class="popOverParent">
+                                                                        <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                        <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                            <div class="slds-popover__body">
+                                                                                {!$Label.AgencyDistributor}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' ||
+                                                                                            childOffer.TargetedDistributor__c == null}">
+                                                                    <span title="{!childOffer.Distributor__c}">
+                                                                        {!childOffer.Distributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' &&
+                                                                                            childOffer.TargetedDistributor__c != null}">
+                                                                    <span title="{!childOffer.TargetedDistributor__c}">
+                                                                        {!childOffer.TargetedDistributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                {!childOffer.FinalType__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                <span title="{!childOffer.Description__c}">
+                                                                    {!childOffer.Description__c}
+                                                                </span>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                {!childOffer.Manufacturer__c}
+                                                            </td>
+                                                            <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                                <td class="slds-text-body_regular slds-truncate">
+                                                                    {!childOffer.OrderLine__r.BrandOfSparePart__c}
+                                                                </td>
+                                                            </apex:outputtext>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!childOffer.ExpectedDeliveryDuration__c}" />
+                                                                <apex:outputText rendered="{!childOffer.ExpectedDeliveryDate__c != null}">
+                                                                    <br />
+                                                                    <apex:outputfield value="{!childOffer.ExpectedDeliveryDate__c}"/>
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!childOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!childOffer.Total__c}"
+                                                                                            styleclass="totalPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!childOffer.Quantity__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!childOffer.Discount__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!childOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'bsGrandTotal', '')}" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!childOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </apex:repeat>
+                                                </apex:outputtext>
+                                            </apex:repeat>
+                                        </tbody>
+                                    </table>
+                                </apex:outputText>
+
+                                <apex:outputText rendered="{!numberOfWrapperInCanceledByDistributor > 0}">
+                                    <div class="slds-card__header slds-grid grid_flex-spread">
+                                        <h2 class="slds-text-heading_small slds-truncate">{!$Label.CanceledByDistributor}</h2>
+                                    </div>
+                                    <table class="slds-table slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <td class="slds-text-heading_label" colspan="2">{!$ObjectType.Offer__c.fields.PartNUmber__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Distributor__c.label}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.OrderLine__c.fields.Type__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Description__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Manufacturer__c.label}</td>
+                                                <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                    <td class="slds-text-heading_label">{!$Label.POOL_Brand}</td>
+                                                </apex:outputtext>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}</td>
+                                                <apex:outputText rendered="{!isNONAXA}">
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$Label.GrossUnitPriceNonAXA}</td>
+                                                </apex:outputText>
+                                                <apex:outputText rendered="{!!isNONAXA}">
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDUNITPRICE}</td>
+                                                </apex:outputText>
+                                                
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDQUANTITY}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Offer__c.fields.Discount__c.label}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDBSTOTALPRICE}</td>
+                                                <apex:outputtext rendered="{!!isInDelivery}">
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$Label.Accepted}</td>
+                                                </apex:outputtext>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="hoverParentAndChild">
+                                            <!-- Repeat in the wrapper and display the offers -->
+                                            <apex:repeat var="parentOfferId" value="{!mapOfferWrapper}">
+                                                <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isCanceledByDistributor &&
+                                                                            (currentSalesOrder.OfferType__c == null || isInDelivery || (!isInDelivery && currentSalesOrder.OfferType__c != null && mapOfferWrapper[parentOfferId].parentOffer.Type__c == currentSalesOrder.OfferType__c))}">
+                                                    <tr class="rowId-{!parentOfferId}">
+                                                        <td colspan="2"
+                                                            class="slds-text-body_regular">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.PartNUmber__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalPartNumber__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular">
+                                                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c}">
+                                                                <div class="popOverParent">
+                                                                    <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                        role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.AgencyDistributor}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputText>
+                                                            <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' ||
+                                                                                        mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c == null}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}
+                                                                </span>
+                                                            </apex:outputText>
+                                                            <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' &&
+                                                                                        mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c != null}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}
+                                                                </span>
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.FinalType__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalType__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-truncate">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}"
+                                                                                title="{!mapOfferWrapper[parentOfferId].parentOffer.Description__c}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.Description__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}"
+                                                                                title="{!mapOfferWrapper[parentOfferId].parentOffer.OriginalDescription__c}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalDescription__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-truncate">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.Manufacturer__c}
+                                                            </apex:outputtext>
+                                                            <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OriginalManufacturer__c}
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                <apex:outputtext >
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.OrderLine__r.BrandOfSparePart__c}
+                                                                </apex:outputtext>
+                                                            </td>
+                                                        </apex:outputtext>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputText rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDuration__c}" />
+                                                                <br />
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDate__c}" />
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.OriginalCatalogPrice__c}"
+                                                                            styleclass="cataloguePrice"
+                                                                            rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}" />
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Total__c}"
+                                                                                            styleclass="totalPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Quantity__c}"
+                                                                                rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}" />
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Discount__c}"
+                                                                                rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}" />
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'bsGrandTotal', '')}" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <apex:outputtext rendered="{!!isInDelivery}">
+                                                            <td class="slds-text-body_regular slds-text-align_center"
+                                                                rowspan="{!mapOfferWrapper[parentOfferId].rowSpan}">
+                                                                <input type="checkbox"
+                                                                        class="multi-switch"
+                                                                        unchecked-value="NO"
+                                                                        checked-value="YES"
+                                                                        value="NO"
+                                                                        wrapperid="{!parentOfferId}"
+                                                                        disabled="disabled" />
+                                                            </td>
+                                                        </apex:outputtext>
+                                                    </tr>
+                                                    <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                                        <tr class="rowId-{!parentOfferId}">
+                                                            <td class="alternative"></td>
+                                                            <td class="slds-text-body_regular">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.PartNUmber__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular">
+                                                                <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c}">
+                                                                    <div class="popOverParent">
+                                                                        <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                        <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                            <div class="slds-popover__body">
+                                                                                {!$Label.AgencyDistributor}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' ||
+                                                                                            mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c == null}">
+                                                                    <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}">
+                                                                        {!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' &&
+                                                                                            mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c != null}">
+                                                                    <span title="{!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}">
+                                                                        {!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.FinalType__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Description__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.Description__c}
+                                                                </span>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.Manufacturer__c}
+                                                            </td>
+                                                            <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                                <td class="slds-text-body_regular slds-truncate">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.OrderLine__r.BrandOfSparePart__c}
+                                                                </td>
+                                                            </apex:outputtext>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDuration__c}" />
+                                                                <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDate__c != null}">
+                                                                    <br />
+                                                                    <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDate__c}" />
+                                                                </apex:outputtext>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Total__c}"
+                                                                                            styleclass="totalPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Quantity__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Discount__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'bsGrandTotal', '')}" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </apex:outputtext>
+                                                    <apex:repeat var="childOffer" value="{!mapOfferWrapper[parentOfferId].childOfferList}">
+                                                        <tr class="rowId-{!parentOfferId}">
+                                                            <td class="bundle"></td>
+                                                            <td class="slds-text-body_regular">
+                                                                {!childOffer.PartNUmber__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular">
+                                                                <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c}">
+                                                                    <div class="popOverParent">
+                                                                        <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                        <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                            <div class="slds-popover__body">
+                                                                                {!$Label.AgencyDistributor}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' ||
+                                                                                            childOffer.TargetedDistributor__c == null}">
+                                                                    <span title="{!childOffer.Distributor__c}">
+                                                                        {!childOffer.Distributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' &&
+                                                                                            childOffer.TargetedDistributor__c != null}">
+                                                                    <span title="{!childOffer.TargetedDistributor__c}">
+                                                                        {!childOffer.TargetedDistributor__c}
+                                                                    </span>
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                {!childOffer.FinalType__c}
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                <span title="{!childOffer.Description__c}">
+                                                                    {!childOffer.Description__c}
+                                                                </span>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                {!childOffer.Manufacturer__c}
+                                                            </td>
+                                                            <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                                <td class="slds-text-body_regular slds-truncate">
+                                                                    {!childOffer.OrderLine__r.BrandOfSparePart__c}
+                                                                </td>
+                                                            </apex:outputtext>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!childOffer.ExpectedDeliveryDuration__c}" />
+                                                                <apex:outputText rendered="{!childOffer.ExpectedDeliveryDate__c != null}">
+                                                                    <br />
+                                                                    <apex:outputfield value="{!childOffer.ExpectedDeliveryDate__c}" />
+                                                                </apex:outputText>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!childOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!childOffer.Total__c}"
+                                                                                            styleclass="totalPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!childOffer.Quantity__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputfield value="{!childOffer.Discount__c}" />
+                                                            </td>
+                                                            <td class="slds-text-body_regular slds-text-align_center">
+                                                                <apex:outputtext value="{!childOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice {!IF(mapOfferWrapper[parentOfferId].parentOffer.Accepted__c == 'YES', 'bsGrandTotal', '')}" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!childOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </apex:repeat>
+                                                </apex:outputtext>
+                                            </apex:repeat>
+                                        </tbody>
+                                    </table>
+                                </apex:outputText>
+                                <!-- Not Available -->
+                                <apex:outputText rendered="{!numberOfWrapperInNotSelectedByDistributor > 0}">
+                                    <div class="slds-card__header slds-grid grid_flex-spread">
+                                        <h2 class="slds-text-heading_small slds-truncate">{!$Label.NotSupplied}</h2>
+                                    </div>
+                                    <table class="slds-table slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <td class="slds-text-heading_label" colspan="2">{!$ObjectType.Offer__c.fields.PartNUmber__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Distributor__c.label}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.OrderLine__c.fields.Type__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Description__c.label}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.Offer__c.fields.Manufacturer__c.label}</td>
+                                                <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                    <td class="slds-text-heading_label">{!$Label.POOL_Brand}</td>
+                                                </apex:outputtext>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDEXPECTDELIVERY}</td>
+                                                <apex:outputText rendered="{!isNONAXA}">
+                                                    <td class="slds-text-heading_label slds-text-align_center">{!$Label.GrossUnitPriceNonAXA}</td>
+                                                </apex:outputText>
+                                                <apex:outputText rendered="{!!isNONAXA}">
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDUNITPRICE}</td>
+                                                </apex:outputText>
+                                                
+                                                
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDQUANTITY}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Offer__c.fields.Discount__c.label}</td>
+                                                <td class="slds-text-heading_label slds-text-align_center">{!$Label.VFORDERLINEFIELDBSTOTALPRICE}</td>
+                                                <td class="slds-text-heading_label">{!$ObjectType.OrderLine__c.fields.CancelReason__c.label}</td><!-- WCH 14/08/2019 C-003348 -->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Repeat in the wrapper and display the offers -->
+                                            <apex:repeat var="parentOfferId" value="{!mapOfferWrapper}">
+                                                <apex:outputtext rendered="{!mapOfferWrapper[parentOfferId].isNotSelectedByDistributor &&
+                                                                            (currentSalesOrder.OfferType__c == null || isInDelivery || (!isInDelivery && currentSalesOrder.OfferType__c != null && mapOfferWrapper[parentOfferId].parentOffer.Type__c == currentSalesOrder.OfferType__c))}">
+                                                    <tr>
+                                                        <td colspan="2"
+                                                            class="slds-text-body_regular">
+                                                            {!mapOfferWrapper[parentOfferId].parentOffer.PartNUmber__c}
+                                                        </td>
+                                                        <td class="slds-text-body_regular">
+                                                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].parentOffer.AgencyMode__c}">
+                                                                <div class="popOverParent">
+                                                                    <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogo "/>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                        role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.AgencyDistributor}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputText>
+                                                            <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'DE' ||
+                                                                                        mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c == null}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.Distributor__c}
+                                                                </span>
+                                                            </apex:outputText>
+                                                            <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'DE' &&
+                                                                                        mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c != null}">
+                                                                <span title="{!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}">
+                                                                    {!mapOfferWrapper[parentOfferId].parentOffer.TargetedDistributor__c}
+                                                                </span>
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            {!mapOfferWrapper[parentOfferId].parentOffer.FinalType__c}
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-truncate">
+                                                            {!mapOfferWrapper[parentOfferId].parentOffer.Description__c}
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-truncate">
+                                                            {!mapOfferWrapper[parentOfferId].parentOffer.Manufacturer__c}
+                                                        </td>
+                                                        <apex:outputtext rendered="{!activateFamilyBrand}"><!-- WCH 09/02/2021 C-004160 -->
+                                                            <td class="slds-text-body_regular slds-truncate">
+                                                                {!mapOfferWrapper[parentOfferId].parentOffer.OrderLine__r.BrandOfSparePart__c}
+                                                            </td>
+                                                        </apex:outputtext>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.ExpectedDeliveryDuration__c}"/>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.OriginalCatalogPrice__c}"
+                                                                            styleclass="cataloguePrice"
+                                                                            rendered="{!mapOfferWrapper[parentOfferId].isOfferOriginal}" />
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.CataloguePrice__c}"
+                                                                                styleclass="cataloguePrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_left popOverDiv-left"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$ObjectType.Offer__c.fields.Total__c.label} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Total__c}"
+                                                                                            styleclass="totalPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Quantity__c}"/>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputfield value="{!mapOfferWrapper[parentOfferId].parentOffer.Discount__c}"/>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputtext rendered="{!!mapOfferWrapper[parentOfferId].isOfferOriginal}">
+                                                                <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.BSTotalPrice__c}"
+                                                                                styleclass="bsTotalPrice" />
+                                                                <div class="popOverParent">
+                                                                    <span class="slds-icon_container svgInfo">
+                                                                    </span>
+                                                                    <div class="slds-popover slds-popover_tooltip slds-nubbin_right popOverDiv-right"
+                                                                            role="tooltip">
+                                                                        <div class="slds-popover__body">
+                                                                            {!$Label.VFORDERLINEFIELDBSUNITPRICE} : &nbsp;
+                                                                            <apex:outputtext value="{!mapOfferWrapper[parentOfferId].parentOffer.Price__c}"
+                                                                                            styleclass="bsUnitPrice" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputtext>
+                                                        </td>
+                                                        <!-- WCH 14/08/2019 C-003348 -->
+                                                        <td class="slds-text-body_regular slds-truncate">
+                                                            {!mapOfferWrapper[parentOfferId].parentOffer.OrderLine__r.CancelReason__c}
+                                                        </td>
+                                                    </tr>
+                                                </apex:outputtext>
+                                            </apex:repeat>
+                                        </tbody>
+                                    </table>
+                                </apex:outputText>
+
+                                <div id="calendar" 
+                                     class="bootstrap-iso calendar-div">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="confirmationModal"
+                         class="slds-modal"
+                         aria-hidden="false"
+                         role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header">
+                                <h2 class="slds-text-heading_medium">{!$Label.ConfirmJSTitle}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <div>
+                                    <p>
+                                        {!$Label.ConfirmJS}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="slds-modal__footer"> 
+                                <!--
+                                    AMI 06/07/18 : Commmunity Rollout
+                                                 : Removing rerender attribute and adding js refresh so as to be able to cater for R3 in case connected user has a communiyt license
+
+                                    AMI 19/09/18 : Updating button type from apex command to input type
+                                -->
+                                <input type="button"
+                                       class="searchDateButton slds-button slds-button_brand slds-button_brand clickOnce"
+                                       value="{!$Label.ModalOK}"
+                                       onclick="respd();" />
+
+                                <apex:actionFunction action="{!respondSalesOrder}" name="respd" onComplete="refresh();" status="statusSpinner"/> 
+
+                                <input type="button"
+                                       class="searchDateButton slds-button slds-button_brand"
+                                       value="{!$Label.ModalCancel}"
+                                       onclick="hideModal();" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hierarchyModal"
+                         class="slds-modal"
+                         aria-hidden="false"
+                         role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header">
+                                <h2 class="slds-text-heading_medium">{!$Label.ConfirmJSTitle}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <apex:outputPanel rendered="{!accountSelectOptionList.size > 1}">
+                                    <div>
+                                        <div class="slds-text-heading_small inlineClass">{!$Label.BodyShopToDeliver}&nbsp;</div>
+                                        <apex:selectlist value="{!currentSalesOrder.BodyShop__c}"
+                                                            size="1"
+                                                            onchange="changeSelectedBodyShop();">
+                                            <apex:selectoptions value="{!accountSelectOptionList}" />
+                                        </apex:selectlist>
+                                    </div>
+                                    <br/>
+                                    <apex:outputPanel id="selectedBodyShopAddress">
+                                        {!mapIdAccount[currentSalesOrder.BodyShop__c].ShippingStreet} <br/>
+                                        {!mapIdAccount[currentSalesOrder.BodyShop__c].ShippingCity}, {!mapIdAccount[currentSalesOrder.BodyShop__c].ShippingState} {!mapIdAccount[currentSalesOrder.BodyShop__c].ShippingPostalCode} <br/>
+                                        {!mapIdAccount[currentSalesOrder.BodyShop__c].ShippingCountry} <br/>
+                                    </apex:outputPanel>
+                                    <br/>
+                                </apex:outputPanel>
+                                <div>
+                                    <p>
+                                        {!$Label.ConfirmJS}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <apex:commandbutton value="{!$Label.ModalOK}"
+                                                    action="{!changeBodyShop}"
+                                                    styleclass="searchDateButton slds-button slds-button_brand slds-button_brand clickOnce"
+                                                    rerender="frm"
+                                                    status="statusSpinner" />
+                                <input type="button"
+                                       class="searchDateButton slds-button slds-button_brand"
+                                       value="{!$Label.ModalCancel}"
+                                       onclick="hideHierarchyModal();" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="confirmationModalBackdrop" class="slds-backdrop"></div>
+
+                    <div id="spinner"
+                         class="slds-spinner_container"
+                         style="display:none;">
+                        <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                    <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+
+                    <!-- Error Manager -->
+                    <apex:outputPanel id="errorMessage">
+                        <div id="toastMessage" class="slds-notify_container slds-hide">
+                            <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                                <button class="slds-button slds-notify__close slds-button_icon-inverse" title="{!$Label.Close}" type="button" onclick="hideError();">
+                                    </button>
+                                <div class="slds-notify__content">
+                                    <p class="slds-text-align_center customErrorMsg"></p>
+                                    <apex:pagemessages id="toastErrorMessage" escape="false" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="errorModal" class="slds-modal slds-modal_prompt" aria-hidden="false" role="dialog">
+                            <div class="slds-modal__container">
+                                <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                    <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                                </div>
+                                <div class="slds-modal__content slds-p-around_medium">
+                                    <p class="slds-m-bottom_medium">
+                                        {!$Label.ErrorModalBody}
+                                    </p>
+                                    <apex:pagemessages escape="false" />
+                                </div>
+                                <div class="slds-modal__footer slds-theme_default">
+                                    <input type="button" class="slds-button slds-button_destructive" value="{!$Label.Close}" onclick="hideError();" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                    </apex:outputPanel>
+
+                    <script>
+                        moment.locale("{!locale}");
+                        //initializeDatePicker();
+                        setButtonLocking();
+                        calculateAcceptedTotal();
+                        renderAllIcons();
+                        formatPrices();
+                        removeDeliveryStatusOptionsv0();
+                        showError({!hasErrors}, {!isToastError});
+                        checkPageMessage({!hasErrors});
+                        renderColoredStatus();
+
+                        //AMI 03/10/18 : C-002045 - added managed status so that latter can be removed
+                        //             : will be added by trigger
+                        function removeDeliveryStatusOptionsv0() {
+                            if (window.params.userProfileName == '{!$Label.R3BSProfileNameForceCom}' || 
+                                window.params.userProfileName == '{!$Label.R4BSProfileNameForceCom}' ||
+                                window.params.userProfileName == '{!$Label.R3BSProfileNameCommunity}' ||
+                                window.params.userProfileName == '{!$Label.R4BSProfileNameCommunity}' ||
+                                window.params.userProfileName == '{!$Label.R4BSProfileNameCommunityPrefikar}' ||  //NPE 24/11/2021 C-004522
+                                window.params.userProfileName == '{!$Label.R4BSProfileNameCommunityLogin}' ||
+                                window.params.userProfileName == '{!$Label.R3BSProfileNameCommunityLogin}') {
+                                $j('.deliveryStatus option').each(function(index, element) {
+                                    if (!($j(element).val() === "ERROR" ||
+                                          /*$j(element).val() === "INDELIVERY" || WCH 05/06/20 C-003750*/ 
+                                          $j(element).val() === "DELIVERED" ||
+                                          $j(element).prop("selected")
+                                         )
+                                        ){
+                                            $j(element).remove();
+                                    }
+                                });
+
+                                //NPE 24/11/2021 C-004522 Do not allow Spanish Bodyshops to set a spare part to ERROR after it has been set to RETURNED
+                                $j('.deliveryStatus').each(function(index){
+                                    var selectedVal = '';
+                                    $j(this).children('option').each(function(index, element){
+                                        if ($j(element).prop("selected")){
+                                            selectedVal = $j(element).val();
+                                        }      
+                                    })
+                                    
+                                    if(selectedVal === 'RETURNED'){
+                                        $j(this).children('option').each(function(index, element){
+                                            if ($j(element).val()!== 'RETURNED'){
+                                                $j(element).remove();
+                                            }      
+                                        })
+                                    }
+                                })
+
+                            }else{
+                                $j('.deliveryStatus option').each(function(index, element) {
+                                    if (
+                                          $j(element).val() === "MANAGED" &&
+                                          !$j(element).prop("selected")
+                                       ){
+                                            $j(element).remove();
+                                    }
+                                });
+                            }
+                        }
+
+                        //AMI 03/10/18 : C-002045 - if advance case management enable, color status red when latter is error
+                        function renderColoredStatus(){
+                            if({!isAdvancedCaseMgt}){
+                                $j('.deliveryStatus option').each(function(index, element) {
+                                    if($j(element).val() === "ERROR" && $j(element).prop("selected")){
+                                        $j(element).parent().css('background-color','red');
+                                        $j(element).parent().css('color','white');
+                                    }else if($j(element).val() === "MANAGED" && $j(element).prop("selected")){
+                                        $j(element).parent().css('background-color','green');
+                                        $j(element).parent().css('color','white');
+                                    }
+                                });
+                            } 
+                        }
+
+                        $j(".dateField").each(function(index, el) {
+                            if ($j(el).val()) {
+                                $j(el).val(moment(new Date($j(el).val())).format('L'));
+                            }
+                        });
+
+                        $j(".dateField").datepicker({
+                            todayBtn: "linked",
+                            language: window.params.locale2,
+                            container: "#calendar",
+                            autoclose: true,
+                        });
+
+                        function setRealDeliveryDate(){
+                            console.log('##setRealDeliveryDate');
+                            $j(".dateField").datepicker( "setDate" , moment().format());
+                        }
+
+
+                        $j(".svgInfo").hover
+                        (
+                            function()
+                            {
+                                showPopOver(this);
+                            },
+                            function()
+                            {
+                                hidePopOver(this);
+                            }
+                        );
+
+                        $j(".agencyLogo").hover
+                        (
+                            function()
+                            {
+                                showPopOver(this);
+                            },
+                            function()
+                            {
+                                hidePopOver(this);
+                            }
+                        );
+
+                        $j(".hoverParentAndChild tr").hover(
+                            function() {
+                                if ($j(this).prop("class")) {
+                                    var rowId = $j(this).prop("class").match(/rowId-(\w+|\s|$)/)[0];
+
+                                    $j("." + rowId).addClass("customHover");
+                                }
+                            },
+                            function() {
+                                if ($j(this).prop("class")) {
+                                    var rowId = $j(this).prop("class").match(/rowId-(\w+|\s|$)/)[0];
+
+                                    $j("." + rowId).removeClass("customHover");
+                                }
+                            }
+                        );
+
+                        if({!canRefresh})
+                        {
+                            if({!!isOrderPage})
+                            {
+                                window.parent.location.href = '/{!PrerequisiteOrder__c.Id}';
+                            }
+                            else
+                            {
+                                window.parent.location.reload();
+                            }
+                        }
+
+                        //AMI 04/07/18 : Commmunity Rollout
+                        //             : refresh with correct url
+                        function refresh(){
+                            if({!isCommunityUser}){
+                                if('{!userType}' == 'R3'){
+                                    window.top.location.href = '{!$Label.RefreshUrlForR3CommunityUsers}' + '{!currentSalesOrder}';
+                                }else{
+                                    window.parent.location.reload();
+                                }
+                            }else{
+                                if('{!userType}' == 'R3'){
+                                    window.top.location.href = '/' + '{!currentSalesOrder}';
+                                }else{
+                                    window.parent.location.reload();
+                                }
+                            };
+                        }
+                    </script>
+                </div>
+
+                <script>
+                    $j('.multi-switch').multiSwitch({
+                                                        textChecked     : window.params.acceptedSwitchYes,
+                                                        textNotChecked  : window.params.acceptedSwitchNo,
+                                                        functionOnChange: function (switches)
+                                                        {
+                                                            // Only 1 button is clicked at a time
+                                                            if($j(switches).attr("value") == "YES")
+                                                            {
+                                                                setToAccepted($j(switches).attr("wrapperId"));
+                                                            }
+                                                            else if($j(switches).attr("value") == "NO")
+                                                            {
+                                                                setToNotAccepted($j(switches).attr("wrapperId"));  
+                                                            }
+                                                        }
+                                                    });
+                    //WCH 09/01/2019 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops
+                    if('{!isMultiSourcing}'=='true'){
+                        $j('.inputCheckboxInNotSelected').siblings('.switch-content').css( 'background-color', 'grey');
+                        $j('.inputCheckboxInNotSelected').attr("disabled", true);
+                    }
+                </script>
+
+                <apex:actionfunction name="setToAccepted"
+                                     action="{!setWrapperAccepted}"
+                                     rerender="frm"
+                                     status="statusSpinner">
+                    <apex:param name="wrapperId"
+                                value=""
+                                assignto="{!wrapperId}" />
+                </apex:actionfunction>
+                <apex:actionfunction name="setToNotAccepted"
+                                     action="{!setWrapperNotAccepted}"
+                                     rerender="frm"
+                                     status="statusSpinner">
+                    <apex:param name="wrapperId"
+                                value=""
+                                assignto="{!wrapperId}" />
+                </apex:actionfunction>
+                <apex:actionfunction name="changeDisplayingOffer"
+                                     action="{!changeDisplayingOffer}"
+                                     rerender="frm"
+                                     status="statusSpinner" />
+                <apex:actionfunction name="changeSelectedBodyShop"
+                                     rerender="selectedBodyShopAddress"
+                                     status="statusSpinner" />
+
+                <!-- AMI 03/10/18 : C-002045 - get country code info from SO -->
+                <apex:inputHidden value="{!PrerequisiteOrder__c.TECH_BodyshopCountryCode__c}"/>
+            </apex:form>
+        </body>
+    </html>
+</apex:page>

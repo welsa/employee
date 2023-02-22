@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+
+            <property 
+                name="isDebug" 
+                type="Boolean" 
+                label="Debug logs ?" 
+                default="false"
+                role="inputOnly"
+            />
+
+            <property 
+                name="disablePrevious" 
+                type="Boolean" 
+                label="Disable Previous" 
+                default="False"
+                role="inputOnly"
+            />
+
+            <property 
+                name="disableNext" 
+                type="Boolean" 
+                label="Disable Next" 
+                default="False"
+                role="inputOnly"
+            />
+
+            <property 
+                name="hideNextBtn" 
+                type="Boolean" 
+                label="Hide Next" 
+                default="False"
+                role="inputOnly"
+            />
+
+            <property 
+                name="hidePreviousBtn" 
+                type="Boolean" 
+                label="Hide Previous" 
+                default="False"
+                role="inputOnly"
+            />
+
+            <property 
+                name="nextLabel" 
+                type="String" 
+                label="Next Label" 
+                default="Suivant"
+                role="inputOnly"
+            />
+
+            <property 
+                name="previousLabel" 
+                type="String" 
+                label="Previous Label" 
+                default="Précédent"
+                role="inputOnly"
+            />
+
+        </targetConfig>
+    </targetConfigs>
+
+</LightningComponentBundle>

@@ -1,0 +1,4 @@
+<aura:component controller="NOB_LC50_SemaineType" implements="force:lightningQuickAction,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes">
+	<aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <h1 style="display:none">let me appear somewhere</h1>
+</aura:component>

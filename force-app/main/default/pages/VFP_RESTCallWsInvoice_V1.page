@@ -1,0 +1,5 @@
+<!-- <apex:page standardcontroller="PrerequisiteOrder__c" extensions="VFC_RESTCallWsInvoice_V1" action="{!callWsInvoice_V1}">
+</apex:page> -->
+
+<apex:page standardcontroller="Invoice__c" extensions="VFC_RESTCallWsInvoice_V1" action="{!callWsInvoice_V1}">
+</apex:page>

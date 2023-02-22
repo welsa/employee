@@ -1,0 +1,51 @@
+<!--
+  @description       : 
+  @author            : 
+  @group             : 
+  @last modified on  : 03-29-2022
+  @last modified by  : 
+-->
+<apex:page controller="VFC22_CancelReasonSO" showHeader="false" sidebar="false">
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+              
+    </head>
+    <body>
+        <apex:form id="CancelSO" >  <!-- NPE C-004547 -->
+            <div style="margin-top: 20px;">
+                <apex:outputText value="{!$Label.IndicateReason}"/><br/>
+            </div>
+            <div class="slds slds-text-align_center" style="margin-top: 10px;">                   
+                    <!--{!JSINHTMLENCODE($Label.CancelSOButtonValidation)}-->
+                    <div>
+                        <div class="slds-text-color_error" id="errorContainer"><apex:pageMessages ></apex:pageMessages></div> <!-- NPE C-004547 -->
+                        <apex:inputField value="{!so.CancelationReason__c}" styleClass="slds-input"/>
+                    </div>
+                    <div style="margin-top: 50px;">
+                        <apex:commandButton styleclass="btn" style="background-color:#103184 !important;background-image:none;color: #fff;font-size: 14px; height: 32px; width: 50px;" value="Save" onclick="save()" reRender="none"/>
+                        
+                            <!-- <span><button class="searchSaveButton slds-button slds-button_brand" onclick="saveReason();">Save</button>
+                            </span> -->
+                    </div>
+            </div>
+            <apex:actionFunction name="save" action="{!savePicklist}"  reRender="CancelSO" onComplete="closeWindow();"/> <!-- NPE C-004547 -->
+            <script>
+                // function saveReason(){
+                //     console.log('here2');
+
+                //     save();
+                //     //alert('IN');
+                // }
+                function closeWindow(){
+                    let errorContainer = document.querySelector("#errorContainer>span"); //NPE  C-004547
+                    if (errorContainer.innerHTML == ""){ //NPE  C-004547
+                        console.log('here');
+                        window.parent.postMessage('close', '*');
+                        console.log('££close');                    
+                        return false;
+                    } //NPE  C-004547
+                }
+            </script>
+         </apex:form>
+    </body>
+</apex:page>

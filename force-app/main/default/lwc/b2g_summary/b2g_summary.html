@@ -1,0 +1,64 @@
+<template>
+    <div class="no-click">
+        <div class={borderCSS}>
+            <lightning-layout multiple-rows="true" horizontal-align="center" vertical-align="center">
+                <lightning-layout-item padding="small" size="12" flexibility="grow">
+
+                    <!-- Appointment Date -->
+                    <div class="slds-m-bottom_small slds-p-left_small">
+                        <lightning-tile label={dateRVLabel} type="media">
+                            <lightning-icon slot="media" icon-name="standard:event"></lightning-icon>
+                            <p class="slds-truncate" title={appointmentDate}>
+                                <lightning-formatted-date-time value={appointmentDate}  month="long" day="2-digit" weekday="long" hour="2-digit" minute="2-digit" time-zone={timezone}></lightning-formatted-date-time>
+                            </p>
+                        </lightning-tile>
+                    </div>
+
+                    <!-- Repair Center Info : Name, Address, Info -->
+                    <div if:true={isSAD}>
+                        <div class="slds-m-bottom_small slds-p-left_small">
+                            <lightning-tile label={homeInterventionLabel} type="media">
+                                <lightning-icon slot="media" icon-name="standard:home"></lightning-icon>
+                                <p class="slds-truncate" title={homeInterventionAddress}>{homeInterventionAddress}</p>
+                            </lightning-tile>
+                        </div>
+                    </div>
+
+                    <!-- Repair Center Info : Name, Address, Info -->
+                    <div class="slds-m-bottom_small slds-p-left_small">
+                        <lightning-tile label={repairCenterName} type="media">
+                            <lightning-icon slot="media" icon-name="standard:address"></lightning-icon>
+                            <p title={repairCenterAddress}>{repairCenterAddress}</p>
+                            <p><lightning-formatted-phone value={repairCenterPhone} ></lightning-formatted-phone></p>
+                        </lightning-tile>
+                    </div>
+
+                    <!-- Reparation Description -->
+                    <div class="slds-m-bottom_small slds-p-left_small">
+                        <lightning-tile label={interventionLabel} type="media">
+                            <lightning-icon slot="media" icon-name="custom:custom19"></lightning-icon>
+                            <p title={reparationDescription}>{reparationDescription}</p>
+                        </lightning-tile>
+                    </div>
+
+                    <!-- Duration of Reparation -->
+                    <div class="slds-m-bottom_small slds-p-left_small">
+                        <lightning-tile label={reparationDurationLabel} type="media">
+                            <lightning-icon slot="media" icon-name="custom:custom95"></lightning-icon>
+                            <p title={reparationDuration}>{reparationDuration}</p>
+                        </lightning-tile>
+                    </div>
+
+                    <!-- Immatriculation -->
+                    <div class="slds-m-bottom_small slds-p-left_small">
+                        <lightning-tile label={immatriculationLabel} type="media">
+                            <lightning-icon slot="media" icon-name="custom:custom31"></lightning-icon>
+                            <p class="slds-truncate" title={immatriculation}>{immatriculation}</p>
+                        </lightning-tile>
+                    </div>
+
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+    </div>  
+</template>

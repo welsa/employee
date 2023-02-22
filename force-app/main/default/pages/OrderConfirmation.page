@@ -1,0 +1,375 @@
+<apex:page controller="OrderConfirmation" showHeader="false" sidebar="true" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <head>
+        <title>{!$Label.OrderConfirmationTitle}</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+        <style>
+            .errorDisplay{
+                color: red;
+            }
+            body{
+                min-width: 900px;
+            }
+            .searchDateButton {
+                background: #103184;
+                color: #fff;
+                font-size: 14px;
+                height: 32px;
+                }
+            .fixedHeader{
+                position: fixed;
+                width:100%;
+                background: #fdfdfd;
+                z-index:1;
+            }
+            
+            .testcolor{
+            	color: {!colorDist};
+            }
+        </style>
+        <script>
+            window.params = {
+                                // URL For Icons
+                                "closeSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                                "closePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                            };
+        </script>
+
+    </head>
+    <body>
+        <apex:form id="paintingForm">
+            <!-- REQUIRED SLDS WRAPPER -->
+            <div class="slds" style="min-width: 1300px;">
+                <!--VSU -->
+                <c:ASPISHeader />
+                <div class="slds-form-element">
+                    <!--<div class="slds-image slds-text-align_center slds-m-vertical_medium slds-p-bottom--large">-->
+                        <!--<object data="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}" type="image/svg+xml" width="250" />-->
+                    <!--</div>-->
+                    <div class="slds-card" id="topCard">
+                        <div class="slds-card__body slds-p-vertical_x-medium">
+                            <table width="100%" class="slds-m-vertical_medium slds-table_fixed-layout">
+                                <tr>
+                                    <!--<td />-->
+                                    <td class="slds-text-align_center" style="white-space:normal;">
+                                        <apex:outputPanel rendered="{!!hasSO}">
+                                            {!notificationMessage}
+                                            <apex:outputPanel rendered="{!hasError}" styleclass="errorDisplay">
+                                                <br/>{!$Label.WarningMessage}
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!hasSO}">
+                                            <apex:outputText rendered="{!ass.TECH_EntityCountryCode__c == 'FR'}">{!$Label.OrderMade}
+                                            </apex:outputText>
+                                            <br/>{!salesOrderCreated} &nbsp;{!salesOrderNumber}.
+                                            <br/>{!$Label.MailConfirmation}
+                                            <apex:outputText rendered="{!ass.TECH_EntityCountryCode__c == 'FR'}"><br/>{!$label.PricingOrderConfirmation}<!--vsu-->
+                                            <br/>{!$label.DownloadOrder}
+                                            </apex:outputText>
+                                            <!-- <apex:outputPanel rendered="{!ass.TECH_EntityCountryCode__c == 'FR'}">
+                                                <br/><STRONG style="font-size: 18px">{!$Label.NoFax}</STRONG>
+                                            </apex:outputPanel> -->
+                                        </apex:outputPanel>
+                                    </td>
+                                    <!--<td class="slds-text-align_left">-->
+                                        <!--<apex:outputText rendered="{!(ass.OrderOrigin__c == 'Order')}">
+                                            <a class="slds-button slds-button_neutral" style="white-space: nowrap;" href="/apex/VFP14_PrintPartListForBodyshop?force_download=true&id={!salesOrderId}&isDeliveryNote=true" target="_self" download="download">
+                                                {!$Label.PrintPartLists}
+                                            </a>
+                                        </apex:outputText>
+                                        <apex:outputText rendered="{!(ass.OrderOrigin__c == 'Quotation')}">
+                                            <a class="slds-button slds-button_neutral" style="white-space: nowrap;" href="/apex/VFP17_PrintPartListForAssessment?force_download=true&id={!ass.id}" target="_self" download="download">
+                                                {!$Label.PrintPartLists}
+                                            </a>
+                                        </apex:outputText>-->
+
+                                        <!--<apex:commandButton action="{!downloadPDFQuote}"
+                                                            rerender="paintingForm"
+                                                            styleclass="slds-button slds-button_neutral"
+                                                            value="{!$Label.PrintPartLists}"
+                                                            rendered="{!ass.OrderOrigin__c == 'Quotation'}"/>
+
+                                        <apex:commandButton action="{!downloadPDFOrder}"
+                                                            rerender="paintingForm"
+                                                            styleclass="slds-button slds-button_neutral"
+                                                            value="{!$Label.PrintPartLists}"
+                                                            rendered="{!ass.OrderOrigin__c == 'Order'}"/>-->
+                                    <!--</td>-->
+                                </tr>
+                                <tr>
+                                    <td class="slds-text-align_center slds-p-top_medium">
+                                        <apex:outputText rendered="{!(sourceAssessmentId == null || sourceAssessmentId == ass.ParentAssessment__c) && NOT(fromPainting) && assessIdEpart == null}"><!-- WCH 03/06/2019 C-002781 Spain R4-->
+                                            <button type="button" class="searchDateButton slds-button slds-button_brand" id="btn-openAssessment" onclick="openChooseAssessment('{!ass.ParentAssessment__c}')">
+                                                {!$Label.BackToAssessment}
+                                            </button>
+                                        </apex:outputText>
+                                        <apex:outputText rendered="{!(sourceAssessmentId != null && sourceAssessmentId != ass.ParentAssessment__c) && NOT(fromPainting) && assessIdEpart == null}"><!-- WCH 03/06/2019 C-002781 Spain R4-->
+                                            <button type="button" class="searchDateButton slds-button slds-button_brand" id="btn-openAssessment" onclick="openChooseAssessment('{!sourceAssessmentId}')">
+                                                {!$Label.BackToAssessment}
+                                            </button>
+                                        </apex:outputText>
+                                        <!-- RLA 31/08/2021 -->
+                                        <apex:outputText rendered="{!(assessIdEpart != null && renderEparts)}">
+                                            <button type="button" class="searchDateButton slds-button slds-button_brand" id="btn-openAssessment" onclick="openChooseAssessment('{!assessIdEpart}')">
+                                                {!$Label.BackToAssessment}
+                                            </button>
+                                        </apex:outputText>
+
+                                        <!-- WCH 03/06/2019 C-002781 Spain R4-->
+                                        <apex:outputText rendered="{!(fromPainting)}">
+                                            <button type="button" class="searchDateButton slds-button slds-button_brand" id="btn-openAssessment" onclick="openAspisSalesOrder('{!salesOrderId}')">
+                                                {!$Label.BackToSalesOrder}
+                                            </button>
+                                        </apex:outputText>
+                                        &nbsp;
+                                        <apex:commandButton action="{!downloadPDFQuote}" 
+                                                            rerender="paintingForm" 
+                                                            styleclass="searchDateButton slds-button slds-button_brand" 
+                                                            value="{!$Label.PrintPartLists}"
+                                                            rendered="{!ass.OrderOrigin__c == 'Quotation'}"/>
+
+                                        <apex:commandButton action="{!downloadPDFOrder}" 
+                                                            rerender="paintingForm" 
+                                                            styleclass="searchDateButton slds-button slds-button_brand" 
+                                                            value="{!$Label.PrintPartLists}"
+                                                            rendered="{!ass.OrderOrigin__c == 'Order'}"/>
+                                        <!-- WCH 03/06/2019 C-002781 Spain R4-->
+                                        <apex:commandButton action="{!downloadPDFOrder}" 
+                                                            rerender="paintingForm" 
+                                                            styleclass="searchDateButton slds-button slds-button_brand" 
+                                                            value="{!$Label.PrintPartLists}"
+                                                            rendered="{!ass.OrderOrigin__c == ''}"/>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- RLA C-004115: FR - E parts orderin-->
+            <apex:outputPanel rendered="{!renderEparts}">
+                <div class="slds-card__body" style="padding-top: 1%;padding-left: 10%;padding-right: 10%;">
+                    <div class="slds-p-around_medium">
+                        <div class="slds-card">
+                            <div class="slds-card__header" style="padding-right: 1.7rem;text-align: center;">
+
+                            
+                            
+                                <div class="slds-p-bottom_small; ">
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <h2 class="slds-text-heading_small slds-text-align_center " >{!$Label.EpartsTitle}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-card__body border-bottomBox">
+                                <table class="slds-table slds-table_bordered">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="slds-text-heading_label">
+                                                {!$ObjectType.PartList__c.fields.PartNumber__c.label}
+                                            </th>
+                                            <th colspan="2" class="slds-text-heading_label slds-text-align_left">
+                                                {!$ObjectType.PartList__c.fields.Description__c.label}
+                                            </th>
+                                            <th colspan="2" class="slds-text-heading_label  slds-text-align_left">
+                                                {!$ObjectType.PurchaseOrder__c.fields.DistributorName__c.label}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="hoverParentAndChild">
+                                        <apex:repeat value="{!mapPartlistsEWrapper}" var="partId">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <apex:outputtext >
+															{!mapPartlistsEWrapper[partId].currentPart.PartNumber__c}
+													</apex:outputtext>
+                                                </td>
+                                                <td colspan="2">
+                                                    <apex:outputtext >
+														<span class="">{!mapPartlistsEWrapper[partId].currentPart.Description__c} </span>	
+                                                        
+													</apex:outputtext>
+                                                </td>
+                                                <td colspan="2">
+                                                    <apex:outputtext id="buttonPanel" rendered="{!mapPartlistsEWrapper[partId].isAdvanced}" >
+                                                        <!-- <input type="button" value="button name" onclick="window.open('http://www.website.com')" /> -->
+
+                                                        <button type="button" title="{!$Label.EpartNewtab}" style="width: 10rem; color: {!mapPartlistsEWrapper[partId].textColorButton}; background: {!mapPartlistsEWrapper[partId].backgrounColorButton}; border-color: {!mapPartlistsEWrapper[partId].backgrounColorButton};" class="searchDateButton slds-button slds-button_brand" id="{!partId}" onclick="opendis('{!partId}','{!mapPartlistsEWrapper[partId].textDis}');" >
+                                                            {!mapPartlistsEWrapper[partId].currentPart.ProducerName__c}
+                                                        </button> 
+                                                        <!-- <apex:commandlink action="opendis('{!mapPartlistsEWrapper[partId].orderLink}','{!partId}', '{!mapPartlistsEWrapper[partId].isOrdered}')" target="_blank">
+                                                               
+                                                            <apex:commandButton value="Switch"  />
+                                                           
+                                                            
+                                                        </apex:commandlink > -->
+                                                        <!-- <apex:image url="/servlet/servlet.FileDownload?file=00P25000008ypVrEAI" width="25" height="25" style="padding-left: 5px;"/> -->
+                                                        <img src="data:image/png;base64,{!mapPartlistsEWrapper[partId].distLog.distributorLogo}" alt = "Logo du distributeur" width="25" height="25" style="padding-left: 5px;"/>
+
+                                                       <!--<apex:image url="/servlet/servlet.FileDownload?file={!mapPartlistsEWrapper[partId].FileId}" width="25" height="25" style="padding-left: 5px;"/> -->
+
+													</apex:outputtext>
+                                                    <apex:outputtext rendered="{!!mapPartlistsEWrapper[partId].isAdvanced}" >
+                                                        <!-- <input type="button" value="button name" onclick="window.open('http://www.website.com')" /> -->
+
+                                                        <!-- <button type="button" style="width: 10rem;" class="searchDateButton slds-button slds-button_brand" id="btn-openDistributor" > -->
+                                                            {!$Label.contactOrderPArtE}&nbsp; {!mapPartlistsEWrapper[partId].currentPart.ProducerName__c}<p class="slds-text-align_center customErrorMsg" id="rlaaa"></p>
+                                                            
+                                                        <!-- </button> -->
+
+													</apex:outputtext>
+                                                    
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>
+                                       
+                                    </tbody>
+                                </table>
+                                <div class="slds-card__footer">
+                                    <h2 class="slds-text-heading_small"><span id="noOfSelectedParts"></span> </h2>   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </apex:outputPanel>
+             <!-- VSU 02/04/18 C-002315 Error Manager -->
+                <apex:outputPanel id="errorMessage">
+                    <div id="toastMessage" class="slds-notify_container slds-hide">
+                        <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" title="{!$Label.Close}" type="button" onclick="hideError();">
+                                </button>
+                            <div class="slds-notify__content">
+                                <p class="slds-text-align_center customErrorMsg" id="ErrMsgCustomP"></p>
+                                <apex:pagemessages id="toastErrorMessage" escape="false" />
+                            </div>
+                        </div>
+                    </div>                   
+                </apex:outputPanel>
+
+                <div id="spinner" class="slds-spinner_container hide positionFixed">
+                    <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+
+                <!-- Error Manager -->
+                
+                
+
+            <!-- <apex:actionfunction name="updatePartlist" action="{!updatePart}" rerender="buttonPanel"    >
+                <apex:param name="partIdupd" assignTo="{!partIdToUpdate}" value="" />
+                <apex:param name="partIsOrd" assignTo="{!partisOrdered}" value="" />
+                 <apex:param name="valRetur" assignTo="{!valueReturned}" value="" /> 
+            </apex:actionFunction> -->
+            <!--<apex:actionfunction name="authenticateOP" action="{!authenticateRem}" rerender="none" status="statusSpinner" />-->
+            
+
+            <script>
+        //VSU 16-JUN 17
+            if (typeof jQuery != "undefined") {
+                    $j = jQuery.noConflict();
+            }
+            var hasAlreadyRun = '{!hasAlreadyRun}';
+            var distNames = '{!distNames}';
+
+            $j(document).ready(function(){
+                //show spinner until distributor integration does not finish
+                $j('#spinner').show();
+                //var assessmentIdIdParam = '{!$CurrentPage.parameters.AssessmentId}';
+                if(hasAlreadyRun == 'false'){ 
+                    //console.log('I will authenticate',distNames);
+                    // authenticateOP(); 
+                    OrderConfirmation.authenticateRem(distNames,function(result,event){
+                        if(event.status){
+                            console.log('result ok ');
+                            //loadResult();
+                        }
+                    },false); 
+
+                }
+                $j('#spinner').hide();
+                
+
+            });
+            
+            var headerHeight = $j('.fixedHeader').height();
+            $j('#topCard').css('padding-top',headerHeight+5);
+
+            function openChooseAssessment(assId){
+                console.log('preOrder');
+                //console.log(atob(assId));
+                //console.log(assId);
+                //update assessment status to ready for eligibilty and sourcing process
+                window.location = '/apex/OrderChooseAssessment?AssessmentId='+btoa(assId);
+            }
+            /*WCH 03/06/2019 C-002781*/
+            function openAspisSalesOrder(salesOrder){
+                console.log('go to salesOrder');
+                window.location = '/apex/ASPISSalesOrder?id='+btoa(salesOrder);
+            }
+
+            
+
+            function opendis(partid,techdis){
+                //console.log('go to dis', techdis);
+                //console.log('partid', partid);
+                
+                $j('#spinner').show();
+
+                OrderConfirmation.callDistributor(partid,techdis,function(result,event){
+                    if (event.status) {
+                        $j('#spinner').hide();
+                        console.log('issucc', result);
+                        if (result != 'Error' ){
+
+                            var urlToGo = result;
+                            window.open(urlToGo,"_blank");
+                            
+                        }
+                        else{
+                            document.getElementById("ErrMsgCustomP").innerHTML = "{!JSENCODE($Label.ErrorCancelButton)}"; 
+                            showError(true, true);
+                            
+                        }
+                    }
+                    else{
+                        $j('#spinner').hide();
+                        console.log('here 2');
+                        document.getElementById("ErrMsgCustomP").innerHTML = "{!JSENCODE($Label.ErrorCancelButton)}";
+                        
+
+                        showError(true, true);
+
+                    }
+                },{escape: false});
+
+                document.getElementById(partid).style.color='#661899';
+                
+
+            }
+
+        
+
+            renderIcons();
+
+            showError({!hasErrors
+            }, {!isToastError
+            });
+            checkPageMessage({!hasErrors
+            });
+
+        </script>
+        </apex:form>
+    </body>
+    </html>
+</apex:page>

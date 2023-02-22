@@ -1,0 +1,46 @@
+<aura:component >
+    <aura:attribute name="name" type="String" access="public"></aura:attribute>
+    <aura:attribute name="label" type="String" access="public"></aura:attribute>
+    <aura:attribute name="value" type="String" access="public"></aura:attribute>
+    <aura:attribute name="startTime" type="Date" access="public"></aura:attribute>
+    <aura:attribute name="endTime" type="Date" access="public"></aura:attribute>
+    <aura:attribute name="merged" type="Array" access="public"></aura:attribute>
+    <aura:attribute name="options" type="Array" access="public" default="[]"></aura:attribute>
+    <aura:attribute name="showArrows" type="Boolean"  default="false"></aura:attribute>
+    <aura:attribute name="offset" type="Integer"  default="0"></aura:attribute>
+    <aura:attribute name="page" type="Array"  default="[]"></aura:attribute>
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+	<div class="slds-form-element" >
+        <aura:if isTrue="{!v.showArrows}">
+            <div style="text-align:center">
+                <lightning:buttonIcon iconName="utility:jump_to_top" variant="bare" onclick="{!c.pageDown}"/>
+            </div>
+        </aura:if>
+        <fieldset >
+            <legend class="slds-form-element__legend slds-form-element__label">{!v.label}</legend>
+            <div class="slds-form-element__control">
+                <aura:iteration items="{!v.page}" var="option">
+                    <span class="slds-radio" onclick="{!c.selectItem}" data-name="{!option.value}" style="padding-bottom:1px">
+                        <aura:if isTrue="{!v.value == option.value}">
+                            <input type="radio" name="{!v.name}"  value="{!option.value}" checked="true"></input>
+                        </aura:if>
+                        <aura:if isTrue="{!v.value != option.value}">
+                            <input type="radio" name="{!v.name}"  value="{!option.value}"></input>
+                        </aura:if>
+                        
+                        <label class="slds-radio__label">
+                            <span class="slds-radio_faux"></span>
+                            <span class="slds-form-element__label" style="padding-left:3px">{!option.label}</span>
+                        </label>
+                    </span>
+                </aura:iteration>
+                
+            </div>
+        </fieldset>
+        <aura:if isTrue="{!v.showArrows}">
+            <div style="text-align:center">
+                <lightning:buttonIcon iconName="utility:jump_to_bottom" variant="bare"   onclick="{!c.pageUp}"/>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

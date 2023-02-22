@@ -1,0 +1,26 @@
+<!--
+  @description       : 
+  @author            : JPI
+  @group             : 
+  @last modified on  : 17/12/2020
+  @last modified by  : JPI
+  Modifications Log 
+  Ver   Date         Author   Modification
+  1.0   30/11/2020   JPI   Initial Version
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="historique" type="String" default="SVR_HistoriquePlanAction__c" />
+
+    <div class="slds-section slds-is-open">
+        <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Historique de donnée</span>
+        </h3>
+        <div aria-hidden="false" class="slds-section__content">            
+            <lightning:recordForm
+                recordId="{!v.recordId}"
+                objectApiName="SVR_AuditOperationnel__c"
+                fields="{!v.historique}"
+                columns="2"/>
+        </div>
+    </div>    
+</aura:component>

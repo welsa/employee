@@ -1,0 +1,855 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="ASPISMyInvoices" extensions="RESTPostInvoice">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>{!$label.ASPISMyInvoices}</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'css/bootstrap-iso.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.BootstrapDatePicker, 'css/bootstrap-datepicker3.css')}" />
+
+        <script>
+            window.params = {
+                "locale": "{!locale}",
+                "pdfSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/doctype-sprite/svg/symbols.svg#pdf')}",
+                "pdfPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/doctype/pdf_60.png')}",
+                "eventSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#event')}",
+                "eventPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/event_60.png')}",
+                "arrowUpSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#arrowup')}",
+                "arrowUpPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/arrowup_60.png')}",
+                "arrowDownSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#arrowdown')}",
+                "arrowDownPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/arrowdown_60.png')}",
+                "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+            };
+
+            var translationMap =  jQuery.parseJSON('{!JSENCODE(mapOriginalTranslatedJson)}');
+                console.log('translationMap',translationMap);
+
+        </script>
+
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.MomentJS)}" />
+        <apex:includescript value="{!URLFOR($Resource.Bootstrap, 'js/bootstrap.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'js/bootstrap-datepicker.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.en-GB.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.es.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.fr.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.it.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.de.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.nl-BE.min.js')}" />
+        <apex:includeScript value="{!URLFOR($Resource.FixedHeader, 'floatThead-2.0.0/dist/jquery.floatThead.min.js')}" />
+        <apex:includeScript value="{!URLFOR($Resource.TableSorter, 'tablesorter-master/js/jquery.tablesorter.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/FileSaver.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.CurrencyFormatter, 'JsWorld.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.CurrencyFormatter, 'fr_FR_EURO.js')}" />
+
+        <style>
+            .searchDateButton {
+                background: #103184;
+                color: #fff;
+                font-size: 14px;
+                height: 32px;
+            }
+
+            .slds-grid.slds-grid--align-end {
+                margin-bottom: 10px;
+            }
+
+            .slds .slds-card {
+                overflow-x: hidden;
+            }
+
+            .divWrapper {
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            table.floatThead-table {
+                border-bottom-width: 1px!important;
+            }
+
+            .sortClass {
+                cursor: pointer;
+            }
+        </style>
+    </head>
+
+    <body class="slds-scope">
+        <apex:form id="InvoiceFrm">
+            <div class="slds" style="min-width: 1300px;">
+                <c:ASPISHeader />
+                <div class="slds-card">
+                    <div class="slds-card__header">
+                        <div class="slds-grid">
+                            <h2 class="slds-media slds-media_center slds-has-flexi-truncate slds-text-heading_small">{!$label.MyInvoices} &nbsp;&nbsp;
+                                <apex:commandButton action="{!downloadInvoiceXls}" styleclass="searchDateButton slds-button slds-button_brand" value="{!$Label.ExportExcel}"></apex:commandButton>
+                            </h2>
+                            <h2 class="slds-media slds-media_center slds-has-flexi-truncate slds-text-heading_small">
+                                <button class="searchDateButton slds-button slds-button_brand" type="button" onclick='getZipOfAllPDF();'>{!$label.Mass_download}</button>
+                            </h2>
+                            <div class="slds-form-element slds-col--padded">
+                                <div class="slds-float--right slds-form-element__control" style="width:200px;">
+                                    <div class="slds-input-has-icon slds-input-has-icon--right">
+                                        <span class="event">
+                                                
+                                        </span>
+                                        <apex:inputHidden value="{!dateFromJs}" id="dateHidden1" />
+                                        <input class="date1 dateField slds-input" type="text" data-date-start-date="01/01/2015" onchange="feedInputText(1);"/>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <div class="slds-float--right slds-form-element__control" style="width:200px;">
+                                    <div class="slds-input-has-icon slds-input-has-icon--right">
+                                        <span class="event">
+
+                                        </span>
+                                        <apex:inputHidden value="{!dateToJs}" id="dateHidden2" />
+                                        <input class="date2 dateField slds-input" type="text" data-date-start-date="01/01/2015" onchange="feedInputText(2);" />
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="searchDateButton slds-button slds-button_brand" type="button" onclick='initialiseTable();'>{!$label.Search}</button>
+                        </div>
+                    </div>
+
+                    <div class="divWrapper">
+
+                    </div>
+
+                    <div id="calendar" class="bootstrap-iso calendar-div" style="position: absolute; z-index:1005!important">
+                    </div>
+
+                    <div style="height: 6rem;" id="loadTable">
+                        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                            <span class="slds-assistive-text">{!$label.Loading}</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+
+                </div>
+                <apex:outputPanel id="errorMessage">
+                   <div id="toastMessage" 
+                        class="slds-notify_container slds-hide">
+                        <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                    title="{!$Label.Close}"
+                                    type="button"
+                                    onclick="hideError();">
+                            </button>
+                            <div class="slds-notify__content">
+                                <p class="slds-text-align_center customErrorMsg"></p>
+                                <apex:pagemessages id="toastErrorMessage" escape="false" />
+                            </div>
+                        </div>
+                    </div>
+
+                  <!-- Error Manager -->
+                
+                    <div id="errorModal"
+                        class="slds-modal slds-modal_prompt"
+                        aria-hidden="false"
+                        role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                            </div>
+                                <div class="slds-modal__content slds-p-around_medium">
+                                    <div id="errorModalBody">
+                                         <p class="slds-m-bottom_medium">
+                                            {!$Label.ErrorModalBody}
+                                        </p>
+                                     </div>
+                                <apex:pagemessages escape="false" />
+                                    <div id='privilege' class="message errorM3" role="alert">
+                                        <table class="messageTable">
+                                            <tbody>
+                                                <tr valign="top">
+                                                    <td><img alt="ERROR" class="msgIcon" src="/s.gif" title="ERROR"/></td>
+                                                    <td class="messageCell">
+                                                        <div class="messageText">
+                                                            <span>
+                                                                <h4 style='color:#cc0000'>  {!$Label.Error_Status}:
+                                                                </h4>
+                                                            </span>
+                                                           <apex:outputText value="{!$Label.InsufficientPrivileges}" escape="false"/>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="slds-modal__footer slds-theme_default">
+                                    <div id="closeButton">
+                                        <input type="button"
+                                            class="slds-button slds-button_destructive"
+                                            value="{!$Label.Close}"
+                                            onclick="hideError();" />
+                                     </div>
+                                     
+                                     <div id = "okButton">
+                                             <apex:commandButton action="{!redirectPage}" 
+                                                                value="{!$Label.ModalOK}" 
+                                                                styleClass="slds-button slds-button_destructive"
+                                                                reRender="InvoiceFrm" 
+                                                                status="statusSpinner"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div id="errorModalBackdrop" class="slds-backdrop"></div>
+
+                    <!--RRJ Error if data not found or Date not correct C-004611-->
+                    <div id="errorModal2"
+                        class="slds-modal slds-modal_prompt"
+                        aria-hidden="false"
+                        role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                            </div>
+                                <div class="slds-modal__content slds-p-around_medium">
+                                    <div id="errorModalBody">
+                                         <p class="slds-m-bottom_medium">
+                                            {!$Label.ErrorModalBody}
+                                        </p>
+                                     </div>
+                                <apex:pagemessages escape="false" />
+                                    <div id='privilege' class="message errorM3" role="alert">
+                                        <table class="messageTable">
+                                            <tbody>
+                                                <tr valign="top">
+                                                    <td><img alt="ERROR" class="msgIcon" src="/s.gif" title="ERROR"/></td>
+                                                    <td class="messageCell">
+                                                        <div class="messageText">
+                                                            <span>
+                                                                <h4 style='color:#cc0000'>  {!$Label.Error_Status}:
+                                                                </h4>
+                                                            </span>
+                                                           <apex:outputText value="{!$Label.Error_periode}" escape="false"/>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="slds-modal__footer slds-theme_default">
+                                    <div id="closeButton">
+                                        <input type="button"
+                                            class="slds-button slds-button_destructive"
+                                            value="{!$Label.Close}"
+                                            onclick="hideError2();" />
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div id="errorModalBackdrop2" class="slds-backdrop"></div>
+                </apex:outputPanel>
+            </div>
+
+            <script>
+                var $j = jQuery.noConflict();
+
+                $j(function() {
+                    $j.tablesorter.addParser({
+                        // set a unique id
+                        id: "dateParser",
+                        is: function(s) {
+                            // return false so this parser is not auto detected
+                            return false;
+                        },
+                        format: function(s, table, cell, cellIndex) {
+                            if (cellIndex == 10 || cellIndex == 9) {
+
+                                var splitStr = s.split('/');
+                                //28,08,2017
+                                var mydate = new Date(splitStr[2], splitStr[1] - 1, splitStr[0]);
+                                var d = new Date(mydate);
+                                return d.getTime();
+                            }
+
+                            return s;
+                        },
+                        type: 'numeric'
+                    });
+                });
+
+                $j(document).ready(function() {
+                    //initialise moment
+                    moment.locale("{!locale}");
+
+                    $j(".dateField").each(function(index, el) {
+                        if ($j(el).val()) {
+                            $j(el).val(moment(new Date($j(el).val())).format('L'));
+                        }
+                    });
+
+                    $j(".dateField").datepicker({
+                        todayBtn: "linked",
+                        language: window.params.locale,
+                        container: "#calendar",
+                        autclose: true,
+                    });
+
+                    $j(".date1").datepicker("setDate", moment(moment().subtract(30, 'days')).format('L'));
+
+                    $j(".date2").datepicker("setDate", moment().format());                    
+
+                    //hide spinner
+                    $j('#loadTable').hide();
+
+                    //initialise table
+                    initialiseTable();
+
+                    //fixed header again for resize window
+                    $j(window).resize(function() {
+                        adjustHeight();
+                    });
+                });
+
+                function showError(hasErrors, isToastMessage) {
+                    console.log('##showerror '+hasErrors);
+                    console.log('##isToastMessage '+isToastMessage);
+                    if (hasErrors) {
+                        if (!isToastMessage) {
+                            $j("#errorModal").addClass("slds-fade-in-open");
+                            $j("#errorModalBackdrop").addClass("slds-backdrop_open");
+                        } else {
+                            $j("#toastMessage").show();
+                        }
+                    }
+                }
+                //RRJ Show Error from mass down C-004611 14/11/2022
+                function showError2(hasErrors, isToastMessage) {
+                    console.log('##showerror '+hasErrors);
+                    console.log('##isToastMessage '+isToastMessage);
+                    if (!isToastMessage) {
+                            $j("#errorModal2").addClass("slds-fade-in-open");
+                            $j("#errorModalBackdrop2").addClass("slds-backdrop_open");
+                    } else {
+                        $j("#toastMessage").show();
+                    }
+                }
+
+                function hideError() {
+                    $j("#errorModal").removeClass("slds-fade-in-open");
+                    $j("#errorModalBackdrop").removeClass("slds-backdrop_open");
+
+                    $j("#toastMessage").hide();
+                }
+
+                //RRJ Hide Error from mass down C-004611 14/11/2022
+                function hideError2() {
+                    $j("#errorModal2").removeClass("slds-fade-in-open");
+                    $j("#errorModalBackdrop2").removeClass("slds-backdrop_open");
+                    $j("#toastMessage").hide();
+                }
+
+                function checkPageMessage(hasErrors) {
+                    if (!hasErrors) {
+                        if ($j('[id$="toastErrorMessage"]').html() !== "") {
+                            showError(true, true);
+                        }
+                    }
+                }
+
+                function feedInputText(number) {
+                    if ($j('.date1').val() != 'undefined' && $j('.date2').val() != 'undefined') {
+                        if (number == 1) {
+                            $j("[id*='dateHidden1']").val($j('.date1').val());
+                            console.log('feeding:' + $j("[id*='dateHidden1']").val());
+                        } else if (number == 2) {
+                            $j("[id*='dateHidden2']").val($j('.date2').val());
+                            console.log('feeding:' + $j("[id*='dateHidden2']").val());
+                        }
+                    }
+
+                };
+
+                
+
+
+                function initialiseTable() {
+                    console.log('##initialiseTable');
+                    if ($j(".date1").val() != 'undefined' && $j(".date2").val() != 'undefined') {
+
+                        //clear div first
+                        $j('.divWrapper').empty();
+                        $j('.floatThead-table').empty();
+                        $j('table.fixTHeader').floatThead('destroy');
+
+                        //show spinner
+                        $j('#loadTable').show();
+                        console.log('##userid: '+"{!currentUserId}");
+
+                        if("{!currentUserId}" != null && "{!currentUserId}" != ''){
+                            //WCH 10/12/2019 C-003521 add isPdf parameter
+                            ASPISMyInvoices.searchByDate("{!currentUserId}", $j(".date1").val(), $j(".date2").val(),false, function(result, event) {
+                            if (event.status) {
+                                console.log('##result', result);
+                                populate(result);
+
+                                console.log('##1');
+
+                                } 
+                            else {
+                                    console.log(event.message);
+                            }
+                            }, {
+                                escape: true
+                            });
+                        }
+                            
+                    }
+                }
+
+                
+
+
+                function returnCorrectIconClass(column, classToApplied) {
+                    if (column == '{!JSENCODE($ObjectType.Invoice__c.fields.Number__c.label)}') {
+                        return '.NUMBER' + classToApplied;
+                    } else if (column == '{!JSENCODE($ObjectType.Invoice__c.fields.Type__c.label)}') {
+                        return '.TYPE' + classToApplied;
+                    } else if (column == '{!JSENCODE($ObjectType.Invoice__c.fields.TotalNet__c.label)}') {
+                        return '.AMOUNTEXCLTAX' + classToApplied;
+                    } else if (column == '{!JSENCODE($ObjectType.Invoice__c.fields.Total__c.label)}') {
+                        return '.AMOUNTINCLTAX' + classToApplied;
+                    } else if (column == '{!JSENCODE($ObjectType.Invoice__c.fields.Status__c.label)}') {
+                        return '.STATUS' + classToApplied;
+                    } else if (column == '{!JSENCODE($ObjectType.Invoice__c.fields.PlateNumber__c.label)}') {
+                        return '.PLATENUMBER' + classToApplied;
+                    } else if (column == '{!JSENCODE($ObjectType.Invoice__c.fields.Claim_Reference__c.label)}' || column == '{!JSENCODE($ObjectType.Assessment__c.fields.MissionNumber__c.label)}') {
+                        return '.CLAIMREFERENCE' + classToApplied;
+                    } else if (column == '{!$Label.OrderReference}') {
+                        return '.ORDERREFERENCE' + classToApplied;
+                    } else if (column == '{!JSENCODE($ObjectType.Invoice__c.fields.EstimatedPaymentDate__c.label)}') {
+                        return '.ESTIMATEDPAYMENTDATE' + classToApplied;
+                    } else if (column == '{!JSENCODE($ObjectType.Invoice__c.fields.Date__c.label)}') {
+                        return '.INVOICEDATE' + classToApplied;
+                    } else if (column == '{!JSENCODE($ObjectType.Assessment__c.fields.Manufacturer__c.label)}') {
+                        return '.MANUFACTURER' + classToApplied;
+                    }
+                }
+
+                function adjustHeight() {
+                    var divPosition;
+                    var tableHeight;
+
+                    if ($j(".floatThead-wrapper").position() != undefined) {
+                        divPosition = $j(".floatThead-wrapper").position().top;
+                        divPosition = divPosition + 3;
+                        tableHeight = $j(window).height() - divPosition;
+                        $j('.divWrapper').height(tableHeight);
+                        //console.log(tableHeight);
+                    }
+                }
+
+                function callSendRequestJs(invoiceNo, invoiceId, invoiceTechNo, invCountryCode) {
+                    invoiceTechNo = invoiceTechNo == 'undefined' ? '' : invoiceTechNo;
+                    invoiceNo = invoiceNo == 'undefined' ? '' : invoiceNo;
+                    invoiceId = invoiceId == 'undefined' ? '' : invoiceId;
+
+                    RESTPostInvoice.sendRequestForPdf(invoiceNo, invoiceId, invoiceTechNo, invCountryCode, function(result, event) {
+                        console.log('##event.status', event.status);
+                        //alert(invoiceNo);
+                        if (event.status) {
+                            console.log('##result1', result); 
+                            if (result != '' && result.includes('timed out')){                                
+                                $j(".customErrorMsg").html(result);
+                                console.log('##result '+result);
+                                showError(true, true);
+                            }
+                            else if (result.indexOf('Error') == -1 && result != '') {
+                                var blobData = b64toBlob(result, "application/pdf");
+                                saveAs(blobData, invoiceNo + ".pdf");
+                                console.log('##sendRequestJS');
+
+                            } else {
+                                $j(".customErrorMsg").html("{!JSENCODE($Label.CegedimPdfError)}");
+                                console.log('##result '+result);
+                                showError(true, true);
+                            }
+                        } else {
+                            console.log(event.message);
+                        }
+                    }, {
+                        escape: true
+                    });
+
+                }
+
+                function b64toBlob(b64Data, contentType, sliceSize) {
+                    contentType = contentType || '';
+                    sliceSize = sliceSize || 512;
+
+                    var byteCharacters = atob(b64Data.replace(/\s/g, ''));
+                    var byteArrays = [];
+
+                    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                        var byteNumbers = new Array(slice.length);
+                        for (var i = 0; i < slice.length; i++) {
+                            byteNumbers[i] = slice.charCodeAt(i);
+                        }
+
+                        var byteArray = new Uint8Array(byteNumbers);
+
+                        byteArrays.push(byteArray);
+                    }
+
+                    var blob = new Blob(byteArrays, {
+                        type: contentType
+                    });
+                    return blob;
+                }
+
+                function updateURL(date1, date2) {
+                    if (history.pushState) {
+                        var urlToKeep = window.location.href.substring(0, window.location.href.lastIndexOf('tabNo') + 7);
+                        var newurl = urlToKeep + '&dateFrom=' + date1 + '&dateTo=' + date2;
+                        window.history.pushState({
+                            path: newurl
+                        }, '', newurl);
+                        console.log('##newurl: ' + newurl);
+                    }
+                }
+
+                function populate(listInvoiceWrappers) {
+                    var content = '';
+                    var emptyTableHeight = $j('.divWrapper').height();
+
+                    content = '<table id="tableInvoice" class="tablesorter fixTHeader slds-table slds-table_bordered slds-table_cell-buffer">';
+                    content += '<thead>';
+                    content += '<tr>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center" scope="col">{!$Label.PDF}</th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center sortClass slds-truncate slds-cell-wrap" scope="col"><span>';
+                    content += '{!JSENCODE($ObjectType.Invoice__c.fields.Number__c.label)}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass NUMBERUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass NUMBERDOWN"/>';
+                    content += '</span></th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center sortClass slds-truncate slds-cell-wrap" scope="col"><span>';
+                    content += '{!JSENCODE($ObjectType.Invoice__c.fields.Type__c.label)}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass TYPEUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass TYPEDOWN"/>';
+                    content += '</span></th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center sortClass slds-truncate slds-cell-wrap" scope="col"><span>';
+                    content += '{!JSENCODE($ObjectType.Invoice__c.fields.TotalNet__c.label)}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass AMOUNTEXCLTAXUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass AMOUNTEXCLTAXDOWN"/>';
+                    content += '</span></th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center sortClass slds-truncate slds-cell-wrap" scope="col"><span>';
+                    content += '{!JSENCODE($ObjectType.Invoice__c.fields.Total__c.label)}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass AMOUNTINCLTAXUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass AMOUNTINCLTAXDOWN"/>';
+                    content += '</span></th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center sortClass" scope="col"><span>';
+                    content += '{!JSENCODE($ObjectType.Invoice__c.fields.Status__c.label)}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass STATUSUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass STATUSDOWN"/>';
+                    content += '</span></th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center slds-truncate slds-cell-wrap sortClass" scope="col"><span>';
+                    content += '{!JSENCODE($ObjectType.Assessment__c.fields.Manufacturer__c.label)}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass MANUFACTURERUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass MANUFACTURERDOWN"/>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center sortClass slds-truncate slds-cell-wrap" scope="col"><span>';
+                    content += '{!JSENCODE($ObjectType.Invoice__c.fields.PlateNumber__c.label)}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass PLATENUMBERUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass PLATENUMBERDOWN"/>';
+                    content += '</span></th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center sortClass slds-truncate slds-cell-wrap" scope="col"><span>';
+                    
+                    //DUN 16/03/2018 Added MissionNumber for BE
+                    if('{!locale}' != 'nl-BE' && '{!locale}' != 'fr_BE'){
+                        content     += '{!JSENCODE($ObjectType.Assessment__c.fields.ClaimReference__c.label)}';
+                    } 
+                    else{
+                        content     += '{!JSENCODE($ObjectType.Assessment__c.fields.MissionNumber__c.label)}';
+                    }
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass CLAIMREFERENCEUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass CLAIMREFERENCEDOWN"/>';
+                    content += '</span></th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center sortClass slds-truncate slds-cell-wrap" scope="col"><span>';
+                    content += '{!$Label.OrderReference}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass ORDERREFERENCEUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass ORDERREFERENCEDOWN"/>';
+                    content += '</span></th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center sortClass slds-truncate slds-cell-wrap" scope="col"><span>';
+                    content += '{!JSENCODE($ObjectType.Invoice__c.fields.InvoicePaidDate__c.label)}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass ESTIMATEDPAYMENTDATEUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass ESTIMATEDPAYMENTDATEDOWN"/>';
+                    content += '</span></th>';
+
+                    content += '<th class="slds-text-heading_label slds-text-align_center slds-truncate slds-cell-wrap sortClass" scope="col"><span>';
+                    content += '{!JSENCODE($ObjectType.Invoice__c.fields.Date__c.label)}';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass INVOICEDATEUP"/>';
+                    content += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass INVOICEDATEDOWN"/>';
+
+                    content += '</span></th>';
+
+                    content += '</tr>';
+                    content += '</thead>';
+
+                    content += '<tbody>';
+                    var errorPermission = false;
+
+                    for (var i = 0; i < listInvoiceWrappers.length; i++) {
+                        if (!listInvoiceWrappers[i].hasReadPermission) {
+                            errorPermission = true;
+                            break;
+                        }
+                    }
+                    if (listInvoiceWrappers.length > 0 && !errorPermission) {
+                        for (var i = 0; i < listInvoiceWrappers.length; i++) {
+
+                            if (listInvoiceWrappers[i].hasReadPermission) {
+
+                                content += '<tr>';
+
+                                content += '<td  width="20px" height="25px">';
+                                content += '<a class="pdf" href="javascript:void(0)" target ="_self" onclick = "callSendRequestJs(\'' + listInvoiceWrappers[i].currentInvoice.Number__c + '\',\'' + listInvoiceWrappers[i].currentInvoice.Id + '\',\'' + listInvoiceWrappers[i].currentInvoice.TECH_Number__c + '\',\'' + listInvoiceWrappers[i].currentInvoice.TechCountryCode__c + '\');"></a>';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (listInvoiceWrappers[i].currentInvoice.Number__c != undefined) ? listInvoiceWrappers[i].currentInvoice.Number__c : '';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (listInvoiceWrappers[i].currentInvoice.Type__c != undefined) ? listInvoiceWrappers[i].currentInvoice.Type__c : '';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (listInvoiceWrappers[i].currentInvoice.TotalNet__c != undefined) ? listInvoiceWrappers[i].currentInvoice.TotalNet__c + ' {!userCurrency}' : '';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (listInvoiceWrappers[i].currentInvoice.Total__c != undefined) ? listInvoiceWrappers[i].currentInvoice.Total__c + ' {!userCurrency}' : '';
+                                content += '</td>';
+
+                                //DUN 21/03/2018 C-002316 : Exponens Evolutions Impacts
+                                var status;
+                                if (listInvoiceWrappers[i].currentInvoice.Status__c != undefined){
+                                    if(listInvoiceWrappers[i].currentInvoice.InvoicePaidDate__c != undefined && listInvoiceWrappers[i].currentInvoice.Status__c == translationMap['PAID'] && listInvoiceWrappers[i].currentInvoice.InvoicePaidDate__c > new Date()) {
+                                        status = '{!$Label.DebitInProgress}'
+                                    }
+                                    else{
+                                        status = listInvoiceWrappers[i].currentInvoice.Status__c;
+                                    }
+                                }
+                                else{
+                                    status = '';
+                                }
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (status != undefined) ? status : '';
+                                content += '</td>';
+
+                                content += '<td class="slds-text-body_regular slds-text-align_center" scope="row">';
+                                content += (listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__r.Manufacturer__c != undefined) ? listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__r.Manufacturer__c : '';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (listInvoiceWrappers[i].currentInvoice.PlateNumber__c != undefined) ? listInvoiceWrappers[i].currentInvoice.PlateNumber__c : '';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                //DUN 16/03/2018 Added MissionNumber for BE
+                                if('{!locale}' != 'nl-BE' && '{!locale}' != 'fr_BE'){
+                                    content += (listInvoiceWrappers[i].currentInvoice.Claim_Reference__c != undefined) ? listInvoiceWrappers[i].currentInvoice.Claim_Reference__c : '';
+                                } 
+                                else{
+                                    content += (listInvoiceWrappers[i].currentInvoice.Assessment__r.MissionNumber__c != undefined) ? listInvoiceWrappers[i].currentInvoice.Assessment__r.MissionNumber__c : '';
+                                }
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+
+                                /*if (listInvoiceWrappers[i].currentInvoice.TechCountryCode__c != 'IT') {
+                                    if (listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__r.BodyshopOrderNumber__c != undefined) {
+                                        content += '<a href="/apex/ASPISSalesOrder?id=' + btoa(listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__c);
+                                        content += '">' + $j('<div/>').html(listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__r.BodyshopOrderNumber__c).text() + '</a>';
+                                    }
+                                } else if (listInvoiceWrappers[i].currentInvoice.TechCountryCode__c == 'IT') {
+                                    content += '<a href="/apex/ASPISSalesOrder?id=' + btoa(listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__c);
+                                    content += '">' + $j('<div/>').html(listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__r.Name).text() + '</a>';
+                                }*/
+                                //vsu Case C-002005 23/11/17
+
+                                if (listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__r.BodyshopOrderNumber__c != undefined) {
+                                    content += '<a href="/apex/ASPISSalesOrder?id=' + btoa(listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__c);
+                                        content += '">' + $j('<div/>').html(listInvoiceWrappers[i].currentInvoice.PrerequisiteOrder__r.BodyshopOrderNumber__c).text() + '</a>';
+                                }
+                                content += '</td>';
+
+                                content += '<td class="slds-text-body_regular slds-text-align_center" scope="row">';
+                                content += (listInvoiceWrappers[i].currentInvoice.InvoicePaidDate__c != undefined) ? moment(listInvoiceWrappers[i].currentInvoice.InvoicePaidDate__c).format('DD/MM/YYYY') : '';
+                                content += '</td>';
+
+                                content += '<td class="slds-text-body_regular slds-text-align_center" scope="row">';
+                                content += (listInvoiceWrappers[i].currentInvoice.Date__c != undefined) ? moment(listInvoiceWrappers[i].currentInvoice.Date__c).format('DD/MM/YYYY') : '';
+                                content += '</td>';
+
+                                content += '</tr>';
+                            } //if hasreadpermission
+
+                        } //end for                            
+                        content += '</tbody>';
+
+                        content += '</table>';
+                    } else if (listInvoiceWrappers.length <= 0) {
+                        content += '<tr id="emptyTr"><td colspan="12" class="slds-text-body_regular slds-text-align_center">';
+
+                        content += '{!$Label.NoDataFound}';
+
+                        content += '</td></tr>';
+
+                        content += '</tbody>';
+
+                        content += '</table>';
+
+                    }
+                    else if(errorPermission && listInvoiceWrappers.length< 200){
+                        console.log('##errorPermission true');
+                        $j('#errorModalBody').hide(); 
+                        $j('#closeButton').hide();
+                        $j('#okButton').show();
+                        $j('#privilege').show();                       
+                        
+                        showError(true,false);                       
+                    }
+
+                    if(listInvoiceWrappers.length == 200){
+                        console.log('##limitUserRecord');
+                        $j(".customErrorMsg").html("{!JSENCODE($Label.LimitUserRecordAccess)}");                       
+                        showError(true,true);
+                    }
+
+                    $j('.divWrapper').append(content);
+
+                    renderIcons();
+
+                    //hide all arrows on initial loading
+                    $j('.iconHideClass').hide();
+
+                    //remove scroll bar if list is empty
+                    /*if(listInvoiceWrappers.length > 0){
+                        $j('.divWrapper').css('overflow-y','scroll');
+                    }
+                    else{
+                        $j('.divWrapper').css('overflow-y','hidden');
+                    }*/
+
+                    $j("#tableInvoice").tablesorter({
+                        headers: {
+                            10: {
+                                sorter: "dateParser"
+                            },
+                            9: {
+                                sorter: "dateParser"
+                            }
+                        }
+                    }).bind('sortEnd', function(event) {
+                        var table = event.target;
+                        var currentSort = table.config.sortList;
+
+                        // target the first sorted column
+                        var columnNum = currentSort[0][0];
+                        var columnName = $j(table.config.headerList[columnNum]).text();
+
+                        //hide active icon first
+                        $j('.iconHideClass').hide();
+
+                        $j('.sortClass').each(function(index, ele) {
+                            if ($j(ele).hasClass('tablesorter-headerAsc')) {
+                                var updatedClass = returnCorrectIconClass(columnName.trim(), 'UP');
+
+                                //show icon
+                                $j(updatedClass).show();
+                            } else if ($j(ele).hasClass('tablesorter-headerDesc')) {
+                                var updatedClass = returnCorrectIconClass(columnName.trim(), 'DOWN');
+
+                                //show icon
+                                $j(updatedClass).show();
+                            }
+                        });
+                    }).floatThead({
+                        scrollContainer: function($table) {
+                            return $j('table.fixTHeader').closest('.divWrapper');
+                        },
+                        position: 'absolute'
+                    });
+
+                    if (listInvoiceWrappers.length == 0) {
+                        $j('#emptyTr').height($j(window).height() - ($j('.floatThead-wrapper').position().top + 50));
+                    }
+
+                    adjustHeight();
+
+                    $j('table.fixTHeader').floatThead('reflow');
+
+                    //hide spinner
+                    $j('#loadTable').hide();
+                }
+
+                //RRJ C-004611 28/10/2022
+                function getZipOfAllPDF() {
+                    console.log('##getZipOfAllPDF');
+                    var error = '';
+                    error = '<table id="tableInvoice" class="tablesorter fixTHeader slds-table slds-table_bordered slds-table_cell-buffer">';
+                    if ($j(".date1").val() != 'undefined' && $j(".date2").val() != 'undefined') {
+
+                        //show spinner
+                        $j('#loadTable').show();
+                        console.log('##userid: '+"{!currentUserId}");
+
+                        if("{!currentUserId}" != null && "{!currentUserId}" != ''){
+                            ASPISMyInvoices.searchAttachmentByDate("{!currentUserId}", $j(".date1").val(), $j(".date2").val(), function(result, event) {
+                                
+                                    if (event.status && result != null) {
+                                        console.log('####result', result);
+                                        window.location.href = result;
+                                        //populate(result);
+                                        $j('#loadTable').hide();
+                                        console.log('##1');
+
+                                    } 
+                                    else {
+                                        console.log('####result', result);
+                                        console.log(event.message);
+                                        showError2(true, false);
+                                    }
+                                }, {
+                                    escape: true
+                            });
+                        }
+                        
+                    $j('#loadTable').hide();
+                    }
+                }
+            </script>
+        </apex:form>
+    </body>
+
+    </html>
+</apex:page>

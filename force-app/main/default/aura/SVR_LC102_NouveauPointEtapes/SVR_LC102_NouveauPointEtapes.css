@@ -1,0 +1,30 @@
+.THIS .slds-modal__container {
+    width: 500px;
+
+}
+
+/* .THIS .slds-modal__container{
+    visibility:hidden;
+}
+
+.THIS .container .slds-modal__container{
+    visibility:visible;
+} */
+
+.THIS .container.slds-modal__container div {
+    height: 84px;
+}
+
+.THIS .slds-modal__content.slds-p-around--medium {
+    text-align: center;
+    padding: 30px;
+}
+
+.THIS .slds-modal__header h2 {
+    padding-top: 16px;
+}
+
+.THIS .slds-modal__footer {
+    /* text-align: center; */
+    padding: 20px;
+}

@@ -1,0 +1,674 @@
+<apex:page controller="AlphaStore" showHeader="false" sidebar="true" standardStylesheets="false" applyBodyTag="false" docType="html-5.0" applyHtmlTag="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <title>{!$label.AlphaStoreTabName}</title>
+
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'css/bootstrap-iso.css')}" /> 
+            <apex:stylesheet value="{!URLFOR($Resource.VFP06, 'css/VFP06.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.jQueryDataTable, 'media/css/jquery.dataTables.css')}" />
+
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.dataTables.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.MomentJS)}" />
+            <apex:includescript value="{!URLFOR($Resource.Bootstrap, 'js/bootstrap.js')}" />
+
+            <style>
+                .searchDateButton {
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    height: 32px;
+                }
+                .slds-grid.slds-grid--align-end{
+                    margin-bottom: 10px;
+                }
+                .slds .slds-card {
+                    overflow-x: hidden;
+                }
+                .divWrapper{
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+                .classHeading{
+                    padding-bottom: 0px;
+                }
+            </style>
+
+            <script>
+                window.params = {  
+                    "invoiceSVGUrl": "{!URLFOR($Resource.slds,'/assets/icons/standard-sprite/svg/symbols.svg#file')}",
+                    "invoicePNGUrl": "{!URLFOR($Resource.slds,'/assets/icons/utility/file_60.png')}",
+                    "eventSVGUrl":"{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#event')}",
+                    "eventPNGUrl":"{!URLFOR($Resource.slds, '/assets/icons/utility/event_60.png')}",
+                    "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                    "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                };
+
+                j$ = jQuery.noConflict();
+
+                j$(document).ready( function () {
+                    //hide loading
+                    $j('#spinner').hide();
+
+                    var selectedRowsMap = {}; 
+                    var selectedRowsQuantityMap = {};
+                    var countquantitymin = 0;
+                    var quantityIdErrorString = '';
+     
+                    j$('[id$=accountSelect]').change(function() {
+                        var val = j$.fn.dataTable.util.escapeRegex(
+                            j$(this).val()
+                        );
+                        partTable.column(0)
+                            .search( val == 'All' ? '' : '^'+val+'$', true, false )
+                            .draw();
+                    });
+
+                    j$('#btn-search').click(function(){
+                        //show  loading
+                        $j('#spinner').show();
+
+                        var rolename = '{!$UserRole.Name}';
+                        //WCH 15/01/2020 C-003562
+                        if(rolename !== null && rolename !== '') {
+                            rolename='NO_ROLE';
+                         }
+
+                        //AMI 29/06/18 : Community Rollout
+                        //             : addtional check on profile name for bshops
+                        var profileName = '{!$Profile.Name}';
+
+                        if(validateCompulsoryFields()){
+                            if(rolename.indexOf('Distributor') >= 0){
+                                var distributor = '{!$User.FirstName}'+' {!$User.LastName}';
+
+                                AlphaStore.partListDisplay(distributor,j$('select.family-Opt').val(),j$('select.brand-Opt').val(),j$('select.rtType-Opt').val(),buildDataTable);
+                            }
+                            else if(rolename.indexOf('BodyShop') >= 0 || profileName.indexOf('CC') >= 0){
+                                AlphaStore.partListDisplay(j$('select.distributor2-Opt').val(),j$('select.family-Opt').val(),j$('select.brand-Opt').val(),j$('select.rtType-Opt').val(),buildDataTable);
+                            }
+                            else{
+                                AlphaStore.partListDisplay(j$('select.distributor-Opt').val(),j$('select.family-Opt').val(),j$('select.brand-Opt').val(),j$('select.rtType-Opt').val(),buildDataTable);
+                            }
+
+                            //hide loading
+                            $j('#spinner').hide();
+                        }else{
+                            //hide loading
+                            $j('#spinner').hide();
+                        }
+                    });
+
+                    function buildDataTable(result,event){
+                        console.log(result);
+                        var partTable = j$('#parttable').DataTable({
+                        destroy:true,
+                        data : result,
+                        order: [[0, 'asc']],
+                        "autoWidth": false,
+
+                        columns : [
+                            {
+                                title : '{!$Label.PartName}',
+                                className : 'name-display slds-text-heading--label',
+                                defaultContent : "-",
+                                data : "Manufacturer_reference__r.Description__c",
+                                width : "32%"
+
+                            },
+                            {
+                                title : '{!$Label.PaintingType}',
+                                className : 'name-display slds-text-heading--label',
+                                defaultContent : "-",
+                                data : "Manufacturer_reference__r.RecordType.Name",
+                                width : "32%"
+
+                            },
+                            {
+                                title : '{!$Label.PartBrand}',
+                                className : 'brand-display slds-text-heading--label',
+                                defaultContent : "-",
+                                data : "Manufacturer_reference__r.Brand__c",
+                                width : "10%"
+
+                            },
+                            {
+                                title : "{!$Label.PartPublicPrice} ({!userCurrency})",
+                                className : 'distributorprice-display slds-text-heading--label',
+                                defaultContent : "-",
+                                data : "Distributor_public_price__c",
+                                width : "10%"
+
+                            },
+                            {
+                                title : "{!$Label.PartDiscount}",
+                                className : 'discount-display slds-text-heading--label',
+                                defaultContent : "-",
+                                data : "BSDiscount__c",
+                                width : "10%"
+
+                            },
+                            {
+                                title : "{!$Label.PartPrice} ({!userCurrency})",
+                                className : 'asprice-display slds-text-heading--label',
+                                defaultContent : "-",
+                                data : "AS_public_price__c",
+                                width : "10%"
+
+                            },
+                            {
+                                title : "{!$Label.PartMinimumQuantity}",//WCH 05/05/2020 C-003728
+                                className : 'minquantity-display slds-text-heading--label',
+                                defaultContent : "-",
+                                data : "Manufacturer_reference__r.Minimum_quantity__c",
+                                width : "10%"
+
+                            },
+                            {
+                                title : '{!$Label.PartUnit}',
+                                className : 'unit-display slds-text-heading--label',
+                                defaultContent : "-",
+                                data : "Manufacturer_reference__r.Unit__c",
+                                width : "10%"
+
+                            },
+                            {
+                                title : '{!$Label.PartQuantity}',
+                                className : 'input-quantity slds-text-heading--label',
+                                defaultContent : "-",
+                                orderable : false,
+                                id : "Id",
+                                width : "8%"
+
+                            }
+                        ],
+                        "oLanguage": {
+                            "sSearch": '{!$Label.DataTableSearch}',
+                            "sEmptyTable": '{!$Label.DataTableEmptyTable}',
+                            "sInfo": '{!$Label.DatatTableInfo}',
+                            "sInfoFiltered": '{!$Label.DataTableInfoFiltered}',
+                            "sInfoEmpty": '{!$Label.DataTableInfoEmpty}',
+                            "sLengthMenu": '{!$Label.DataTableLengthMenu}',
+                            "sZeroRecords": '{!$Label.DataTableZeroRecords}',
+                            "oPaginate": {
+                                "sFirst": '{!$Label.DataTableFirst}',
+                                "sLast": '{!$Label.DataTableLast}',
+                                "sNext": '{!$Label.DataTableNext}',
+                                "sPrevious": '{!$Label.DataTablePrevious}'
+                            }
+                        },
+                        "createdRow": function( row, data, dataIndex ) {
+                            // add line data to checkbox for each row
+
+                            var _checkbox = j$('<input/>', {type : 'checkbox',
+                                                            class : 'choose-box'});
+
+                            j$(row).data('part', data);
+
+                            j$('td.check-choose', row).html(_checkbox);
+
+                            var _inputtextQuantity = j$('<input/>', {type : 'text',
+                                                            class : 'quantity-input slds-input'});
+
+                            j$('td.input-quantity', row).html(_inputtextQuantity);
+                        }
+                    });
+                    
+                    //add class and css for showing number of entries
+                    j$("select[name='parttable_length']").addClass('slds-select');
+                    j$("select[name='parttable_length']").css('width','50px');
+                    j$("#parttable_length").addClass('slds-text-body--small');
+
+                    //add class and css for showing pagination
+                    j$("#parttable_paginate").addClass('slds-text-body--small');
+
+                    //add class and css for filter(sSearch)
+                    j$("div.dataTables_filter > label").addClass('slds-text-body--small');
+                    j$("div.dataTables_filter > label > input").addClass('slds-input');
+                    j$("div.dataTables_filter > label > input").css('width','200px');
+                    }
+
+                    j$('#parttable').on('change', '.quantity-input', function(){
+                        var _line = j$(this).closest('tr').data('part');  
+
+                        var _quantity = (j$(this).val()?j$(this).val():0);  
+
+                        if(_quantity > 0){
+                            quantityIdErrorString += _line.Id + ';';
+                            selectedRowsQuantityMap[_line.Id] = _quantity;
+                            selectedRowsMap[_line.Id] = _line;
+                            countquantitymin ++;
+                        }
+                        else{
+                            if(quantityIdErrorString.includes(_line.Id + ';')){
+                                quantityIdErrorString.replace(_line.Id + ';', '');
+                                delete selectedRowsQuantityMap[_line.Id];
+                                delete selectedRowsMap[_line.Id];
+                                countquantitymin --;
+                            }
+
+                        }
+                    });
+
+                    function displaySuccessError(result,event){
+                        if(event.status){
+                            
+                            //AMI 06/11/2018  C-002781 : Migrate Spain to R4
+                            //                         : Returning assessment encoded id so that latter can be 
+                            //                         : redirected to aspissalesorderpage
+                            //                         : We will no more be redirected to new std tab but instead to aspissalesorder
+                            if(result){
+                                var returnedString = result;
+                                if(returnedString.length !== 18 || returnedString.match(/[A-Za-z0-9]/) == false ){
+                                    //KEM 20/08/2022 C-004766: FLOOR PRICE LIMIT IN PAINTING - SINNEK DISTRIBUTORS
+                                    var alertString = '{!$Label.FloorLimitMsg}';
+                                    alertString = alertString.replaceAll('{0}', returnedString);
+                                    alert(alertString);
+                                }else{
+                                    /*WCH 03/06/2019 C-002781 commented code*/
+                                    //var redirectUrl = '/apex/ASPISSalesOrder?id=' + result;
+                                    var redirectUrl = '/apex/OrderConfirmation?Painting=true&AssessmentId=' + result;
+                                    window.location.href = redirectUrl;
+                                }
+                            }else{
+                                //hide  loading
+                                $j('#spinner').hide();
+                                j$('#errorDisplay').html('<div style="color: #d74c3b;">{!$Label.AdvanceMgtErrMsg1}</div>');
+                            }
+                        }
+                        else{
+                            alert(event.message);
+                        }
+                    }
+
+                    function jq_addError(me,msg){
+                        if(!(j$(me).hasClass('error'))){
+                            j$(me).addClass("error");
+                            j$(me).parent().parent().append("<div class='errorMsg' style='color:red'>" + msg + "</div>");
+                        }
+                        else{
+                            j$(me).parent().siblings('.errorMsg').remove();
+                            j$(me).parent().parent().append("<div class='errorMsg' style='color:red'>" + msg + "</div>");
+                        }
+                    }
+
+                    function jq_removeError(me){
+                        if(j$(me).hasClass('error')){
+                            j$(me).removeClass("error");
+                            j$(me).parent().siblings('.errorMsg').remove();
+                        }
+                    }
+
+                    function validateCompulsoryFields(){
+                        var b = true;
+                        j$('select.jq_reqS').each(function(){
+                            if(j$(this).val() == null || j$(this).val().length == 0)
+                            {
+                                jq_addError(j$(this),'{!$Label.ChooseValue}');
+                                b = false;
+                            }
+                            else
+                            {
+                                jq_removeError(j$(this));
+                            }
+                        });
+
+                        return b;
+                    }
+
+                    j$('#btn-save').click(function(){
+                        //show  loading
+                        $j('#spinner').show();
+
+                        var rolename = '{!$UserRole.Name}';
+                        //WCH 15/01/2020 C-003562
+                        if(rolename !== null && rolename !== '') {
+                            rolename='NO_ROLE';
+                         }
+
+                        //AMI 29/06/18 : Community Rollout
+                        //             : addtional check on profile name for bshops
+                        var profileName = '{!$Profile.Name}';
+                        
+                        if(validateCompulsoryFields() && countquantitymin > 0){
+                            if(rolename.indexOf('Distributor') >= 0){
+                                var distributor = '{!$User.FirstName}'+'{!$User.LastName}';
+                                AlphaStore.saveAssPL(selectedRowsMap,selectedRowsQuantityMap,j$('select.bodyshop-Opt').val(),j$('#ass-ordernumber').val(),distributor,(j$('*[id*=POComments]').val()==undefined?'':j$('*[id*=POComments]').val())/*WCH 25/01/2019 C-002764*/,displaySuccessError);
+                            }
+                            else if(rolename.indexOf('BodyShop') >= 0 || profileName.indexOf('CC') >= 0){
+                                AlphaStore.saveAssPL(selectedRowsMap,selectedRowsQuantityMap,'',j$('#ass-ordernumber').val(),j$('select.distributor2-Opt').val(),(j$('*[id*=POComments]').val()==undefined?'':j$('*[id*=POComments]').val())/*WCH 25/01/2019 C-002764*/,displaySuccessError);
+                            }
+                            else{
+                                AlphaStore.saveAssPL(selectedRowsMap,selectedRowsQuantityMap,j$('select.bodyshop-Opt').val(),j$('#ass-ordernumber').val(),j$('select.distributor-Opt').val(),(j$('*[id*=POComments]').val()==undefined?'':j$('*[id*=POComments]').val())/*WCH 25/01/2019 C-002764*/,displaySuccessError);
+                            }
+                        }
+                        else if(countquantitymin <= 0){
+                            //hide  loading
+                            $j('#spinner').hide();
+
+                            j$('#errorInfo')[0].click();
+                            j$('#errorDisplay').html('<div style="color: #d74c3b;">{!$Label.ErrorNoPLSelected}</div>');
+                        }
+                    });
+                });
+            </script>
+        </head>
+
+        <body class="slds-scope">
+            <apex:form id="paintingForm">
+                <!-- REQUIRED SLDS WRAPPER -->
+                
+                <div class="slds" style="min-width: 1300px;">   
+                    <apex:pageMessages /><!-- WCH 15/01/2020 C-003562 -->
+                    <div class="slds-form-element">
+
+                        <c:ASPISHeader />  
+
+                        <div>
+                            <div class="slds-card slds-card__header">             
+                                <div class="slds-grid">
+                                    <h2 class="classHeading slds-media slds-media_center slds-has-flexi-truncate slds-text-heading_small">
+                                        {!$Label.AlphaStoreTabName}
+                                    </h2>
+                                </div>
+                            </div>
+
+                            <!-- <apex:pageMessages /> WCH 15/01/2020 C-003562-->
+                            
+                            <table width="100%" >
+                                <tr>
+                                    <td colspan="4" style="padding: 20px 10px 0px 10px ; border-bottom: thin solid;">
+                                        <div class="slds-text-heading--small">{!$label.ChooseProductType}</div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td style="padding: 25px 0px 20px 10px" width="5%">  
+                                        <div class="slds-text-body--medium">{!$Label.PaintingType}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>      
+                                    </td>
+                                    <td style="padding: 20px 100px 20px 10px" width="45%">      
+                                        <div class="slds-form-element__control" style="width:250px">
+                                            <div class="slds-select_container">                     
+                                                <apex:selectList value="{!rtType}" size="1" onchange="changeObjectType2();" styleclass="form-control jq_reqS rtType-Opt slds-select"> 
+                                                    <apex:selectOptions value="{!RecordTypeOptions}"/>
+                                                </apex:selectList>  
+                                                <apex:actionFunction action="{!typeResults}" name="changeObjectType2"/> 
+                                            </div>
+                                        </div>                                              
+                                    </td>
+                                    <td style="padding: 25px 10px 20px 10px" width="10%">
+                                    </td>
+                                    <td style="padding: 20px 100px 20px 10px" width="40%">
+                                        <!-- WCH 01/06/2020 C-003728 -->
+                                        <div class="slds-form-element__control" style="width:250px">
+                                            <apex:outputPanel rendered="{!IF(showCatalog,true,false)}">
+                                                <apex:outputLink value="{!theCatalogLinkPDF}" target="_blank">
+                                                    {!$Label.DownloadAlphaStoreCatalog}
+                                                </apex:outputLink>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <apex:outputPanel id="ProductType">
+                                <table width="100%" >
+                                    <tr>
+                                        <td colspan="4" style="padding: 20px 10px 0px 10px ; border-bottom: thin solid;">
+                                            <div class="slds-text-heading--small">{!$label.ChooseFamilyManufacturer}</div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>
+                                            <!-- AMI 29/06/18 : Community RollOut
+                                                              : Adding correct bypass -->
+                                            <apex:outputPanel id="adminPanel" rendered="{!AND(NOT(ISBLANK(currentUser.UserRoleId)),NOT(OR(contains($UserRole.Name, 'Distributor'), contains($UserRole.Name, 'BodyShop'), contains($Profile.Name, 'CC'))))}" layout="block"><!-- WCH 15/01/2020 C-003562 -->
+                                                <table>
+                                                    <tr>
+                                                        <td style="padding: 25px 0px 0px 10px" width="5%">
+                                                            <div class="slds-text-body--medium">{!$Label.BodyShop}</div>  
+                                                        </td>
+                                                        <td style="padding: 20px 100px 0px 10px" width="45%">
+                                                            <div class="slds-form-element__control" style="width:250px">
+                                                                <div class="slds-select_container">                     
+                                                                    <apex:selectList value="{!bodyshop}" size="1" styleclass="form-control bodyshop-Opt slds-select"> 
+                                                                        <apex:selectOptions value="{!BodyShopOptions}"/>
+                                                                    </apex:selectList>  
+                                                                </div>
+                                                            </div>                                  
+                                                        </td>
+                                                        <td style="padding: 25px 10px 20px 10px" width="10%">  
+                                                            <div class="slds-text-body--medium">{!$label.OrderNumber}</div>      
+                                                        </td>
+                                                        <td style="padding: 20px 100px 20px 10px" width="40%">      
+                                                            <input type="text" id="ass-ordernumber" class="slds-input" style="width:250px"/>                                              
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 25px 0px 20px 10px" width="5%">
+                                                            <div class="slds-text-body--medium">{!$label.Distributor}*</div>  
+                                                        </td>
+                                                        <td style="padding: 20px 100px 20px 10px" width="45%">
+                                                            <div class="slds-form-element__control" style="width:250px">
+                                                                <div class="requiredInput">
+                                                                    <div class="requiredBlock"></div> 
+                                                                    <div class="slds-select_container">     
+                                                                        <apex:selectList value="{!distributor}" size="1" onchange="changeObjectType();" styleclass="form-control jq_reqS distributor-Opt slds-select"> 
+                                                                            <apex:selectOptions value="{!DistributorOptions}"/>
+                                                                        </apex:selectList>  
+                                                                        <apex:actionFunction action="{!brandFamilyResults}" name="changeObjectType" rerender="BrandFamilyPanel"/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>                                  
+                                                        </td>
+                                                        <td style="padding: 25px 10px 20px 10px" width="5%">       
+                                                        </td>
+                                                        <td style="padding: 20px 100px 20px 10px" width="45%">                                             
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>
+                                            <!-- Distributor -->
+                                            <apex:outputPanel id="distributorPanel" rendered="{!AND(NOT(ISBLANK(currentUser.UserRoleId)),AND(contains($UserRole.Name, 'Distributor'),NOT(ISBLANK($UserRole.Name))))}" ><!-- WCH 15/01/2020 C-003562 -->
+                                                <table>
+                                                    <tr>
+                                                        <td style="padding: 25px 0px 0px 10px" width="5%">
+                                                            <div class="slds-text-body_medium">{!$Label.BodyShop}</div> 
+                                                        </td>
+                                                        <td style="padding: 20px 100px 0px 10px" width="45%">
+                                                            <apex:repeat value="{!mapDisIdBSlist}" var="key" >
+                                                                <apex:outputPanel rendered="{!($User.Id == key)}">
+                                                                    <div class="slds-form-element__control" style="width:250px">
+                                                                        <div class="slds-select_container">                     
+                                                                            <apex:selectList value="{!bodyshop}" size="1" styleclass="form-control bodyshop-Opt slds-select"> 
+                                                                                <apex:selectOptions value="{!mapDisIdBSlist[key]}"/>
+                                                                            </apex:selectList>  
+                                                                        </div>
+                                                                    </div> 
+                                                                </apex:outputPanel>  
+                                                            </apex:repeat>                               
+                                                        </td>
+                                                        <td style="padding: 25px 10px 20px 10px" width="10%">  
+                                                            <div class="slds-text-body_medium">{!$label.OrderNumber}</div>      
+                                                        </td>
+                                                        <td style="padding: 20px 100px 20px 10px" width="40%">      
+                                                            <input type="text" id="ass-ordernumber" class="slds-input" style="width:250px"/>                                              
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>
+                                            <!-- BodyShop -->
+                                            <!-- AMI 29/06/18 : Community RollOut
+                                                              : Adding correct bypass -->
+                                            <apex:outputPanel id="bodyShopPanel" rendered="{!(OR((contains($Profile.Name,'CC')),AND(contains($UserRole.Name, 'BodyShop'),NOT(ISBLANK($UserRole.Name)))))}"><!-- WCH 15/01/2020 C-003562 -->
+                                                <table>
+                                                    <tr>
+                                                        <td style="padding: 25px 0px 0px 10px" width="5%">
+                                                            <div class="slds-text-body--medium">{!$Label.Distributor}*</div>
+                                                        </td>
+                                                        <td style="padding: 20px 100px 0px 10px" width="45%">
+                                                            <apex:repeat value="{!mapBSIdDisList}" var="key" > 
+                                                                <apex:outputPanel rendered="{!($User.Id == key)}">
+                                                                    <div class="slds-form-element__control" style="width:250px">
+                                                                        <div class="slds-select_container">                
+                                                                            <div class="requiredInput">
+                                                                                <div class="slds-select_container">     
+                                                                                    <apex:selectList value="{!distributor}" size="1" onchange="changeObjectType();" styleclass="form-control jq_reqS distributor2-Opt slds-select"> 
+                                                                                        <apex:selectOptions value="{!mapBSIdDisList[key]}"/>
+                                                                                    </apex:selectList>  
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div> 
+                                                                </apex:outputPanel>  
+                                                            </apex:repeat>        
+                                                            <apex:actionFunction action="{!brandFamilyResults}" name="changeObjectType" rerender="BrandFamilyPanel"/>                       
+                                                        </td>
+                                                        <td style="padding: 25px 10px 20px 10px" width="10%">  
+                                                            <div class="slds-text-body--medium">{!$label.OrderNumber}</div>      
+                                                        </td>
+                                                        <td style="padding: 20px 100px 20px 10px" width="40%">      
+                                                            <input type="text" id="ass-ordernumber" class="slds-input" style="width:250px"/>                                              
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>
+                                            <!-- visible to all -->
+                                            <apex:outputPanel id="BrandFamilyPanel">
+                                                <table>
+                                                    <tr>
+                                                        <td style="padding: 25px 0px 20px 10px" width="5%">  
+                                                            <div class="slds-text-body--medium">{!$Label.Brand}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>      
+                                                        </td>
+                                                        <td style="padding: 20px 100px 20px 10px" width="45%">      
+                                                            <div class="slds-form-element__control" style="width:250px">
+                                                                <div class="slds-select_container">                     
+                                                                    <apex:selectList value="{!manufacturer}" size="1" styleclass="form-control brand-Opt slds-select" disabled="{!isPicklistdisabledBrand}"> 
+                                                                        <apex:selectOptions value="{!BrandOptions}"/>
+                                                                    </apex:selectList>      
+                                                                </div>
+                                                            </div>                                              
+                                                        </td>
+                                                        <td style="padding: 25px 10px 20px 10px" width="10%">
+                                                            <div class="slds-text-body--medium">{!$Label.Family}</div>  
+                                                        </td>
+                                                        <td style="padding: 20px 100px 20px 10px" width="40%">
+                                                            <div class="slds-form-elemen__ctontrol" style="width:250px">
+                                                                <div class="slds-select_container">                     
+                                                                    <apex:selectList value="{!family}" size="1" styleclass="form-control family-Opt slds-select" disabled="{!isPicklistdisabledFamily}"> 
+                                                                        <apex:selectOptions value="{!FamilyOptions}"/>
+                                                                    </apex:selectList>  
+                                                                </div>
+                                                            </div>                                  
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td colspan="4" style=" text-align: center; padding: 20px 10px 20px 10px">
+                                            <button type="button" class="slds-button slds-button--neutral slds-not-selected" id="btn-search">
+                                                {!$label.Search}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td colspan="4" >
+                                            <a href="#" id="errorInfo"/>
+                                            <div id='errorDisplay'></div>
+                                        </td>
+                                    </tr>
+                                    <tr><!-- WCH C-002764 25/01/2019 Add a new information to fill by the BS when ordering painting and non painting products -->
+                                        <!-- visible to ES BS,local Admin and sys admin-->
+                                        <td colspan="4" style="padding: 20px 10px 20px 10px">
+                                            <apex:outputPanel id="QueriesPanel" rendered="{!contains($Label.ProfileVisible_POComment,$Profile.Name)}"><!-- WCH 28/05/2019 C-003263 -->
+                                                <table>
+                                                    <tr>
+                                                        <td colspan="4" style="padding: 20px 10px 0px 10px ; border-bottom: thin solid;">
+                                                            <div class="slds-text-heading--small">{!$Label.QueriesSection}</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 25px 0px 20px 10px" width="1%">  
+                                                            <div class="slds-text-body--medium">{!$Label.Comments}</div>      
+                                                        </td>
+                                                        <td style="padding: 20px 100px 20px 10px" width="77%">      
+                                                            <div class="" style="width:250px">
+                                                                <div class="">                     
+                                                                    <apex:inputTextarea id="POComments" value="{!POComments}" html-placeholder="{!$Label.EnterYourComments}"/> 
+                                                                </div>
+                                                            </div>                                              
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="padding: 20px 10px 0px 10px ; border-bottom: thin solid;">
+                                            <div class="slds-text-heading--small">{!$label.PartListInformation}</div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td colspan="4" style="padding: 20px 10px 20px 10px">
+                                            <table id="parttable" class="display">
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td colspan="4" style=" text-align: center; padding-top:20px; padding-bottom:20px;">
+                                            <button type="button" class="slds-button slds-button--neutral slds-not-selected" id="btn-save">  
+                                                {!$label.Save}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+
+                    <div id="spinner" class="slds-spinner_container">
+                        <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- call  changeObjectType after the page loads in case the pickList values are filled already-->
+                <script>
+                    j$(document).ready(function(){
+                        changeObjectType();
+                    });
+                </script>
+            </apex:form>
+        </body>
+    </html>
+</apex:page>

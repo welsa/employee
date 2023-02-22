@@ -1,0 +1,100 @@
+<apex:component allowDML="true">
+        <html>
+            <head>
+                <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+                <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+                <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/search.css')}" />
+                
+                <style>
+                    .header_top{
+                    /*margin-left: auto;
+                    margin-right: auto;*/
+                    width: 100%;
+                    /*display: flex;*/
+                    margin-top: 12px;
+                    }
+                    .header_bottom{
+                        margin-bottom: :24px;
+                    }
+                    .header_top_search{
+                    width: 20%;
+                    }
+                    .header_top_logo{
+                    /*width: 170px;*/
+                    height: 60px;
+                    background: url("{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}") no-repeat;
+                    cursor: pointer;
+                    /*margin: 15px 50px 15px 0;*/
+                    }
+                    .header_below{
+                    background: linear-gradient(to right, #3989C9, #103184);
+                    }
+                    .header_section{
+                    /*margin-left: auto;
+                    margin-right: auto;*/
+                    width: 100%;
+                    }
+                    /*.header_contact_privacy{
+                    margin-right: auto; 
+                    width: 400px;
+                    margin-top: 28px;
+                    margin-left: 15%;               
+                    }*/
+                    .slds-tabs_default__item{
+                    font-weight: bold;
+                    color: #fff;
+                    }
+                    .linkstyle{
+                    color: #8199af;
+                    }
+                    .slds-tabs_default__item:hover{
+                    background: #fff;
+                    color: #103184;
+                    }
+                    .slds-tabs_default__item.active{
+                    background: #fff !important;
+                    color: #103184;
+                    }
+                    .slds-button.slds-button_neutral.slds-button_brand{
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    /*margin-top: 24px;*/
+                    height: 32px;
+                    }
+                    .ul.topLinks{
+                    list-style-type: none;
+                    margin: 0;
+                    padding: 0;
+                    }
+                    .slds-tabs_default__nav{
+                    border-bottom: 0px;
+                    }
+                    .header_body{
+                    margin-bottom: 20px;
+                    }
+                    .searchWidth{
+                        width : 75%;
+                    }
+                    .searchDateButton {
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    height: 32px;
+                    }
+
+                </style>
+            </head>
+            
+            <body>
+                <div class="slds-grid header_top">
+                    <div class="slds-col slds-size--1-of-3" title="Alpha-scale" style="margin-left: 16px;"><div id ="logoHeader" class="header_top_logo" style="width:150px"></div></div>  
+                      
+                </div>
+
+               
+                
+               
+            </body>           
+        </html>
+</apex:component>

@@ -1,0 +1,116 @@
+<aura:component >
+    <aura:attribute name = "days" type = "Array"/>
+    <aura:attribute name = "times" type = "Array"/>
+    <aura:attribute name = "showPopup" type = "Boolean" default="false"/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:attribute name = "selectedDay" type = "String"/>
+    <aura:attribute name = "selectedStartTime" type = "Time"/>
+    <aura:attribute name = "selectedEndTime" type = "Time"/>
+    <aura:attribute name = "selectedType" type = "String"/>
+    <aura:attribute name = "semaineType" type = "Object"/>
+    <div>
+        
+        <aura:if isTrue="{!v.showPopup}">
+            
+            
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon class="slds-button_icon slds-modal__close slds-button_icon-inverse" iconName="utility:close" variant="bare" onclick="{! c.handleClosePopup }" alternativeText="Fermer" title="Fermer" />
+                        
+                        
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Ajouter un créneau</h2>
+                        
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2" >
+                        <lightning:select label="Jour de la semaine" name="selectedDay" value="{!v.selectedDay}">
+                            <aura:iteration items="{!v.days}" var="day">
+                                <option text="{!day}" value="{!day}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                        
+                        <lightning:select label="Type de planning" name="selectedType" value="{!v.selectedType}">
+                            <option text="Disponibilité" value="dispo"/>
+                            <option text="Absence" value="abs"/>
+                        </lightning:select>
+                        <lightning:input type="time" min="09:00" max="21:00" step="1" label="Heure de début" name="selectedStartTime" value="{!v.selectedStartTime}"></lightning:input>
+                        <lightning:input type="time" label="Heure de fin" name="selectedEndTime" value="{!v.selectedEndTime}"></lightning:input>
+                        
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.handleClosePopup}">Annuler</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.handleSave}">Enregistrer</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        
+        
+        
+        <lightning:layout>
+            <lightning:layoutItem size="10" padding="around-medium">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped slds-table_col-bordered">
+                    
+                    <thead>
+                        <tr>
+                            <td style="width:4%"></td>
+                            <td style="width:16%">Lundi</td>
+                            <td style="width:16%">Mardi</td>
+                            <td style="width:16%">Mercredi</td>
+                            <td style="width:16%">Jeudi</td>
+                            <td style="width:16%">Vendredi</td>
+                            <td style="width:16%">Samedi</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.times}" var="time">
+                            <tr>
+                                <td style="cursor:pointer;padding:0">{!time}</td>
+                                <aura:iteration items="{!v.days}" var="day">
+                                    <td  data-day="{!day}" data-time="{!time}" data-half="full" onclick="{!c.addItem}" style="cursor:pointer;padding:0" class="cell">
+                                        
+                                        <div data-day="{!day}" data-time="{!time}" data-half="full" class="{!day + '-' + time + '-full-dispo'}" >&nbsp;</div>
+                                        <div data-day="{!day}" data-time="{!time}" data-half="full" class="{!day + '-' + time + '-full-abs'}" >&nbsp;</div>
+                                        
+                                        
+                                    </td>
+                                </aura:iteration>
+                            </tr>
+                            <tr>
+                                <td style="cursor:pointer;padding:0">&nbsp;</td>
+                                <aura:iteration items="['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']" var="day">
+                                    <td  data-day="{!day}" data-time="{!time}" data-half="half" onclick="{!c.addItem}" style="cursor:pointer;padding:0" class="cell">
+                                        
+                                        <div data-day="{!day}" data-time="{!time}" data-half="half" class="{!day + '-' + time + '-half-dispo'}" >&nbsp;</div>
+                                        <div data-day="{!day}" data-time="{!time}" data-half="half" class="{!day + '-' + time + '-half-abs'}" >&nbsp;</div>
+                                    </td>
+                                </aura:iteration>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="2" >
+                <lightning:card class="legend" title="Légende">
+                
+                    <ul style="padding:0.5rem;margin-top:1rem" class="ll">
+                        <li><a><div class="abss"></div></a> <a style="position:relative;top:-20px;left:27px"> Disponibilités </a></li>
+                    	<li><a><div class="abss_absence"></div></a> <a style="position:relative;top:-20px;left:27px"> Absences </a></li>
+                    </ul>
+                
+                </lightning:card>
+                <lightning:card class="legend">
+                    <div style="padding:0.5rem">
+                        <lightning:input type="date" label="Appliquer jusqu'à :"></lightning:input>
+                        <div style="height:1rem"></div>
+                        <lightning:button label="Enregistrer" variant="brand"></lightning:button>
+                    </div>
+                </lightning:card>
+            </lightning:layoutItem>
+        </lightning:layout>
+        
+        
+        
+    </div>	
+</aura:component>

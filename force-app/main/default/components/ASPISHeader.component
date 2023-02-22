@@ -1,0 +1,287 @@
+<apex:component controller="ASPISHeader" allowDML="true">
+        <html>
+            <head>
+                <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+                <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+                <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/search.css')}" />
+                
+                <style>
+                    .header_top{
+                    width: 100%;
+                    margin-top: 12px;
+                    }
+                    .header_bottom{
+                        margin-bottom:24px;
+                    }
+                    .header_top_search{
+                    width: 20%;
+                    }
+                    .header_top_logo{
+                    height: 60px;
+                    background: url("{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}") no-repeat;
+                    cursor: pointer;
+                    }
+                    .header_below{
+                    background: linear-gradient(to right, #3989C9, #103184);
+                    }
+                    .header_section{
+                    width: 100%;
+                    }
+                    .slds-tabs_default__item{
+                    font-weight: bold;
+                    color: #fff;
+                    }
+                    .linkstyle{
+                    color: #8199af;
+                    }
+                    .slds-tabs_default__item:hover{
+                    background: #fff;
+                    color: #103184;
+                    }
+                    .slds-tabs_default__item.active{
+                    background: #fff !important;
+                    color: #103184;
+                    }
+                    .slds-button.slds-button_neutral.slds-button_brand{
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    height: 32px;
+                    }
+                    .ul.topLinks{
+                    list-style-type: none;
+                    margin: 0;
+                    padding: 0;
+                    }
+                    .slds-tabs_default__nav{
+                    border-bottom: 0px;
+                    }
+                    .header_body{
+                    margin-bottom: 20px;
+                    }
+                    .searchWidth{
+                        width : 75%;
+                    }
+                    .searchDateButton {
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    height: 32px;
+                    }
+
+                </style>
+            </head>
+            
+            <body>
+                <div class="slds-grid header_top">
+                    <div class="slds-col slds-size--1-of-3" title="Alpha-scale" style="margin-left: 16px;"><div id ="logoHeader" class="header_top_logo" style="width:150px"></div></div>
+                    
+                    <div class="slds-col slds-size--1-of-3 slds-clearfix">
+                        <input type="text" class="slds-input slds-lookup__search-input slds-col searchWidth slds-float_left" id="searchInput" placeholder="{!$Label.SearchPlaceholder}" style="margin-top: 14px; font-weight: 400;"/>
+                        <button class="searchDateButton slds-button slds-button_brand slds-col--padded slds-float_left" style="margin-top: 14px; font-weight: 400;" onclick="redirectToSearch();" type="button">{!$label.Search}</button>
+                    </div>
+
+                    <div class="slds-col slds-size--1-of-3 slds-clearfix" style="margin-top: 14px;">
+                        <ul class="topLinks slds-global-header__item slds-float_right">
+                            <li style="display: inline"><a class="linkstyle" href="/apex/ASPISContactUs" style="text-transform: uppercase; font-family: Salesforce Sans,Arial,sans-serif; font-weight: 300;">{!$label.ContactUsCustomerSite}</a></li>
+                            <li style="display: inline; text-transform: uppercase; font-family: Salesforce Sans,Arial,sans-serif; font-weight: 300;">|</li>
+                            <li style="display: inline; margin-right: 30px;"><a class="linkstyle" href="/apex/ASPISPrivacyNotice" style="text-transform: uppercase; font-family: Salesforce Sans,Arial,sans-serif; font-weight: 300;">{!$label.PrivacyNotice}</a></li>
+                            
+                            <li id="logoutDropdown" class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                                <button type="button" class="slds-button" title="{!$User.FirstName & ' ' & $User.LastName}" aria-haspopup="true" onclick="toggleLogoutDropdown();">
+                                    <span class="slds-avatar slds-avatar_circle slds-avatar_medium">
+                                        <img src="{!profilePicture}" alt="{!$User.FirstName & ' ' & $User.LastName}" />
+                                    </span>
+                                </button>
+                                <div class="slds-dropdown slds-dropdown_right slds-nubbin_top-right">
+                                    <div class="slds-float_left slds-p-top_medium slds-p-left_medium">
+                                        <img src="{!profilePicture}" class="slds-avatar slds-avatar_circle slds-avatar_medium" alt="{!$User.FirstName & ' ' & $User.LastName}" />
+                                    </div>
+                                    <div class="slds-p-around_medium slds-m-left_xx-large">
+                                        <span class="slds-truncate">
+                                            <h1 class="slds-text-heading_small" style="font-weight: 400; font-size: .8125rem  !important;">
+                                                {!$User.FirstName & ' ' & $User.LastName}
+                                            </h1>
+                                        </span>
+                                        <a href="/secur/logout.jsp" class="slds-text-body_regular" style="font-weight: 400; font-size: .7125rem !important;">{!$Label.LogOut}</a>
+                                    </div>
+                                </div>
+                            </li>
+                            
+                            <!-- NPE 05/05/2022 C-004704: AJOUT ONGLET POUR VISUALISER LES CGV ASF -->
+                            <br></br>
+
+                            <li style="display: inline; margin-right: 0px;">
+                                <apex:outputLink rendered="{!showCGenerale}" value="/apex/VFP30_ConditionsGenerales"> 
+                                <li style="display: inline; margin-right: 4px;"><a class="linkstyle" href="/apex/VFP30_ConditionsGenerales" style="text-transform: uppercase; font-family: Salesforce Sans,Arial,sans-serif; font-weight: 300;">{!$Label.ConditionGenerales}</a></li>
+                                </apex:outputLink>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="header_below header_top">
+                    <div class="header_section">
+                        <div class="slds-tabs_default">
+                            <ul class="slds-tabs_default__nav" id="tabs" role="tablist" style="margin-left: 16px;">
+                                <!-- AMI 25/01/19 C-002781 : Migrate Spain to R4
+                                                           : Chatter Home Page -->
+                                <apex:outputText rendered="{!showChatter}">
+                                    <li id="tab2" class="slds-tabs_default__item slds-text-heading_label" title="Home" role="presentation"><a class="slds-tabs_default__link " href="/apex/ASPISHomePage?tabNo=5" role="tab" tabindex="5" id="tab-default-5__item">{!$Label.ChatterFeedMsg3}</a></li>
+                                </apex:outputText>
+                                 <!-- WCH 04/07/2019  C-003316 : Spain R4 Nice to have-->
+                                <apex:outputText rendered="{!showMyAssessments}">
+                                    <li id="tab5" class="slds-tabs_default__item slds-text-heading_label" title="{!$label.MyAssessments}" role="presentation"><a class="slds-tabs_default__link " href="/apex/ASPISMyAssessments?id={!encodedUserId}&tabNo=6" role="tab" tabindex="5" id="tab-default-6__item">{!$label.MyAssessments}</a></li>
+                                </apex:outputText> 
+
+                                <apex:outputText rendered="{!isEligibleQuotation}">
+                                    <li id="tab0" class="slds-tabs_default__item slds-text-heading_label" title="{!$label.MyQuotations}" role="presentation"><a class="slds-tabs_default__link" href="/apex/ASPISMyQuotations?id={!encodedUserId}&tabNo=0" role="tab" tabindex="0" id="tab-default-0__item">{!$label.MyQuotations}</a></li>
+                                </apex:outputText>
+                                <li id="tab1" class="slds-tabs_default__item slds-text-heading_label" title="{!$label.MyOrders}" role="presentation"><a class="slds-tabs_default__link" href="/apex/ASPISMyOrders?id={!encodedUserId}&tabNo=1" role="tab" tabindex="1" id="tab-default-1__item">{!$label.MyOrders}</a></li>
+                                
+                                <!-- AMI 22/10/2018  C-002781 : Migrate Spain to R4
+                                                              : render my invoice for all country except spain -->
+                                <apex:outputText rendered="{!showMyInvoice}">
+                                    <li id="tab2" class="slds-tabs_default__item slds-text-heading_label" title="{!$label.MyInvoices}" role="presentation"><a class="slds-tabs_default__link " href="/apex/ASPISMyInvoices?id={!encodedUserId}&tabNo=2" role="tab" tabindex="2" id="tab-default-2__item">{!$label.MyInvoices}</a></li>
+                                </apex:outputText>
+
+                                <!-- AMI 12/11/2018  C-002781 : Migrate Spain to R4
+                                                              : render My Cases -->
+                                <apex:outputText rendered="{!showMyCases}">
+                                    <li id="tab3" class="slds-tabs_default__item slds-text-heading_label" title="{!$label.MyCases}" role="presentation"><a class="slds-tabs_default__link " href="/apex/ASPISMyCases?id={!encodedUserId}&tabNo=3" role="tab" tabindex="3" id="tab-default-3__item">{!$label.MyCases}</a></li>
+                                </apex:outputText> 
+
+                                <!-- AMI 05/11/2018  C-002781 : Migrate Spain to R4
+                                                              : render alpha store -->
+                                <apex:outputText rendered="{!showAStore}">
+                                    <li id="tab4" class="slds-tabs_default__item slds-text-heading_label" title="{!$label.AlphaStoreTabName}" role="presentation"><a class="slds-tabs_default__link " href="/apex/AlphaStore?tabNo=4" role="tab" tabindex="4" id="tab-default-4__item">{!$label.AlphaStoreTabName}</a></li>
+                                </apex:outputText>
+                                
+                                
+                                <!--HMO 17/08/2021 C-004433 -->
+                                <apex:outputText rendered="{!showASPartner}">
+                                    <li id="tab5" class="slds-tabs_default__item slds-text-heading_label" title="{!$label.ASPartners}" role="presentation"><a class="slds-tabs_default__link " href="/apex/ASPartners?tabNo=5" role="tab" tabindex="5" id="tab-default-5__item">{!$label.ASPartners}</a></li>
+                                </apex:outputText>
+
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DUN 20/03/3018 case 2340 -->
+                <apex:outputText id="welcomeContainer" rendered="{!showWelcomeModal}"> 
+                    <div id="welcomeModal"
+                        class="slds-modal"
+                        aria-hidden="false"
+                        role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_info slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.WelcomeModalHeader}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <p class="slds-m-bottom_medium">
+                                    <apex:outputText value="{!$Label.SearchWelcomeModalBody}" escape="false"/>
+                                </p>
+                            </div>
+                            <div class="slds-modal__footer slds-modal__footer_directional">
+                                <div class="slds-form-element slds-float_left">
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-checkbox">
+                                            <apex:inputField id="hidePopupCheckbox" value="{!currentUser.HideSiteWelcomePopup__c}"/>
+                                            <label class="slds-checkbox__label" for="{!$Component.hidePopupCheckbox}">
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label">{!$Label.DoNotShowAgain}</span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <input type="button"
+                                    class="slds-button slds-button_brand"
+                                    value="{!$Label.Close}"
+                                    onclick="closeWelcomeModal();" />
+                            </div>
+                        </div>
+                    </div>
+                   <div id="welcomeModalBackdrop" class="slds-backdrop"></div>
+                 </apex:outputText> 
+
+                <apex:actionfunction name="checkHideSiteWelcomePopup" action="{!checkHideSiteWelcomePopup}" rerender="welcomeContainer" />
+                
+                <script>
+                console.log('## in');
+                if (typeof jQuery != "undefined") {
+                    $j = jQuery.noConflict();
+                }
+
+                $j(document).ready(function(){
+                    inputTermInSearchBox();
+
+                });
+
+                $j(document).click(function(event) {
+                    closeDropdowns(event);
+                });
+
+                $j('#logoHeader').click(function(event){
+                    console.log('##logo on click');
+                    window.location.href="/apex/Search";
+                });
+
+                var tabNumber;
+
+                var currentHref = window.location.href,
+                tabNumber = currentHref.substring(currentHref.indexOf('tabNo=')+6);
+                console.log('#tab'+tabNumber);
+                if (tabNumber != undefined && tabNumber.length ==1){
+                    $j('#tab'+tabNumber).addClass('active');              
+                }
+
+                $j('.slds-tabs_default__item').click(function(e) {
+                    $j(".slds-tabs_default__item").removeClass("active");
+                    console.log('## in active');
+                    $j(this).addClass('active');
+                });
+                
+                function redirectToSearch(){
+                    if(!$j('[id$="searchInput"]').val()){
+                        return false;
+                    }else{
+                        console.log('##click search');
+                        window.location.href="/apex/Search?inputTerm="+$j('[id$="searchInput"]').val();
+                    }                     
+                }
+
+                function inputTermInSearchBox(){
+                    var winhref = window.location.href;
+                        if(winhref.indexOf('inputTerm') != -1){
+                                $j('[id$="searchInput"]').val(winhref.substring(winhref.indexOf('=')+1));
+                        }
+                }
+
+                //DUN 20/03/3018 case 2340
+                function closeWelcomeModal()
+                {
+                    checkHideSiteWelcomePopup();
+                    hideWelcomeMessage();
+                }
+                showWelcomeMessage({!showWelcomeModal});
+
+
+                $j('[id$="searchInput"]').on({
+                        "keypress": function(event) {[]
+                            // Key press to prevent enter key on blank input
+                            if ((window.event && window.event.keyCode == 13) || event.which == 13) {
+                                if (!$j('[id$="searchInput"]').val()) {
+                                    return false;
+                                } else {
+                                    window.location.href="/apex/Search?inputTerm="+$j('[id$="searchInput"]').val();
+                                    return false;
+                                }
+                            }
+                        }
+                    });
+            </script>
+            </body>           
+        </html>
+</apex:component>

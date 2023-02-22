@@ -1,0 +1,104 @@
+<!--
+  @description       : 
+  @author            : HRM
+  @group             : 
+  @last modified on  : 11-17-2021
+  @last modified by  : HRM
+  Modifications Log
+  Ver   Date         Author   Modification
+  1.0   10-22-2021   HRM   Initial Version
+-->
+<apex:page standardController="Account" extensions="VFC28_PlafondCommande" lightningStylesheets="false" applyBodyTag="false" applyHtmlTag="false" showHeader="false">
+        <apex:slds />
+        <html>
+            <head>
+                <style>
+                    table,
+                    th,
+                    td {
+                        border-collapse: collapse;
+                        font-family: Helvetica;
+                        font-size: 12px;
+                        color: #4a4a56;
+                        padding: 10px;
+                    }
+                    td.heading{text-align: right;font-weight:bold}
+                    td.data{text-align: left;padding-left: 10px;}
+                
+                    p {
+                        font-family: Helvetica;
+                        font-size: 12px;
+                        color: #4a4a56;
+                        margin-left: 50px;
+                    }
+                
+                    tr {
+                        border-bottom: 1px solid #D3D3D3;
+                    }
+                
+                    .hidecolumn {
+                        display: none;
+                    }
+                </style>
+            </head>
+            <body marginwidth="0" marginheight="0">
+                <apex:outputPanel rendered="{!allowPlafond}" layout="none">
+                    <table class="">
+                        <tbody>
+                            <tr>
+                                <td class="heading">{!$Label.PlafondCommandeMaxAmount}</td>
+                                <td class="data">
+                                    <apex:outputText value="{! If(plafond==null ,$Label.ErrorPlafondNotDefined ,'{0, number, EUR ##,###.##}')}">
+                                        <apex:param value="{!plafond}" />
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="heading">{!$Label.PlafondCommandeSumOrdered}</td>
+                                <td class="data">
+                                    <apex:outputText value="{0, number, EUR ##,###.##}">
+                                        <apex:param value="{!TotalOrders}" />
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="heading">{!$Label.StatutPlafond}</td>
+                                <td class="data">
+                                    <apex:outputText value="{! If(plafond==null ,$Label.ErrorPlafondNotDefined ,'{0, number, 0}%')}">
+                                        <apex:param value="{!progressBarWidth}" />
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </tbody>
+                    
+                    
+                    </table>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{! !allowPlafond}" layout="none">
+                    <h3 class="slds-text-align_center">{!$Label.NothingToDisplay}</h3>
+                </apex:outputPanel>
+                
+            </body>
+        </html>
+        <!-- <div class="pbSubsection" >
+                <table class="detailList" border="0" cellpadding="0" cellspacing="0">
+                    <tbody>
+                        <tr>
+                            <td class="last labelCol">Max Amount For Orders</td>
+                            <td class="dataCol last col02 inlineEditLock">
+                                <apex:outputText value="{0, number, EUR ##,###.##}">
+                                    <apex:param value="{!plafond}" />
+                                </apex:outputText>
+                            </td>
+                            <td class="last labelCol">Sum of Total Price Ordered</td>
+                            <td class="last dataCol inlineEditLock">
+                                <apex:outputText value="{0, number, EUR ##,###.##}">
+                                    <apex:param value="{!TotalOrders}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+        </div> -->
+            
+</apex:page>

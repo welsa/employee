@@ -1,0 +1,640 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="ASPISMyCases">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <title>{!$label.MyCases}</title>
+
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'css/bootstrap-iso.css')}" /> 
+            <apex:stylesheet value="{!URLFOR($Resource.BootstrapDatePicker, 'css/bootstrap-datepicker3.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.VFP06, 'css/VFP06.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.MultiSwitch, 'multi-switch.min.css')}" />
+
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.MomentJS)}" />
+            <apex:includescript value="{!URLFOR($Resource.Bootstrap, 'js/bootstrap.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'js/bootstrap-datepicker.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.en-GB.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.es.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.fr.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.it.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.de.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.nl-BE.min.js')}" />
+            <apex:includeScript value="{!URLFOR($Resource.FixedHeader, 'floatThead-2.0.0/dist/jquery.floatThead.min.js')}" />
+            <apex:includeScript value="{!URLFOR($Resource.TableSorter, 'tablesorter-master/js/jquery.tablesorter.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.MultiSwitch, 'multi-switch.js')}" />
+
+            <script>
+                window.params = {
+                    "locale" : "{!locale}",
+                    "eventSVGUrl":"{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#event')}",
+                    "eventPNGUrl":"{!URLFOR($Resource.slds, '/assets/icons/utility/event_60.png')}",
+                    "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                    "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                };
+            </script>
+
+            <style>
+                .searchDateButton {
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    height: 32px;
+                }
+
+                .slds-grid.slds-grid--align-end{
+                    margin-bottom: 10px;
+                }
+
+                .slds .slds-card {
+                    overflow-x: hidden;
+                }
+
+                .divWrapper{
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+
+                table.floatThead-table {
+                    border-bottom-width:1px!important;
+                }
+
+                .sortClass{
+                    cursor: pointer;
+                }
+
+                .classHeading{
+                    padding-bottom: 0px;
+                }
+
+                .multi-switch{
+                    width:69px !important;
+                }
+
+                .multi-switch .switch-content 
+                    height:27px !important;
+                }
+
+                .switch-circle{
+                    width:29px !important;
+                    height:25px !important;
+                }
+
+                .iconStyle{
+                    padding-right: 3px;
+                    padding-left: 3px;
+                    background: #3d82ea;
+                    color: white;
+                    border-radius: 12px;
+                    font-size: 8px;
+                    cursor: help;
+                }
+            </style>
+        </head>
+
+        <body  class="slds-scope">
+            <apex:form id="CasesForm">
+
+                <div class="slds" style="min-width: 1300px;">
+                    <c:ASPISHeader />    
+                
+                    <div class="slds-card">
+                        <div class="slds-card__header">             
+                            <div class="slds-grid">
+                                <h2 class="classHeading slds-media slds-media_center slds-has-flexi-truncate slds-text-heading_small">
+                                    {!$Label.MyCases}
+                                </h2>
+
+                                <div class="toggleWrapper">
+                                    <div class="slds-form-element slds-col--padded"> 
+                                        <div class="slds-float--right slds-form-element__control">
+                                            <span class="slds-form-element__label">
+                                                {!JSENCODE($ObjectType.Case__c.fields.Status__c.label)}
+                                            </span>
+                                            
+                                            <input type="checkbox"
+                                                        class="multi-switch"
+                                                        unchecked-value="closed"
+                                                        checked-value="opened"
+                                                        value=""/>
+
+                                            <span class="slds-form-element__label" id="cseStatus" style="padding-left: 12px;">
+                                                
+                                            </span>                                                                                        
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="slds-form-element" style="padding-right: 6px"> 
+                                    <div class="slds-float--right slds-form-element__control" style="width:200px;">
+                                        <div class="slds-input-has-icon slds-input-has-icon--right">
+                                            <span class="event">
+                                                    
+                                            </span> 
+                                            <input id="date1" class="dateField slds-input" type="text" data-date-start-date="01/01/2015"/>                                                              
+                                        </div>                          
+                                    </div>
+                                </div>  
+
+                                <div class="slds-form-element" style="padding-right: 6px"> 
+                                    <div class="slds-float--right slds-form-element__control" style="width:200px;"> 
+                                        <div class="slds-input-has-icon slds-input-has-icon--right">
+                                            <span class="event">
+                                            
+                                            </span>
+                                            <input id="date2" class="dateField slds-input" type="text" data-date-start-date="01/01/2015"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="searchDateButton slds-button slds-button_brand" type="button" onclick='initialiseToggle();' >{!$label.Search}</button>
+                            </div>
+                        </div>
+
+                        <div class="divWrapper">
+                        </div>
+
+                        <div id="calendar" class="bootstrap-iso calendar-div" style="position: absolute; z-index:1005!important">
+                        </div>
+
+                        <div class="demo-only slds-hide" style="height: 6rem;" id="loadTable">
+                            <div class="slds-spinner_container">
+                                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                    <span class="slds-assistive-text">{!$label.Loading}</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <apex:outputPanel id="errorMessage">
+                        <div id="toastMessage" 
+                            class="slds-notify_container slds-hide">
+                            <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                                <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                        title="{!$Label.Close}"
+                                        type="button"
+                                        onclick="hideError();">
+                                </button>
+
+                                <div class="slds-notify__content">
+                                    <p class="slds-text-align_center customErrorMsg"></p>
+                                    <apex:pagemessages id="toastErrorMessage" escape="false"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="errorModal"
+                            class="slds-modal slds-modal_prompt"
+                            aria-hidden="false"
+                            role="dialog">
+                            <div class="slds-modal__container">
+                                <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                    <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                                </div>
+                                <div class="slds-modal__content slds-p-around_medium">
+                                    <div id="errorModalBody">
+                                         <p class="slds-m-bottom_medium">
+                                            {!$Label.ErrorModalBody}
+                                        </p>
+                                    </div>
+                                    <apex:pagemessages escape="false" />
+                                    <div id='privilege' class="message errorM3" role="alert">
+                                        <table class="messageTable">
+                                            <tbody>
+                                                <tr valign="top">
+                                                    <td><img alt="ERROR" class="msgIcon" src="/s.gif" title="ERROR"/></td>                                           
+                                                    <td class="messageCell">
+                                                        <div class="messageText">
+                                                            <span>
+                                                                <h4 style='color:#cc0000'>  {!$Label.Error_Status}:
+                                                                </h4>
+                                                            </span><apex:outputtext value="{!$Label.InsufficientPrivileges}" escape="false"/>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="slds-modal__footer slds-theme_default">
+                                    <div id="closeButton">
+                                        <input type="button"
+                                            class="slds-button slds-button_destructive"
+                                            value="{!$Label.Close}"
+                                            onclick="hideError();" />
+                                     </div>
+                                     
+                                     <div id = "okButton">
+                                             <apex:commandButton action="{!redirectPage}" 
+                                                                value="{!$Label.ModalOK}" 
+                                                                styleClass="slds-button slds-button_destructive"
+                                                                reRender="InvoiceFrm" 
+                                                                status="statusSpinner"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                    </apex:outputPanel>
+                </div>
+
+                <script>
+                    var $j = jQuery.noConflict();
+
+                    $j(function(){
+                        $j.tablesorter.addParser({
+                            // set a unique id
+                            id: "dateParser",
+                            is: function(s) {
+                                // return false so this parser is not auto detected
+                                return false;
+                            },
+                            format: function(s, table, cell, cellIndex) {
+                                if(cellIndex == 6){
+                                    var splitStr = s.split('/');
+                                    var mydate = new Date(splitStr[2],splitStr[1]-1,splitStr[0]); 
+                                    var d = new Date(mydate);
+                                    return d.getTime();
+                                }
+
+                                return s;
+                            },
+                            type: 'numeric'  
+                        });
+                    });
+
+                    $j(document).ready(function() {
+                        //initialise moment
+                        moment.locale("{!locale}");
+
+                        //on load, display all cases text
+                        $j('#cseStatus').html('{!$Label.MyCasesDisplayMsg1}');
+
+                        $j('.multi-switch').multiSwitch({
+                            textChecked     : '{!$Label.MyCasesDisplayMsg3}',
+                            textNotChecked  : '{!$Label.MyCasesDisplayMsg2}',
+                            functionOnChange: function (switches){
+                                if($j(switches).attr("value") == "opened"){
+                                    initialiseTable(false,false);
+                                }else if($j(switches).attr("value") == "closed"){
+                                    initialiseTable(false,true);
+                                }
+                            }
+                        });
+
+                        $j(".dateField").each(function(index, el) {
+                            if ($j(el).val()) {
+                                $j(el).val(moment(new Date($j(el).val())).format('L'));
+                            }
+                        });
+
+                        $j(".dateField").datepicker({
+                            todayBtn: "linked",
+                            language: window.params.locale,
+                            container: "#calendar",
+                            autoclose: true,
+                        });
+
+                        $j("#date1").datepicker( "setDate" , moment(moment().subtract(30,'days')).format('L'));
+                        $j("#date2").datepicker( "setDate" , moment().format() );
+                        
+                        //initialise table
+                        initialiseTable(true,false);
+    
+                        //fixed header again for resize window
+                        $j(window).resize(function() {
+                            adjustHeight();                                                         
+                        });                      
+                    });
+
+                    function adjustHeight(){
+                        var divPosition;
+                        var tableHeight;
+                        if($j(".floatThead-wrapper").position() != undefined){
+                            divPosition = $j(".floatThead-wrapper").position().top;
+                            divPosition = divPosition + 3;
+                            tableHeight = $j(window).height() - divPosition;
+                            $j('.divWrapper').height(tableHeight);
+                        }
+                    }
+
+                    function initialiseToggle(){       
+                        //clear div container div first
+                        $j('.toggleWrapper').empty();       
+   
+                        //build content
+                        content = '';
+
+                        content += '<div class="slds-form-element slds-col--padded">'; 
+                        content += '<div class="slds-float--right slds-form-element__control">';
+                        content += '<span class="slds-form-element__label">';
+                        content += '{!JSENCODE($ObjectType.Case__c.fields.Status__c.label)}';
+                        content += '</span>';
+                        content +=  '<input type="checkbox" class="multi-switch" unchecked-value="closed" checked-value="opened" value=""/>';
+                        content +=  '<span class="slds-form-element__label" id="cseStatus" style="padding-left: 12px;">';           
+                        content +=  '</span>';   
+                        content +=  '</div>';
+                        content +=  '</div>';         
+                                                                          
+                        $j('.toggleWrapper').append(content);
+
+                        //initialise switcher
+                        $j('.multi-switch').multiSwitch({
+                            textChecked     : 'Opened Cases',
+                            textNotChecked  : 'Closed Cases',
+                            functionOnChange: function (switches){
+                                if($j(switches).attr("value") == "opened"){
+                                    initialiseTable(false,false);
+                                }else if($j(switches).attr("value") == "closed"){
+                                    initialiseTable(false,true);
+                                }
+                            }
+                        });
+
+                        //set status text
+                        $j('#cseStatus').html('{!$Label.MyCasesDisplayMsg1}');
+
+                        //search data
+                        initialiseTable(true,false);
+                    }
+
+                    function initialiseTable(all,isclosed){
+                        if($j("#date1").val() != 'undefined' && $j("#date2").val() != 'undefined' ){
+                            $j('.divWrapper').empty(); 
+                            $j('.floatThead-table').empty();
+                            $j('table.fixTHeader').floatThead('destroy');
+
+                            //show spinner
+                            $j('#loadTable').show();
+
+                            if("{!decryptedBSId}" != null && "{!decryptedBSId}" != ''){
+                                ASPISMyCases.searchCases($j("#date1").val(),$j("#date2").val(),all,isclosed,function(result, event){
+                                    if (event.status){        
+                                        if(!result.errorMsg){
+                                            populate(result.lstCaseWrapper);
+
+                                            //set case status text
+                                            if(all == true){
+                                                $j('#cseStatus').html('{!$Label.MyCasesDisplayMsg1}');
+                                            }else{
+                                                if(isclosed == true){
+                                                    $j('#cseStatus').html('{!$Label.MyCasesDisplayMsg2}');
+                                                }else{
+                                                    $j('#cseStatus').html('{!$Label.MyCasesDisplayMsg3}');
+                                                }
+                                            }
+                                        }  
+                                    }else {
+                                        console.log(event.message);
+                                    }
+                                }, {escape:true});
+                            }
+                        }
+                    }
+
+                    function returnCorrectIconClass(column,classToApplied){
+                        if(column == '{!JSENCODE($ObjectType.Case__c.fields.Name.label)}'){
+                            return '.name' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Case__c.fields.Type__c.label)}'){
+                            return '.type' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Case__c.fields.Subject__c.label)}'){
+                            return '.subject' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Case__c.fields.Status__c.label)}'){
+                            return '.status' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Case__c.fields.Sales_order__c.label)}'){
+                            return '.so' + classToApplied;
+                        }
+                        //WCH 18/07/2019 C-003340 In R4, Add additional columns on 2 pages
+                        else if(column == '{!JSENCODE($ObjectType.PurchaseOrder__c.fields.PlateNumber__c.label)}'){
+                            return '.plateNumber' + classToApplied;
+                        }
+                        else if(column == '{!JSENCODE($ObjectType.PurchaseOrder__c.fields.Distributor__c.label)}'){
+                            return '.po' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Case__c.fields.CreatedDate.label)}'){
+                            return '.date' + classToApplied;
+                        }
+                    }   
+
+                    function htmlDecode(input){
+                        var e = document.createElement('div');
+                        e.innerHTML = input;
+                        // handle case of empty input
+                        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+                    }
+
+                    function showLoading(){
+                        $j('#loadTable').removeClass('slds-hide');
+                    }
+ 
+                    function populate(listWrapper){
+                        var content     = '';
+
+                        content     =  '<table id="tableCase" class="tablesorter fixTHeader slds-table slds-table_bordered slds-table_cell-buffer">';
+                        content     += '<thead>';
+                        content     += '<tr>';
+
+                        content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" scope="col"><span>';
+                        content     += '{!$Label.CaseNumber}';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass nameUP"/>';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass nameDOWN"/>';
+                        content     += '</span></th>';
+                        
+                        content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" scope="col"><span>';
+                        content     += '{!JSENCODE($ObjectType.Case__c.fields.Type__c.label)}';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass typeUP"/>';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass typeDOWN"/>';
+                        content     += '</span></th>';
+
+                        content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" scope="col"><span>';
+                        content     += '{!JSENCODE($ObjectType.Case__c.fields.Subject__c.label)}';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass subjectUP"/>';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass subjectDOWN"/>';
+                        content     += '</span></th>';                      
+
+                        content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" slds-truncate scope="col"><span>';
+                        content     += '{!JSENCODE($ObjectType.Case__c.fields.Status__c.label)}';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass statusUP"/>';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass statusDOWN"/>';
+                        content     += '</span></th>';
+
+                        content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" slds-truncate scope="col"><span>';
+                        content     += '{!JSENCODE($ObjectType.Case__c.fields.Sales_order__c.label)}';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass soUP"/>';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass soDOWN"/>';
+                        content     += '</span></th>';
+
+                        //WCH 18/07/2019 C-003340 In R4, Add additional columns on 2 pages
+                        if((listWrapper.length > 0 && listWrapper[0].cse.CountryCode__c=='ES') || '{!locale}'=='es_ES'){
+                            content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" slds-truncate scope="col"><span>';
+                            content     += '{!JSENCODE($ObjectType.PurchaseOrder__c.fields.PlateNumber__c.label)}';
+                            content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass plateNumberUP"/>';
+                            content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass plateNumberDOWN"/>';
+                            content     += '</span></th>';
+                        }
+
+                        content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" slds-truncate scope="col"><span>';
+                        content     += '{!JSENCODE($ObjectType.PurchaseOrder__c.fields.Distributor__c.label)}';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass poUP"/>';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass poDOWN"/>';
+                        content     += '</span></th>';
+
+                        content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" slds-truncate scope="col"><span>';
+                        content     += '{!JSENCODE($ObjectType.Case__c.fields.CreatedDate.label)}';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass dateUP"/>';
+                        content     += '<img src="{!URLFOR($Resource.slds, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass dateDOWN"/>';
+                        content     += '</span></th>';
+
+                        content += '</tr>';
+                        content += '</thead>';
+                           
+                        content += '<tbody>';
+
+                        if(listWrapper.length > 0){
+                            //building table body
+                            for(var i = 0; i < listWrapper.length; i++) {
+                                if(listWrapper[i].cse.Type__c != undefined && listWrapper[i].cse.Type__c == '{!problem}'){
+                                    content += '<tr style="background:#d8edff">';   
+                                }else{
+                                    content += '<tr>';   
+                                }
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row" style="position:relative;">';
+                                if(listWrapper[i].caseEncodedId != undefined){
+                                    content += '<a href="/apex/ASPISMyCaseDetail?id='+listWrapper[i].caseEncodedId+'" onclick="showLoading();" style="padding-right:2px">';
+                                    content += (listWrapper[i].cse.Name != undefined) ? listWrapper[i].cse.Name : '';
+                                    content += '</a>';
+                                }else{
+                                    content += (listWrapper[i].cse.Name != undefined) ? listWrapper[i].cse.Name : '';
+                                }
+
+                                if(!listWrapper[i].hasViewed){
+                                   content += '<span class="iconStyle" title="{!$Label.MyCasesDisplayMsg4}" style="position:fixed;">U</span>';
+                                }
+                                content += '</td>';
+                                
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (listWrapper[i].cse.Type__c != undefined) ? listWrapper[i].cse.Type__c : '';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (listWrapper[i].cse.Subject__c != undefined) ? listWrapper[i].cse.Subject__c : '';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (listWrapper[i].caseStatus != undefined) ? listWrapper[i].caseStatus : '';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                if(listWrapper[i].soEncodedId != undefined){
+                                    content += '<a href="/apex/ASPISSalesOrder?id='+listWrapper[i].soEncodedId+'" onclick="showLoading()">';
+                                    content += (listWrapper[i].cse.Sales_order__c != undefined) ? listWrapper[i].cse.Sales_order__r.Name : '';
+                                    content += '</a>';
+                                }else{
+                                    content += (listWrapper[i].cse.Sales_order__c != undefined) ? listWrapper[i].cse.Sales_order__r.Name : '';
+                                }
+                                content += '</td>';
+
+                                //WCH 18/07/2019 C-003340 In R4, Add additional columns on 2 pages
+                                if(listWrapper[0].cse.CountryCode__c=='ES'){
+                                    content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                    content += (listWrapper[i].cse.Purchase_order__c != undefined && listWrapper[i].cse.Purchase_order__r.PlateNumber__c != undefined) ? listWrapper[i].cse.Purchase_order__r.PlateNumber__c : '';
+                                    content += '</td>';
+
+                                }
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += (listWrapper[i].cse.Purchase_order__c != undefined && listWrapper[i].cse.Purchase_order__r.Distributor__r.Name != undefined) ? listWrapper[i].cse.Purchase_order__r.Distributor__r.Name : '';
+                                content += '</td>';
+
+                                content += '<td class="slds-text-body_regular slds-text-align_center" scope="row">';
+                                content += (listWrapper[i].cse.CreatedDate != undefined) ? moment(listWrapper[i].cse.CreatedDate).format('DD/MM/YYYY') : '';
+                                content += '</td>';
+
+                                content += '</tr>'; 
+                            }//end for
+                            
+                            content += '</tbody>';
+                            content += '</table>';
+                        }
+                        else if (listWrapper.length <= 0){
+                            //WCH 18/07/2019 C-003340 changed from colspan=7 to 8
+                            content += '<tr id="emptyTr"><td colspan="8" class="slds-text-body_regular slds-text-align_center">';
+
+                            content += '{!$Label.NoDataFound}';
+
+                            content += '</td></tr>';
+
+                            content += '</tbody>';
+                            content += '</table>';
+                        }
+                    
+                        $j('.divWrapper').append(content);
+                        
+                        //hide all arrows on initial loading
+                        $j('.iconHideClass').hide();
+                    
+                        //initialise table sorter
+                        $j("#tableCase").tablesorter({
+                            sortList: [[1,0]], 
+                            headers: {
+                                6: {
+                                    sorter: "dateParser"
+                                }
+                            }
+                        }).bind('sortEnd',function(event) {
+                            var table = event.target;
+                            var currentSort = table.config.sortList;
+                            
+                            // target the first sorted column
+                            var columnNum = currentSort[0][0];
+                            var columnName = $j(table.config.headerList[columnNum]).text();
+
+                            //hide active icon first
+                            $j('.iconHideClass').hide();
+
+                            $j('.sortClass').each(function(index,ele){
+                                if($j(ele).hasClass('tablesorter-headerDesc')){
+                                    var updatedClass = returnCorrectIconClass(columnName.trim(),'DOWN');
+
+                                    //show icon
+                                    $j(updatedClass).show();
+                                }else if($j(ele).hasClass('tablesorter-headerAsc')){
+                                    var updatedClass = returnCorrectIconClass(columnName.trim(),'UP');
+
+                                    //show icon
+                                    $j(updatedClass).show();
+                                }
+                            });
+                        }).floatThead({
+                            scrollContainer: function($table) {
+                                return $j('table.fixTHeader').closest('.divWrapper');
+                            },
+                            position: 'absolute'
+                        });
+
+                        if(listWrapper.length == 0){
+                            $j('#emptyTr').height($j(window).height()-($j('.floatThead-wrapper').position().top+50));
+                        }
+
+                        adjustHeight();
+                        $j('table.fixTHeader').floatThead('reflow');
+
+                        //hide spinner
+                        $j('#loadTable').hide();
+                    }
+
+                    renderIcons();
+
+                    showError({!hasErrors},{!isToastError});
+                    checkPageMessage({!hasErrors});
+                </script>   
+            </apex:form>    
+        </body>
+    </html>
+</apex:page>

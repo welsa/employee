@@ -1,0 +1,19 @@
+<template>
+    <div class="bigfont">
+        <div class="slds-p-bottom_small">
+            <lightning-input type="text" label={firstNameLabel} value={firstNameValue} required onchange={handlefirstNameInputChange}></lightning-input>
+        </div>
+        <div class="slds-p-bottom_medium lgc-bg">
+            <lightning-input type="text" label={lastNameLabel} value={lastNameValue} required onchange={handlelastNameInputChange}></lightning-input>
+        </div>    
+        <div class="slds-p-bottom_medium lgc-bg">
+            <lightning-input type="email" label={emailLabel} value={emailValue} required onchange={handleEmailInputChange}></lightning-input>
+        </div>
+        <div class="slds-p-bottom_medium lgc-bg">
+            <lightning-input type="tel" label={phoneLabel} value={phoneValue} required onchange={handlePhoneInputChange}></lightning-input>
+        </div>
+        <div class="slds-p-bottom_medium lgc-bg">
+        <lightning-textarea label={additionalInfoLabel} value={additionalInfoValue} onchange={handleAdditionalInputChange}></lightning-textarea>
+        </div>
+    </div>
+</template>

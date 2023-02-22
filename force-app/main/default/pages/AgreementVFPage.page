@@ -1,0 +1,179 @@
+<apex:page controller="AgreementCtrl" action="{!Init}" Id="AgreementPage" SideBar="false">
+
+<apex:includeScript value="{!URLFOR($Resource.popin,'popin.js')}"/>
+<!-- AMI 09/08/2018 : Community Rollout -->
+<!-- Added new JQuery Script -->
+<apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+<!-- <apex:includeScript value="{!URLFOR($Resource.jQuery_1_8_2_JS)}"/>
+<apex:includeScript value="{!URLFOR($Resource.jQuery_UI_1_8_JS)}"/> -->
+<!--<apex:includeScript value="{!URLFOR($Resource.Scroll)}"/>-->
+
+<style>
+
+        .overlay1 {         
+            position: fixed;
+            overflow: hidden;
+            left:0px;
+            top: 0px;
+            width:100%;
+            height:100%;
+            text-align:center;
+            z-index: 50101;
+         }      
+        .msgBx{
+            height:300px;
+            width:800px;
+            margin-top:-25px;
+            margin-left:-100px;
+            text-align:center;
+        }
+        .smallbox{
+            border: 4px solid #777;         
+            background-color:white;                 
+            -moz-border-radius: 10px;
+            border-radius: 10px;        
+            left: 35%;
+            position: absolute;
+            top: 20%;
+            z-index: 50101; 
+        }
+        .overback{      
+            opacity: 0.7; 
+            filter: alpha(opacity = 70);            
+            z-index: 50100;     
+            background-color:#000;      
+            position: fixed;
+            overflow: hidden;           
+            left:0px;
+            top: 0px;
+            width: 10000px;
+            height: 20000px;
+        }
+        .AgreementContent{
+            margin-top: 10px;
+        }
+        
+        
+        .close {
+          padding: 10px;
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            
+          font-size: 20px;
+          font-weight: bold;
+          line-height: 18px;
+          color: #000000;
+          text-shadow: 0 1px 0 #ffffff;
+          opacity: 0.2;
+          filter: alpha(opacity=20);
+          text-decoration: none;
+        }
+        .close:hover {
+          color: #000000;
+          text-decoration: none;
+          opacity: 0.4;
+          filter: alpha(opacity=40);
+          cursor: pointer;
+        }
+        
+</style>
+
+<script type="text/javascript">
+
+function showAgremment(flag){
+    var el = document.getElementById("agreement");
+    if(flag == 0){
+        el.style.visibility = "hidden";               
+    }
+    else{
+        el.style.visibility = "visible";                                    
+    }
+
+}
+
+function ManageButton(cb){
+    var el = document.getElementById("AgreementPage:AgreementForm:ConfirmBtn");
+
+    if(cb.checked){
+        el.setAttribute('disabled', 'false');
+        el.removeAttribute('disabled');
+        el.setAttribute('Class', 'btn');
+        el.onclick = function() { return Agree(); };
+    }
+    else{
+        el.setAttribute('disabled', 'true');
+        el.setAttribute('Class', 'btnDisabled');
+    }
+
+}
+
+    //function Redirect(){
+    //RedirectCtrl();
+    //}
+
+function Agree(){
+    AgreeCtrl();
+    return false;
+}
+
+
+
+$(function(){
+    $('#MyContent').slimScroll({
+        height: '410px'
+    });
+    
+    //if(!{!MyAgreement.General__c}){
+    //  var el = document.getElementById("CloseBtn");
+    //  el.style.visibility = "visible";
+    //}
+});
+
+window.onload = function(e){
+    if({!AgreementNeeded}){
+        showAgremment(1);
+        var el = document.getElementById("AgreementPage:AgreementForm:ConfirmBtn");
+        el.setAttribute('disabled', 'true');
+        el.setAttribute('Class', 'btnDisabled');
+    }
+
+
+}
+
+
+    
+
+
+</script>
+
+
+<apex:form id="AgreementForm">
+    <!--<apex:actionfunction name="RedirectCtrl" action="{!Redirect}"/>-->
+    <apex:actionfunction name="AgreeCtrl" action="{!Agree}"/>
+
+    <div id="agreement" style="visibility:hidden">       
+        <div class="overlay1">
+            <div class="smallbox msgBx" id="addApp">
+                <!--<div style="text-align:right;" id="CloseBtn">
+                    <a class="close" onclick="Redirect();">&times;</a>
+                </div>-->
+                <div class="AgreementContent" id="MyContent">
+                    <apex:outputtext escape="false" value="{!AgreementBody}" style="text-align:left"></apex:outputtext>
+                </div>
+                <br></br>
+                
+                <input type="checkbox" id="c1" name="cc" onclick="ManageButton(this);"/>
+            <br></br>
+                <label for="c1"><span></span>{!$Label.Agreement_I_Agree_To_Terms}</label>
+                
+                <br></br>
+                
+
+                <apex:commandbutton id="ConfirmBtn" value="{!$Label.Agreement_Confirm}"  action="{!Agree}" disabled="true" onclick="return Agree();"/>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:commandbutton value="{!$Label.Agreement_I_Disagree}"  action="{!Redirect}" />
+            </div>
+        </div>
+        <div class="overback"></div>          
+    </div>
+</apex:form>
+</apex:page>

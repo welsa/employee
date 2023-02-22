@@ -1,0 +1,30 @@
+.THIS .container.slds-modal__container {
+    width: 642px !important;
+}
+
+.THIS .slds-modal__content {
+    height: 500px !important;
+}
+
+.THIS .slds-modal__content.slds-p-around--medium {
+    padding: 30px;
+}
+
+.THIS .slds-modal__header h2 {
+    padding-top: 16px;
+}
+
+.THIS .slds-modal__footer {
+    /* text-align: center; */
+    padding: 20px;
+}
+
+.THIS .closeButton {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.THIS .slds-button.slds-button_icon.slds-modal__close.closeIcon.slds-button_icon-bare.slds-button_icon-inverse {
+    margin-right: -34px;
+    display: none;
+}

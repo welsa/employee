@@ -1,0 +1,168 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="ASPISWelcomeDetect" language="{!language}">
+
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>{!$Label.ASPISWelcomeDetectTitle}</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+
+        <!-- Initalise the global variable first as these values are used in the external javascript files -->
+        <script>
+            window.params = {
+                                // URL For Icons
+                                "closeSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                                "closePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                            };
+        </script>
+
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.VFP06, 'css/VFP06.css')}" />
+
+    </head>
+
+    <body>
+        <apex:form >
+            <div class="slds slds-text-align_center">
+                <div class="slds-text-align_center slds-m-top_large">
+                    <object data="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}" type="image/svg+xml" width="500" />
+                </div>
+
+                <div id="waitingPanel">
+                    <h1 id="statusText" class="slds-text-heading_large slds-m-top_xx-large">
+                        {!$Label.PleaseWait}
+                    </h1>
+
+                    <div id="spinner" class="spinnerContainer slds-m-top_xx-large">
+                        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+
+                    <div id="browserMessage"
+                         class="slds-notify_container container-bottom slds-hide">
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                    title="{!$Label.Close}"
+                                    type="button"
+                                    onclick="hideBrowserMessage();">
+                            </button>
+                            
+                            <h2>
+                                <apex:outputText value="{!$Label.BrowserSupported}"
+                                                 escape="false"/>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <iframe id="sessionPageWithDomain" class="checkConnection" src="{!$Label.AlphaScaleDomain & '/apex/ASPISVerifySession'}" />
+                <iframe id="sessionPage" class="checkConnection" src="https://c.{!currentInstance}.visual.force.com/apex/ASPISVerifySession" />
+            </div>
+            <apex:outputText id="renderText"/>
+            <apex:actionFunction name="redirectPage" action="{!redirectPage}" rerender="renderText">
+                <apex:param name="isConnected" value="" assignto="{!isConnected}" />
+                <apex:param name="isUsingDomain" value="" assignto="{!isUsingDomain}" />
+            </apex:actionFunction>
+            <!--VSU 02/04/18 C-002315-->
+            <apex:outputPanel id="errorMessage">
+                    <div id="toastMessage" 
+                        class="slds-notify_container slds-hide">
+                        <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                    title="{!$Label.Close}"
+                                    type="button"
+                                    onclick="hideError();">
+                            </button>
+                            <div class="slds-notify__content">
+                                <p class="slds-text-align_center customErrorMsg"></p>
+                                <apex:pagemessages id="toastErrorMessage" escape="false" />
+                            </div>
+                        </div>
+                    </div>
+            </apex:outputPanel>
+
+            <script>
+                if (typeof jQuery != 'undefined') {
+                    $j = jQuery.noConflict();
+                }
+                var intervalId;
+                var timeoutId;
+                var result = false;
+                var isUsingDomain = false;
+
+                // --------------------- Adding Event Listner ---------------------
+                if (window.addEventListener) {
+                    window.addEventListener("message", captureMessage, false);
+                } else {
+                    window.attachEvent("onmessage", captureMessage);
+                }
+
+                $j(document).ready(function() {
+                    if ({!isValidLink}) {
+                        // setInterval to check if the message has been received
+                        intervalId = setInterval(function() {
+                            if (result === true) {
+                                //console.log('Got it');
+                                stopThreads();
+                                redirectPage(result, isUsingDomain);
+                            }
+                        }, 500);
+
+                        // in case there are no message in the miliseconds stated as below
+                        // redirect the page to ASPISConnect
+                        timeoutId = setTimeout(function() {
+                            stopThreads();
+                            //console.log('No');
+                            redirectPage(result, isUsingDomain);
+                        }, 3000);
+                    } else {
+                        showErrorMessage();
+                    }
+                });
+
+                // --------------------- Event Listner Handler --------------------- 
+                function captureMessage(msg) {
+                    var jsonResult = JSON.parse(msg.data);
+                    console.log('## jsonResult', jsonResult);
+                    result = jsonResult.success;
+
+                    // giving priority to domain
+                    if(!isUsingDomain)
+                    {
+                        isUsingDomain = jsonResult.isDomain;
+                    }
+                }
+
+                // --------------------- function to stop the threads running --------------------- 
+                function stopThreads() {
+                    clearInterval(intervalId);
+                    clearTimeout(timeoutId);
+                }
+
+                // --------------------- function to replace the text and hide the spinner --------------------- 
+                function showErrorMessage() {
+                    $j("#statusText").addClass("text-red");
+                    $j("#statusText").text("{!JSENCODE($Label.InvalidRequest)}");
+                    $j("#spinner").hide();
+                }
+
+                displayBrowserMessage();
+                //renderCloseSVG();
+                renderIcons();
+
+                showError({!hasErrors
+                }, {!isToastError
+                });
+                checkPageMessage({!hasErrors
+                });
+            </script>
+        </apex:form>
+    </body>
+
+    </html>
+</apex:page>

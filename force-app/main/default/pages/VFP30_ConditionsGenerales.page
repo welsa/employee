@@ -1,0 +1,98 @@
+<!--
+  @description       : 
+  @author            : 
+  @group             : 
+  @last modified on  : 05-12-2022
+  @last modified by  : 
+-->
+<apex:page controller="VFC30_ConditionsGenerales"  showHeader="false" sidebar="true" standardStylesheets="false" applyBodyTag="false" docType="html-5.0" applyHtmlTag="false">
+    <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+    <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+    <apex:form >
+        <head>
+            <meta charset="utf-8"/>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            
+        <!-- Bootstrap -->
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/bootstrap.min.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/animate.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/font-awesome.min.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/jquery.bxslider.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/normalize.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/set1.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/overwrite.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/style.css')}" /> 
+ 
+            <title>AlphaScale | CGV</title>
+        </head>
+        
+          <style>
+            #containerTop{
+                padding-top: 100px;
+            }
+            
+            
+         </style>
+         
+         <c:ASPISHeader />     
+         <div class="bootstrap-iso">
+        <body style = "padding-bottom: 100px;"> 
+            <div class="row">
+                <div class="text-center">
+                    <h3><b>CONDITIONS GÉNÉRALES DE VENTE</b></h3>
+                    <h4><b>Tous nos contrats sont soumis aux présentes conditions générales de vente :</b></h4>
+                </div>
+                <div class="col-md-4 col-md-offset-0">
+                    <div class="text-justify">
+                        <apex:outputText value="{!cgvBody}" escape="false" />
+                    </div>
+                </div>
+                <div class="col-md-4 col-md-offset-0">
+                    <div class="text-justify">
+                        <apex:outputText value="{!cgvBody2}" escape="false" />
+                    </div>
+                </div>
+                <div class="col-md-4 col-md-offset-0">
+                    <div class="text-justify">
+                        <apex:outputText value="{!cgvBody3}" escape="false" />
+                    </div>
+                </div>
+                
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4">
+                    <hr></hr>
+                    <div class="text-center">
+                        <h6><b>Alpha Scale France SAS</b></h6>
+                        <h6>Capital de 10.000 Euros</h6>
+                        <h6>Siège Social : 9 avenue des Andes – 91940 Les Ulis – France.</h6>
+                        <h6>SIREN : 812 650 166 RCS Paris – TVA FR40812650166</h6>
+                        <h6>+33 1 76 40 01 24</h6>
+                    </div>
+                </div>
+                <hr/>
+                <div class="col-md-6 col-md-offset-3 text-right">
+                    <div class="text-center">
+                        <h6>Si vous souhaitez télécharger les CGV en format PDF, veuillez cliquer ici: &nbsp;&nbsp; 
+                            <apex:outputLink value="{!cgvPDF}" id="ViewPrivacyNoticePDF" target="_blank">{!$Label.CGenerale}</apex:outputLink>
+                        </h6>
+                    </div>
+
+                </div>
+            </div>
+     </body>        
+           <div class="navbar navbar-fixed-bottom" style = "background: linear-gradient(to right, #3989C9, #103184); min-height:40px;">  
+           </div>
+           </div>
+            
+    <script>
+        if (typeof jQuery != 'undefined') {
+            $j = jQuery.noConflict();
+        }
+        $j(document).click(function(event){
+            closeDropdowns(event);
+        });
+    </script>  
+    </apex:form>
+</apex:page>

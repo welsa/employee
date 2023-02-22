@@ -1,0 +1,17 @@
+<!-- sldsValidatorIgnore -->
+<!-- sldsValidatorIgnore -->
+<!-- sldsValidatorIgnore -->
+<template>
+    <div style = "background-color:#027180;height:3.625rem;display: block; cursor: pointer;" class = "clickDiv" onclick = {openCommLink} onmouseover= {handleAddColor} onmouseout  = {handleRemoveColor}>
+        <lightning-layout class = "slds-grid_align-center slds-grid_vertical-align-center">
+            <lightning-layout-item size = "7" padding="around-small">
+                <p style = "color:white;font-weight:bold;font-size:small" class =" slds-text-align_center" >{label.communicationLabel}</p>
+            </lightning-layout-item>
+            <lightning-layout-item size = "4"  padding="around-small">
+            <!-- sldsValidatorIgnoreNextLine -->
+                <input readonly  type="number" style = "height:100%;width:100%;color:red;text-align:center;font-weight:bold;" name="conteur" value = {commNonLue} />
+            </lightning-layout-item>
+        </lightning-layout>
+
+    </div>
+</template>

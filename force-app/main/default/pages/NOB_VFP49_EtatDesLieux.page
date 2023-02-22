@@ -1,0 +1,715 @@
+<!--
+ @File Name          : NOB_VFP49_EtatDesLieux
+ @Description        : visualforce pdf form
+ @Author             : HMO
+ @Group              : 
+ @Last Modified By   : DUN
+ @Last Modified On   : 05-24-2021
+ @Modification Log   : 
+ ==============================================================================
+  Ver         Date                     Author      Modification
+ ==============================================================================
+  1.0    25/08/2020, 11:00      HMO      1.0
+  1.1    31/08/2020  13.42      HMO      1.1   
+  1.2    05/11/2020, 16:42      HMO      1.2      All EL using Case replaced by formula fields
+-->
+
+<apex:page applyHtmlTag="false"
+           showHeader="false"
+           standardStylesheets="false"
+           renderAs="pdf"
+           applyBodyTag="false"
+           docType="html-5.0"
+           standardController="workOrder"
+           extensions="NOB_VFC49_EtatDeLieux">
+
+    <html>
+        <head>
+            <style>
+
+                    @media print {
+                        /* html, body {
+                            page-break-after: avoid;
+                            page-break-before: avoid;
+                        } */
+                        footer {
+                            page-break-after: always;
+                        }
+                    }
+
+                    @page {
+                            size: A4;
+                            margin-top: 0.5in;
+                            margin-bottom: 0.5in;
+                            margin-left: 0.5in;
+                            margin-right: 0.35in;
+
+                        /* @top-center {
+                        content: element(header);
+                        } */
+
+                        @bottom-left {
+                            content: element(footer);
+                        }
+
+                        @bottom-right {
+                            content: "Page " counter(page) " of " counter(pages);
+                            content:counter(page);
+                        }
+
+                    }
+
+                    *{
+                        box-sizing: border-box;
+                    }
+
+                    html,
+                    body{
+                        height: 100%;
+                    }
+
+                    body{
+                        /* border: 1px solid red; */
+                        font-family: sans-serif,Arial Unicode MS;
+                        font-size: 14px;
+                        color: #000000;
+                        font-weight: normal;
+                        font-style: normal;
+                        text-decoration: none;
+                        /* padding-bottom: 25px; */
+                        
+                    }
+
+                    div.header{
+                        top:0;
+                        left: 0;
+                        width: 100%;
+                        height: 150px;
+                        text-align: center;
+                        /* position: running(header); */
+                    }
+
+                    div.content{
+                        /* border: 1px solid black; */
+                        /* min-height: 100vh; */
+                        /* height: 600px; */
+                    }
+
+                    /* table{
+                        width: 100%;
+                    } */
+
+                    table.header-table{
+                        padding-top:20px;
+                        text-align:left;
+                    }
+
+                    hr{
+                        height:1px;
+                        border-width:0;
+                        color:gray;
+                        background-color:gray;
+                        margin-top: 20px;
+                    }
+
+                    table thead{
+                        color: #000000;
+                        font-family: Arial Unicode MS,sans-serif;
+                        font-size: 13px;
+                        background-color: #E3F2FD;
+                    }
+
+                    .text-grey{
+                        color: #7f7f7f;
+                    }
+
+                    .text-red{
+                        color: red;
+                    }
+
+                    .text-small{
+                        font-size: 9px;
+                    }
+
+                    .table-vehicule{
+                        width:100%;
+                        /*width: 50%;
+                        padding-right: 10px;
+                        padding-top: 15px;
+                        float:left;*/
+                    }
+
+                    .table-client{
+                        width:100%;
+                        /*width: 50%;
+                        padding-left: 10px;
+                        padding-top: 15px;
+                        float:left;*/
+                    }
+
+                    .table-client td{
+                        vertical-align: top;
+                    }
+
+                    .table-vehicule td{
+                        /* border:solid 1px #fab;  */
+                        width:100px;
+                        word-wrap:normal;
+                        word-break: normal;
+                        vertical-align:top;
+                    }
+
+                    .table-client td{
+                        /* border:solid 1px #fab;  */
+                        /*width:100px;
+                        word-break: normal;
+                        word-wrap:normal;
+                        vertical-align:top;*/
+                    }
+
+
+                    .content{
+                        content:"";
+                        clear: both;
+                    }
+
+                    .footer {
+                        display: block;
+                        padding: 10px;
+                        position: running(footer);
+                    }
+            
+                    .content-page-one{
+                        clear:both;
+                    }
+
+                    .content-page-two{
+                        clear:both;
+                    }
+
+                    .text-grey-small{
+                        color: #7f7f7f;
+                        font-size: 11px;
+                    }
+
+                    .table-cree-le td{
+                        text-align:center;
+                        background-color:#E3F2FD;
+                    }
+
+                    .table-vehicule-pret td{
+                        text-align:center;
+                        border: 1px solid gray;
+                    }
+
+                    .header-grey{
+                        color: #7f7f7f;
+                        text-align:center;
+                    }
+
+                    .texte p{
+                        background-color:#E3F2FD;
+                    }
+
+                    .table-6 thead tr{
+                        background-color:#E3F2FD;
+                        text-align:center;
+                    }
+
+                    .table-6 tbody td{
+                        border: 1px solid gray;
+                        text-align:center;
+                    }
+
+                    .table-temps-expertise{
+                        width:30%;
+                        float:left;
+                    }
+
+                    .table-info-or{ 
+                        word-break: normal;
+                        word-wrap:normal;
+                    }
+
+                    .table-temps-expertise td{
+                        text-align: center;
+                    }
+
+                    .table-pointages{
+                      clear:both;
+                    }
+
+                    .expertise{
+                        margin-top:20px;
+                    }
+
+                    .check{
+                        clear:both;
+                    }
+
+                </style>
+        </head>
+
+        <body>
+                <c:NOB_Header acctName="{!wo.NOB_TECH_ReparateurName__c}" acctBillingStreet="{!wo.NOB_TECH_ReparateurBillingStreet__c}" acctBillingPostalCode="{!wo.NOB_TECH_ReparateurBillingPostalCode__c}"
+                acctBillingCity="{!wo.NOB_TECH_ReparateurBillingCity__c}" acctPhone="{!wo.NOB_TECH_ReparateurPhone__c}" acctFax="{!wo.NOB_TECH_ReparateurFax__c}" contactName="{!wo.NOB_TECH_ContactPickupFirstName__c} {!wo.NOB_TECH_ContactPickupLastName__c}"
+                vehiculeBrand="{!wo.NOB_TECH_VehicleBrand__c}" vehiculeRegistrationNumber="{!wo.NOB_TECH_VehicleRegistrationNumber__c}" localdt="{!strlocaldt}"/>
+                
+                <div class = "footer" name = "footer">
+                    <p>Prefikar</p>
+                </div>
+                
+                <div class="content-page-one" style="page-break-after:always;">
+                    <hr/>
+                    <div class="content">
+                        <table class="table-client">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">CLIENT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-grey">Civilité&nbsp;:</td>
+                                                <td>{!wo.NOB_TECH_ContactPickupSalutation__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Nom&nbsp;:</td>
+                                                <td>{!wo.NOB_TECH_ContactPickupLastName__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Prenom&nbsp;:</td>
+                                                <td>{!wo.NOB_TECH_ContactPickupFirstName__c}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-grey">E-mail&nbsp;:</td>
+                                                <td>{!wo.NOB_TECH_ContactPickupEmail__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey"></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                            <thead>
+                                <tr>
+                                    <th colspan="2">DOMICILE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-grey">Adresse&nbsp;:</td>
+                                                <td>{!wo.NOB_InsuredStreet__c}&nbsp;{!wo.NOB_InsuredZipCode__c}
+                                                    {!wo.NOB_InsuredCity__c}&nbsp;{!wo.NOB_TECH_ContactPickup_MailingCountry__c}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-grey">Tel&nbsp;:</td>
+                                                <td>{!wo.NOB_TECH_ContactPickupPhone__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Mobile&nbsp;:</td>
+                                                <td>{!wo.NOB_TECH_ContactPickupMobilePhone__c}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                            <thead>
+                                <tr>
+                                    <th colspan="2">BUREAU</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-grey">Adresse&nbsp;:</td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-grey">Tel&nbsp;:</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Mobile&nbsp;:</td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                            <thead>
+                                <tr>
+                                    <th colspan="2">AUTRE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-grey">Adresse&nbsp;:</td>
+                                                <td>{!wo.NOB_TECH_ContactPickup_OtherStreet__c}&nbsp;{!wo.NOB_TECH_ContactPickup_OtherPostalCode__c}
+                                                    {!wo.NOB_TECH_ContactPickup_OtherCity__c}&nbsp;{!wo.NOB_TECH_ContactPickup_OtherCountry__c}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-grey">Tel&nbsp;:</td>
+                                                <td>{!wo.NOB_TECH_ContactPickup_OtherPhone__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Mobile&nbsp;:</td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table-vehicule">
+                            <thead>
+                            <tr>
+                                <th colspan="4">VEHICULE</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-red">Immatriculation&nbsp;:</td>
+                                                <td class="text-red">{!wo.NOB_TECH_VehicleRegistrationNumber__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Marque&nbsp;:</td>
+                                                <td>{!wo.NOB_VehicleBrand__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Modèle&nbsp;:</td>
+                                                <td>{!wo.NOB_VehicleModel__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">1ere M.en.C.&nbsp;:</td>
+                                                <!-- <td><apex:outputText value="{0,date,yyyy/MM/dd}">
+                                                    <apex:param value="{!NOW()}" />
+                                                </apex:outputText>
+                                                </td>-->
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Couleur&nbsp;:</td>
+                                                <td>{!wo.NOB_Color__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Type&nbsp;de&nbsp;peinture&nbsp;:</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Assurance&nbsp;:</td>
+                                                <td>{!wo.NOB_TECH_BusinessProviderName__c}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width:50%">
+                                        <table>
+                                            <tr>
+                                                <td class="text-grey">Puissance&nbsp;:</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Energie&nbsp;:</td>
+                                                <td>{!wo.NOB_Energy__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">N° de série&nbsp;:</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Type mine&nbsp;:</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-grey">Observation(s)&nbsp;:</td>
+                                                <td>{!wo.NOB_DamageType__c}&nbsp;{!wo.NOB_TECH_DamageDetails__c}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+<!-- line break -->
+                <div class = "content-page-two" style="page-break-before:always;">
+                    <br/>
+                    <br/>
+                    <c:NOB_Header acctName="{!wo.NOB_TECH_ReparateurName__c}" acctBillingStreet="{!wo.NOB_TECH_ReparateurBillingStreet__c}" acctBillingPostalCode="{!wo.NOB_TECH_ReparateurBillingPostalCode__c}"
+                    acctBillingCity="{!wo.NOB_TECH_ReparateurBillingCity__c}" acctPhone="{!wo.NOB_TECH_ReparateurPhone__c}" acctFax="{!wo.NOB_TECH_ReparateurFax__c}" contactName="{!wo.NOB_TECH_ContactPickupFirstName__c} {!wo.NOB_TECH_ContactPickupLastName__c}"
+                                  vehiculeBrand="{!wo.NOB_TECH_VehicleBrand__c}" vehiculeRegistrationNumber="{!wo.NOB_TECH_VehicleRegistrationNumber__c}" localdt="{!strlocaldt}"/>
+
+                    <hr/>
+                    <div class = "body-container">
+                        <table class = "table-cree-le" style = "width:100%;">
+                            <thead class = "header-grey" style = "background-color:white;">
+                                <th>O.R.</th>
+                                <th>créé le</th>
+                                <th>terminé le</th>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                    <td style = "width:60%;text-align:left;">MISSION N° {!wo.WorkOrderNumber}</td>
+                                    <td style = "width:20%;"><apex:outputText value="{0,date,dd/MM/YYYY}">
+                                        <apex:param value="{!wo.CreatedDate}" />
+                                        </apex:outputText>
+                                    </td>
+                                    <td></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+
+                        <table class = "table-vehicule-pret" style = "width:100%;">
+                            <thead class = "header-grey" style = "background-color:white;">
+                                <th>Véhicule de prêt</th>
+                                <th>immatriculation</th>
+                                <th>départ</th>
+                                <th>retour</th>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{!rent.NOB_ReplacementVehicule__r.NOB_Make__c} {!rent.NOB_ReplacementVehicule__r.NOB_Model__c}</td>
+                                <td>{!rent.NOB_ReplacementVehicule__r.NOB_PlateNumber__c}</td>
+                                <td>{!dateRentalVR} {!timeRentalVR}</td>
+                                <td>{!dateReturnVR} {!timeReturnVR}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <div class = "or-wrapper" style = "width:100%;padding-top:20px;">
+                            <table class = "table-info-or" style = "float:left; width:60%;">
+                                    <tr>
+                                        <th style = "background-color:#E3F2FD;font-weight:normal;" colspan="5">INFORMATION MISSION</th>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey-small">Immat:</td>
+                                        <td>{!wo.NOB_TECH_VehicleRegistrationNumber__c}</td>
+                                        <td><span style = "padding-right:25px;">&nbsp;</span></td>
+                                        <td class = "text-grey-small">Numéro:O.R:</td>
+                                        <td>{!wo.WorkOrderNumber}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey-small">Marque:</td>
+                                        <td>{!wo.NOB_VehicleBrand__c}</td>
+                                    </tr>
+                                    <tr colspan="2">
+                                        <td class = "text-grey-small">Modèle:</td>
+                                        <td colspan = "3">{!wo.NOB_VehicleModel__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey-small">Date de début:</td>
+                                        <td></td>
+                                        <td cellpadding="10">&nbsp;</td>
+                                        <td class = "text-grey-small">carburant:</td>
+                                        <td>{!wo.NOB_Carburant__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey-small">Date de livraison prévue:</td>
+                                        <td>
+                                            <apex:outputText value="{0,date,dd/MM/YYYY}">
+                                            <apex:param value="{!wo.NOB_VehiculeReturnDate__c}" />
+                                            </apex:outputText>
+                                        </td>
+                                        <td cellpadding="10">&nbsp;</td>
+                                        <td class = "text-grey-small">kilométrage:</td>
+                                        <td>{!wo.NOB_Mileage__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey-small">Date fin:</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey-small">Cabinet:</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey-small">Priorité:</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey-small">Observat.</td>
+                                        <td colspan = "4" style = "font-size:10px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey-small">Avancement:</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td style = "background-color:black;height:20px;" colspan = "5"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style = "background-color:#E3F2FD;" colspan = "5" >INFORMATION VÉHICULE DE REMPLACEMENT</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey">VDR:</td>
+                                        <td>{!rent.Name}</td>
+                                        <td cellpadding="10">&nbsp;</td>
+                                        <td class = "text-grey">Jour de prêt:</td>
+                                        <td>{!dateRentalVR} {!timeRentalVR}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey">Marque:</td>
+                                        <td>{!rent.NOB_ReplacementVehicule__r.NOB_Make__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey">Modele:</td>
+                                        <td>{!rent.NOB_ReplacementVehicule__r.NOB_Model__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class = "text-grey">Reception:</td>
+                                        <td>{!dateRendezVous} {!timeRendezVous}</td>
+                                        <td cellpadding="10">&nbsp;</td>
+                                        <td class = "text-grey">Restitution:</td>
+                                        <td>{!dateReturnVR} {!timeReturnVR}</td>
+                                    </tr>
+                            
+                            </table>
+
+                            <div class = "img-container" style = "float:right;margin-top:-14px;">
+                                <div><p style = "text-align:center;background-color:#E3F2FD;height:19px;">CAROSSERIE</p></div>
+                                <apex:image url="{!URLFOR($Resource.VFP49,'VFP49/VFP49_EtatDesLieux/images/voiture.PNG')}" style="height:350px;width:250px;"/>
+                            </div>
+                        </div>
+            
+                        
+                        <div class = "texte" style = "clear:both;">
+                            <p>LISTE DES TAUX</p>
+                        </div>
+                        <div style = "padding-top:8px;"></div>
+                        <div class = "table-wrapper">
+                            <table class = "table-6" style = "width:70%;float:left;">
+                            <thead>
+                                <tr style = "font-weight:bold;">
+                                    <td colspan="3">Mécanique</td>
+                                    <td colspan = "3">Tôlerie</td>
+                                    <td style = "width:15%;">Peinture</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                        <td>M1&nbsp;:</td>
+                                        <td>M2&nbsp;:</td>
+                                        <td>M3&nbsp;:</td>
+                                        <td>T1&nbsp;:</td>
+                                        <td>T2&nbsp;:</td>
+                                        <td>T3&nbsp;:</td>
+                                        <td>P2&nbsp;:</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>{!wo.NOB_TECH_ReparateurRate1__c}</td>
+                                        <td>{!wo.NOB_TECH_ReparateurRate2__c}</td>
+                                        <td>{!wo.NOB_TECH_ReparateurRate3__c}</td>
+                                        <td>{!wo.NOB_TECH_ReparateurPaintRate__c}</td>
+                                    </tr>
+                            </tbody>
+                            </table>
+
+                            <table class = "table-temps-expertise">
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style = "text-decoration:underline;">Temps expertise&nbsp;:</td>
+                                </tr>
+                                <tr>
+                                    <td>37.7</td>
+                                </tr>
+                            </table> 
+                        </div> 
+
+                        <div class = "texte" style = "clear:both;padding-top:5px;">
+                            <p>TOTAL DES POINTAGES</p>
+                        </div>
+                        <table class = "table-pointages">
+                            <!-- <th style = "background-color:#E3F2FD;width:100%;">TOTAL DES POINTAGES</th> -->
+                                <tr class = "text-small">
+                                    <td>Mécanique&nbsp;(0,00&nbsp;%&nbsp;-&nbsp;0.00)</td>
+                                    <td>:</td>
+                                    </tr>
+                                    <tr class = "text-small">
+                                    <td>Tôlerie&nbsp;(0,00&nbsp;%&nbsp;-&nbsp;0.00)</td>
+                                    <td>:</td>
+                                    </tr>
+                                    <tr class = "text-small">
+                                    <td>Préparation&nbsp;(0,00&nbsp;%&nbsp;-&nbsp;0.00)</td>
+                                    <td>:</td>
+                                    </tr>
+                                    <tr class = "text-small">
+                                    <td>Peinture&nbsp;(0,00&nbsp;%&nbsp;-&nbsp;0.00)</td>
+                                    <td>:</td>
+                                    </tr>
+                                    <tr class = "text-small">
+                                    <td>Lavage&nbsp;(0,00&nbsp;%&nbsp;-&nbsp;0.00)</td>
+                                    <td>:</td>
+                                    </tr>
+                                    <tr class = "text-small">
+                                    <td>Réception&nbsp;(0,00&nbsp;%&nbsp;-&nbsp;0.00)</td>
+                                    <td>:</td>
+                                    </tr>
+                                    <tr class = "text-small">
+                                    <td>Restitution&nbsp;(0,00&nbsp;%&nbsp;-&nbsp;0.00)</td>
+                                    <td>:</td>
+                                </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class = "content-page-three" style="page-break-before:always;">
+                    <br/><br/><br/>
+                    <c:NOB_Header acctName="{!wo.NOB_TECH_ReparateurName__c}" acctBillingStreet="{!wo.NOB_TECH_ReparateurBillingStreet__c}" acctBillingPostalCode="{!wo.NOB_TECH_ReparateurBillingPostalCode__c}"
+                    acctBillingCity="{!wo.NOB_TECH_ReparateurBillingCity__c}" acctPhone="{!wo.NOB_TECH_ReparateurPhone__c}" acctFax="{!wo.NOB_TECH_ReparateurFax__c}" contactName="{!wo.NOB_TECH_ContactPickupFirstName__c} {!wo.NOB_TECH_ContactPickupLastName__c}"
+                                  vehiculeBrand="{!wo.NOB_TECH_VehicleBrand__c}" vehiculeRegistrationNumber="{!wo.NOB_TECH_VehicleRegistrationNumber__c}" localdt="{!strlocaldt}"/>
+
+                    <hr style = "margin-top:-5px;"/>
+                    <div class = "expertise">
+                        <p class = "text-small">Expertise&nbsp;(0,00 % - 0.00)&nbsp;:</p>
+                    </div>
+                </div>
+        </body>
+    </html>
+</apex:page>

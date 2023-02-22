@@ -1,0 +1,15 @@
+<!--
+  @description       : 
+  @author            : HRM
+  @group             : 
+  @last modified on  : 12-02-2021
+  @last modified by  : HRM
+  Modifications Log
+  Ver   Date         Author   Modification
+  1.0   11-26-2021   HRM   Initial Version
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <lightning:flow aura:id="flowData" onstatuschange="{!c.statusChange}" />
+</aura:component>

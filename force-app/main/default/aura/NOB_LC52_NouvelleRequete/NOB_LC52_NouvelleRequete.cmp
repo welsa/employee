@@ -1,0 +1,226 @@
+<aura:component controller = "NOB_LC52_NouvelleRequete" implements="force:lightningQuickAction,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:actionOverride" access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="businessProvider" type="Account[]" />
+    <aura:attribute name="firstAccount" type="Account" />
+    <aura:attribute name="accountType" type="String" default="select" />
+    <aura:attribute name="popupContact" type="Boolean" default="false" />
+    
+    <aura:attribute name="firstChoix" type="NOB_AccountPricebook__c" />
+    <aura:attribute name="choixType" type="String" default="select" />
+    
+    <aura:attribute name="choixOffre" type="NOB_AccountPricebook__c[]" />
+    <aura:attribute name="assureField" type="String" default=""/>
+    
+    
+    
+    <aura:attribute name="contact" 
+                    type="Contact" 
+                    default="{ 'sobjectType': 'Contact',
+                             'MailingStreet': '',
+                             'MailingCity':'',
+                             'MailingPostalCode' : '',
+                             'MailingState' : '' ,
+                             'MailingCountry' : ''}"/>
+    <aura:attribute name = "recordTypeName" type = "String"/>
+    <aura:attribute name = "recordOwner"    type = "String"/>
+    <aura:attribute name="countries" type="Map" default="{}"/>
+ 
+    
+    <!--HMO 24-11-2020-->
+    <aura:attribute name="case" 
+                        type="Case" 
+                        default="{ 'sobjectType': 'Case'}"/>
+    
+    
+    <!--Create Contact Modal-->
+    <aura:if isTrue="{!v.popupContact}">
+        
+        <lightning:recordEditForm aura:id="recordFormContact" objectApiName="Contact" onerror="{!c.handleErrorContact}" onsubmit="{!c.handleSubmitContact}" onsuccess="{!c.handleSuccessContact}" onload = "{!c.handleLoadContact}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon class="slds-button_icon slds-modal__close slds-button_icon-inverse" iconName="utility:close" variant="bare" onclick="{! c.closeCreateContact }" alternativeText="Fermer" title="Fermer" />
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Nouveau contact : Assuré / Conducteur </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        
+                        <lightning:messages />
+                        
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12" padding="around-medium">
+                                <h2 class="slds-text-heading_small">Informations sur le contact</h2>
+                            </lightning:layoutItem>
+
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="Name"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="Email"/>
+                            </lightning:layoutItem>
+                       
+                        
+                        
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="AccountId"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="NOB_EuropeanPassport__c"/>
+                            </lightning:layoutItem>
+                        
+                        
+                        
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="Phone"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="NOB_IsPersonAccount__c"/>
+                            </lightning:layoutItem>
+                        
+                        
+                       
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="MobilePhone"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="NOB_InsuredtTVASubject__c"/>
+                            </lightning:layoutItem>
+                        
+                        
+                            <lightning:layoutItem size="6" padding="around-medium">
+                                <h2 class="slds-text-heading_small">Coordonnées</h2>
+                                <lightning:inputAddress
+                                                        aura:id="myaddress"
+                                                        addressLabel="Address"
+                                                        streetLabel="Rue"
+                                                        cityLabel="Ville"
+                                                        countryLabel="Pays"
+                                                        provinceLabel="Région/Province"
+                                                        postalCodeLabel="Code postal"
+                                                        street="{!v.contact.MailingStreet}"
+                                                        city="{!v.contact.MailingCity}"
+                                                        country="{!v.contact.MailingCountry}"
+                                                        province="{!v.contact.MailingState}"
+                                                        postalCode="{!v.contact.MailingPostalCode}"
+                                                        required="true"
+                                                        fieldLevelHelp="Enter your Mailing address"
+                                                        showAddressLookup="true"
+                                                        />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small"></lightning:layoutItem>
+                        
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="NOB_AddressType__c"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small"></lightning:layoutItem>
+                           
+                            <lightning:layoutItem size="12" padding="around-medium">
+                                <h2 class="slds-text-heading_small">Information entreprise</h2>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="NOB_InsuredCompanyName__c"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:inputField fieldName="NOB_InsuredTaxNumber__c"/>
+                            </lightning:layoutItem>
+                        
+                            <lightning:layoutItem size="12" padding="around-medium">
+                                <h2 class="slds-text-heading_small">Information système</h2>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                Propriétaire du contact
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                Type d'enregistrement du contact 
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <p class = "boldText" >{!v.recordOwner}</p>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <p class = "boldText">{!v.recordTypeName}</p>
+                            </lightning:layoutItem>
+                        
+                        </lightning:layout>
+
+                    </div>
+                    <footer class="slds-modal__footer">
+                        
+                        <lightning:button class="slds-m-top_small" variant="brand" name="cancel" label="Annuler"  onclick="{!c.closeCreateContact}"/>
+                        
+                        <lightning:button class="slds-m-top_small" variant="brand" type="submit" name="register" label="Enregistrer" />
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </lightning:recordEditForm>
+        
+        
+    </aura:if>
+    
+    
+
+    <lightning:card title="Nouvelle Requete">
+    <lightning:recordEditForm aura:id="recordForm" objectApiName="Case" onerror="{!c.handleError}" onsubmit="{!c.handleSubmit}" onsuccess="{!c.handleSuccess}" onload = "{!c.handleLoad}">
+        <lightning:messages />
+
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                    <lightning:inputField required="true" fieldName="NOB_IncidentDateandTime__c"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                    <lightning:inputField required="true"  fieldName="Status"/>
+                </lightning:layoutItem>
+
+
+                
+                
+
+                <lightning:layoutItem size="6" padding="horizontal-small" >
+                    
+                    <aura:if isTrue = "{!v.accountType == 'readonly'}">
+                        <lightning:input variant="label-inline" label="Apporteur d'affaire" value="{!v.firstAccount.Name}" readonly="true"></lightning:input>
+                        
+                        <aura:set attribute="else">
+                            <lightning:select class="slds-form-element_horizontal" variant="label-inline" aura:id="selectedBusinessProvided"  label="Apporteur d'affaire" required="true">
+                                <aura:iteration items="{!v.businessProvider}" var="prov">
+                                    <option value="{!prov.Id}" text="{!prov.Name}" />  
+                                </aura:iteration>
+                            </lightning:select>
+                        </aura:set>
+                    </aura:if>
+    
+                    
+
+                </lightning:layoutItem>
+                
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                </lightning:layoutItem>
+                
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                    <lightning:inputField required="true" fieldName="Origin"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                    <lightning:inputField required = "true" fieldName="NOB_VehicleRegistrationNumber__c"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                    <lightning:inputField required="true" fieldName="NOB_DamageType__c"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                            <lightning:inputField required="true" label="Assurée" fieldName="NOB_Assure__c" value = "{!v.assureField}"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                    <lightning:inputField required="true" fieldName="NOB_VehicleBrand__c"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                    <lightning:inputField required = "true" fieldName="NOB_InsurerClaimNumber__c"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6" padding="horizontal-small">
+                    <lightning:inputField required="true" fieldName="NOB_VehicleModel__c"/>
+                </lightning:layoutItem>
+            </lightning:layout>
+        <p style="text-align:right" class="slds-m-right_small">
+            <lightning:button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Sauvegarder" />
+            <lightning:button class="slds-m-top_small" label="Créer contact" variant="brand" onclick="{!c.showCreateContact}"/>
+        </p>
+    </lightning:recordEditForm>
+</lightning:card>
+</aura:component>

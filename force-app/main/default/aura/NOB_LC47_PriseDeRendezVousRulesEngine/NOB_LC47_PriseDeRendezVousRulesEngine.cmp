@@ -1,0 +1,514 @@
+<aura:component controller="NOB_LC47_PriseDeRendezVous" implements="force:lightningQuickAction,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes">
+    <!-- attributes -->
+    <aura:attribute name="mapMarkers" type="Object" default="[]"/>
+    <aura:attribute name="markersTitle" type="String" />
+    <aura:attribute name="recordId" type="Id" default="5001l000005K9WwAAK" />
+    <aura:attribute name="selectedMarkerValue" type="String" default="France1" />
+    <aura:attribute name="case" type="Case"  />
+    <aura:attribute name="canCustom" type="Boolean" default="false"  />
+    <aura:attribute name="loading" type="Boolean" default="false"  />
+    <aura:attribute name="defaultPlanningDuration" type="Integer" default="60"  />
+    <aura:attribute name="horsreseaux" type="Account[]" default="[]"/>
+    <aura:attribute name="selectReseaux" type="String" default="1"/>
+    <aura:attribute name="splitSlot" type="Object[]" default="[]"/>
+    <aura:attribute name="lessOneHrError" type="Boolean" default="false"/>
+    <aura:attribute name="offset" type="Integer" default="0"  />
+    
+    <aura:attribute name="calendar" type="Object[]" default="[]"></aura:attribute>
+    <aura:attribute name="dates" type="Object[]" default="[]"></aura:attribute>
+    <aura:attribute name="res" type="Object[]" default="[]"></aura:attribute>
+    <aura:attribute name="currentStartDate" type="Double" ></aura:attribute>
+    <aura:attribute name="numResults" type="Double" default="0" ></aura:attribute>
+    
+    <aura:attribute name="newRepName" type="String" />
+    <aura:attribute name="newRepStreet" type="String" />
+    <aura:attribute name="newRepPostalCode" type="String" />
+    <aura:attribute name="newRepCity" type="String" />
+    <aura:attribute name="newRepProvince" type="String" />
+    <aura:attribute name="newRepCountry" type="String" />
+    <aura:attribute name="newRepTelephone" type="String" />
+    
+    
+    <aura:attribute name="selectedDispo" type="Id" />
+    <aura:attribute name="selectedStartTime" type="Date" />
+    <aura:attribute name="selectedEndTime" type="Date" />
+    <aura:attribute name="selectedMerge" type="Array" />
+    <aura:attribute name="selectedTime" type="String" />
+    <aura:attribute name="showPopup" type="Boolean" default="false"/>
+    <aura:attribute name="otherDispo" type="Boolean" default="false"/>
+    <aura:attribute name="loadingOther" type="Boolean" default="false"/>
+    
+    <aura:attribute name="showPopupRaison" type="Boolean" default="false"/>
+    <aura:attribute name="showPopupSplit" type="Boolean" default="false"/>
+    <aura:attribute name="selectedRaison" type="String" />
+    <aura:attribute name="autreRaison" type="String" />
+    
+    <aura:attribute name="selectedRep" type="String" />
+    <aura:attribute name="startDateTime" type="String" />
+    <aura:attribute name="endDateTime" type="String" />
+    
+    <aura:attribute name="startDate" type="String"  ></aura:attribute>
+    
+    <aura:attribute name="selectedRanking" type="String" default=""></aura:attribute>
+    
+    <aura:attribute name="competences" type="List"></aura:attribute>
+    
+    <aura:attribute name="withRE" type="Boolean" default="false"></aura:attribute>
+    
+    <!--HMO -20/08/2021-->
+    <aura:attribute name="userAssureur" type="Boolean" default="false"></aura:attribute>
+    <aura:attribute name="showReseau" type="Boolean" default="false"></aura:attribute>
+    <!--fff-->
+    
+    <aura:attribute name="center" type="Object"/>
+   
+    
+    <aura:handler name="ChangeCompetences" event="c:ChangeCompetences" action="{!c.searchCompetences}"/>
+    
+    <!-- handlers-->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <aura:attribute Name="selItem" type="object"  access="public" /> 
+    <aura:handler name="change" value="{!v.selItem}" action="{!c.searchChange}"/>
+    
+    <aura:handler event="force:refreshView" action="{!c.forceRefreshViewHandler}"/>
+    
+    <lightning:workspaceAPI aura:id="workspace"/>
+    
+     
+    <div style="position:relative">
+        
+        <aura:if isTrue="{!v.loading}">
+            <lightning:spinner></lightning:spinner>
+        </aura:if>
+    
+    <aura:if isTrue="{!v.showPopupRaison}">
+        
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon class="slds-button_icon slds-modal__close slds-button_icon-inverse" iconName="utility:close" variant="bare" onclick="{! c.handleClosePopupRaison }" alternativeText="Fermer" title="Fermer" />
+                    
+                    
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Prise de rendez-vous hors réseau</h2>
+                    
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2" >
+                    
+                    <h1 class="slds-text-title slds-text-align_center">Vous venez de sélectionner un réparateur ne faisant pas partie du réseau Prefikar, êtes-vous sûr ?</h1>
+                    
+                    
+                    
+                    
+                    <!--
+                    <lightning:select name="raisonProp" label="Veuillez indiquer la raison du choix de ce réparateur" value="{!v.selectedRaison}">
+                        <option value="Je suis un habitué de ce réparateur">Je suis un habitué de ce réparateur</option>
+                        <option value="Je suis très satisfait du service de ce réparateur">Je suis très satisfait du service de ce réparateur</option>
+                        <option value="Autre">Autre raison</option>
+                        
+                    </lightning:select>
+                    <br></br>
+                    <aura:if isTrue="{!v.selectedRaison == 'Autre'}">
+                        <lightning:textarea name="autreRaison" value="{!v.autreRaison}" label="Veuillez indiquer une autre raison"></lightning:textarea>
+                    </aura:if>
+     -->                    
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.handleClosePopupRaison}">Non</button>
+                    <button class="slds-button slds-button_brand" onclick="{!c.handleSaveHorsRes}">Oui</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    
+    <aura:if isTrue="{!v.showPopupSplit}">
+        
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon class="slds-button_icon slds-modal__close slds-button_icon-inverse" iconName="utility:close" variant="bare" onclick="{! c.handleClosePopupSplit }" alternativeText="Fermer" title="Fermer" />
+                    
+                    
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Veuillez choisir l'heure de votre rendez-vous</h2>
+                    
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2" >
+                    <aura:if isTrue="{!v.loadingOther}">
+                        <lightning:spinner></lightning:spinner>
+                    </aura:if>
+                    <lightning:select  label="Veuillez choisir l'heure de votre rendez-vous:" value="{!v.selectedTime}">
+                        <aura:iteration items="{!v.splitSlot}" var="option">
+                            <option text="{!option.label}" value="{!option.value}"/>
+                        </aura:iteration>
+                    </lightning:select>
+                    
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.handleClosePopupSplit}">Non</button>
+                    <button class="slds-button slds-button_brand" onclick="{!c.handleSaveSplit}">Oui</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    
+    
+    
+    <aura:if isTrue="{!v.otherDispo}">
+        
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon class="slds-button_icon slds-modal__close slds-button_icon-inverse" iconName="utility:close" variant="bare" onclick="{! c.handleCloseOtherDispo }" alternativeText="Fermer" title="Fermer" />
+                    
+                    
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Veuillez choisir une date / heure à votre convenance</h2>
+                    
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2" style="min-height:275px;">
+                    <aura:if isTrue="{!v.loadingOther}">
+                        <lightning:spinner></lightning:spinner>
+                    </aura:if>
+
+                     <lightning:icon iconName="utility:warning" alternativeText="Warning!" title="Warning" />
+                      &nbsp;
+                     <span><b>Vous devez obtenir l’accord du réparateur pour valider le rendez-vous</b></span>
+                      <br></br>
+                      <br></br>
+                    <aura:if isTrue="{!v.lessOneHrError}">
+                        
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                            
+                            <h2>Veuillez sélectionner un créneau d’une heure</h2>
+                            
+                        </div>
+                    
+                    	
+                    </aura:if>
+                    
+                    <lightning:input label="Date / heure de début" type="datetime" value="{!v.startDateTime}" onchange="{!c.adjustEndTime}"></lightning:input>   
+                    <lightning:input label="Date / heure de fin" type="datetime" value="{!v.endDateTime}"></lightning:input>
+                    
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.handleCloseOtherDispo}">Annuler</button>
+                    <button class="slds-button slds-button_brand" onclick="{!c.handleSaveOtherDispo}">Sauvegarder</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    
+    
+    
+    <aura:if isTrue="{!v.showPopup}">
+        
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon class="slds-button_icon slds-modal__close slds-button_icon-inverse" iconName="utility:close" variant="bare" onclick="{! c.handleClosePopup }" alternativeText="Fermer" title="Fermer" />
+                    
+                    
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Creer réparateur</h2>
+                    
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    
+                    <lightning:input name="name" label="Nom Réparateur" value="{!v.newRepName}" ></lightning:input>
+                    
+                    <lightning:inputAddress addressLabel="Adresse"
+                                            streetLabel="Rue"
+                                            postalCodeLabel="Code Postal"
+                                            cityLabel="Ville"
+                                            provinceLabel="Province"
+                                            countryLabel="Pays"                                            
+                                            showAddressLookup="true"
+                                            required="true"                                                                                        
+                                            street="{!v.newRepStreet}"
+                                            postalCode="{!v.newRepPostalCode}"
+                                            city="{!v.newRepCity}"
+                                            province="{!v.newRepProvince}"
+                                            country="{!v.newRepCountry}"/>
+                    <lightning:input name="telephone" label="Téléphone" value="{!v.newRepTelephone}"></lightning:input>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.handleClosePopup}">Annuler</button>
+                    <button class="slds-button slds-button_brand" onclick="{!c.handleCreateReparateur}">Sauvegarder</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.case != null &amp;&amp; v.case.Status == 'Affectation'}">
+        <!-- the map component -->
+        <lightning:card iconName="action:log_a_call" title="Prise de rendez-vous">
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem padding="around-medium" size="12">
+                    <lightning:layout>
+                        <lightning:layoutItem size="2" padding="horizontal-medium">
+                            <lightning:input type="date" label="Date" value="{!v.startDate}" onchange="{!c.positionDate}"></lightning:input>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="2" padding="horizontal-medium"  >
+                            <lightning:select name="type" label="Type" value="{!v.selectReseaux}" onchange="{!c.handleFilter}">
+                                <option value="0">Selectionner un...</option>
+                                <option value="1">Réparateur réseau</option>
+                                <option value="2">Réparateur hors réseau</option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                        <!--
+                    <lightning:layoutItem size="2" padding="horizontal-medium">
+                        <lightning:select name="ranking" label="Ranking" onchange="{!c.handleFilter}" value="{!v.selectedRanking}">
+                            <option value="">Choisissez une...</option>
+                            <option value="Bronze">Bronze</option>
+                            <option value="Silver">Silver</option>
+                            <option value="Gold">Gold</option>
+                        </lightning:select>
+                    </lightning:layoutItem>
+     -->
+                        <lightning:layoutItem size="4" padding="horizontal-medium">
+                            <c:NOB_LC47_SearchCompetences aura:id="uicomp" competences="{!v.competences}"></c:NOB_LC47_SearchCompetences>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="4" padding="horizontal-medium">
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="7">
+                                    
+                                    
+                                    <c:NOB_LC00Lookup objectName="Account"
+                                                      field_API_text="Name"
+                                                      field_API_val="Id"
+                                                      limit="10"
+                                                      field_API_search="Name"
+                                                      lookupIcon="standard:account" 
+                                                      selItem="{!v.selItem}" 
+                                                      placeholder="Nom du réparateur"
+                                                      label="Nom du réparateur"
+                                                      textInput="{!v.newRepName}"
+                                                      />  
+                                    
+                                    <!--
+                                
+                                <lightning:input name="createnew" value="{!v.newRepName}"  label="Nom du réparateur" type="Search"></lightning:input> -->
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="5">
+                                    <lightning:button label="Rechercher réparateur" class="sbtn" variant="brand" onclick="{!c.handleSearch}"></lightning:button>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="8" class="tab-left">
+                    
+                    
+                    <ui:scrollerWrapper class="table-wrapper" aura:id="wrapper">
+                        <table class="slds-table slds-no-row-hover slds-table_bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th>
+                                        <div class="slds-truncate slds-cell-buffer_left slds-cell-buffer_right" >
+                                            <lightning:buttonIcon iconName="utility:chevronleft" size="small" variant="bare" onclick="{! c.handlePreviousDate }" alternativeText="Settings" title="Settings" />
+                                            <lightning:buttonIcon iconName="utility:chevronright" size="small" variant="bare" onclick="{! c.handleNextDate }" alternativeText="Settings" title="Settings" />
+                                        </div>
+                                    </th>
+                                    <aura:iteration items="{!v.dates}" var="date">
+                                        <th>
+                                            <div class="slds-truncate" title="{!date}">{!date}</div>
+                                        </th>
+                                    </aura:iteration>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.calendar}" var="item">
+                                    
+                                    <tr class="slds-hint-parent" style="{!v.selectedMarkerValue == item.account.Id?'background:rgba(238, 238, 238, 1)':''}">
+                                        
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                                        	
+                                            <div class="slds-illustration slds-illustration_small" style="max-width:250px">
+                                                <div class="slds-text-longform" style="text-align:left">
+                                                    <lightning:layout multipleRows="true">
+                                                        <lightning:layoutItem size="8" class="slds-truncate">
+                                                            <a href="javascript:void(0);" onclick="{!c.selectLocation}" name="{!item.account.Id}" data-nameddd="{!item.account.Id}" class="slds-text-body_regular slds-truncate" style="color: rgb(0, 95, 178); font-size: 0.8125rem;font-weight:bold;text-align:left" title="{!item.account.Name}">
+                                                                {!item.account.Name}
+                                                            </a><br></br>
+                                                            <!-- <aura:if isTrue="item.account.NOB_NetworkType__c == 'Réseau Platinium'">
+                                                                True
+                                                                <aura:set attribute="else">
+                                                                False
+                                                                </aura:set>
+                                                            </aura:if>  -->
+                                                            
+                                                          <!--HMO -23-08-2021 RSIW 9377-->
+                                                
+                                                                <!--<aura:if isTrue = "{!not(v.userAssureur)}">-->
+                                                                    <aura:if isTrue = "{!v.showReseau}">
+                                                                	<span title="{!item.account.NOB_NetworkType__c}">{!item.account.NOB_NetworkType__c}</span><br></br>
+                                                                </aura:if>
+                                                            
+                                     
+                                                            <!-- <span title="{!item.account.NOB_NetworkType__c}">{!v.mapNetworkTypes}</span><br></br> -->
+                                                            <span title="{!item.account.BillingAddress.street}">{!item.account.BillingAddress.street}</span><br></br>
+                                                            <span title="{!item.account.BillingAddress.postalCode + ' ' + item.account.BillingAddress.city}">{!item.account.BillingAddress.postalCode} {!item.account.BillingAddress.city}</span><br></br>
+                                                            <span title="{!item.account.BillingAddress.country}">{!item.account.BillingAddress.country}</span><br></br>
+                                                            <span title="{!item.account.Phone}">{!item.account.Phone}</span><br></br>
+                                                        </lightning:layoutItem>
+                                                        <lightning:layoutItem  size="4">
+                                                            <aura:if isTrue="{!item.account.NOB_NetworkType__c == 'Réseau Platinium' || item.account.NOB_NetworkType__c == 'Réseau Premium'}">
+                                                                
+                                                                <!--HMO -23-08-2021 RSIW 9377-->
+                                                                <aura:if isTrue = "{!not(v.userAssureur)}">
+                                                                	<img src="{!item.account.rank}"/>
+                                                                </aura:if>
+                                                                
+                                                                
+                                                                <aura:set attribute="else">
+                                                                	<div style="height:48px;"></div>
+                                                                </aura:set>
+                                                                
+                                                                
+                                                            </aura:if>
+                                                            <aura:if isTrue="{!item.account.NOB_Statut__c == 'Inactif' || item.account.NOB_Statut__c == 'Suspendu'}">
+                                                                <lightning:ButtonIcon title="Choisir ce réparateur" name="{!item.account.Id}" iconName="utility:button_choice" class="slds-button_stretch sel-other"  variant="brand" onclick="{!c.handleSelectHors}"></lightning:ButtonIcon>
+                                                                <aura:set attribute="else">
+                                                                    <aura:if isTrue="{!v.canCustom}">
+                                                                        <lightning:ButtonIcon name="{!item.account.Id}" title="Ajouter une disponibilité avec l’accord du réparateur" iconName="utility:relate" class="slds-button_stretch sel-other"  variant="brand" onclick="{!c.handleOpenOtherDispo}"></lightning:ButtonIcon>
+                                                                    </aura:if>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                            
+                                                            
+                                                        </lightning:layoutItem>
+                                                        
+                                                    </lightning:layout>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <aura:if isTrue="{!item.week.length &gt; 0 &amp;&amp; item.account.NOB_Statut__c != 'Inactif' &amp;&amp; item.account.NOB_Statut__c != 'Suspendu'}">
+                                            <aura:iteration items="{!item.week}" var="day">
+                                                <td style="padding:2px;">
+                                                    <!--  <lightning:radioGroup name="{!item.account.Id}" label="" value="{!v.selectedDispo}" options="{!day.options}" type="radio"></lightning:radioGroup>-->
+                                                    <c:NOB_LC00RadioGroup name="{!item.account.Id}" label="" value="{!v.selectedDispo}" merged="{!v.selectedMerge}" startTime="{!v.selectedStartTime}" endTime="{!v.selectedEndTime}" options="{!day.options}"></c:NOB_LC00RadioGroup>
+                                                </td>
+                                            </aura:iteration>
+                                        </aura:if>
+                                        <aura:if isTrue="{!item.week.length &lt;= 0}">
+                                            <td colspan="7"></td>
+                                        </aura:if>
+                                    </tr>
+                                    
+                                </aura:iteration>
+                                
+                                <aura:iteration items="{!v.horsreseaux}" var="rep">
+                                    
+                                    <tr class="slds-hint-parent" style="{!v.selectedMarkerValue == rep.Id?'background:rgba(238, 238, 238, 1)':''}">
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                                            
+                                            <div class="slds-illustration slds-illustration_small" style="max-width:250px">
+                                                <div class="slds-text-longform" style="text-align:left">
+                                                    <lightning:layout multipleRows="true">
+                                                        <lightning:layoutItem size="8">
+                                                            <a href="javascript:void(0);" onclick="{!c.selectLocation}" name="{!rep.Id}" data-nameddd="{!rep.Id}" class="slds-text-body_regular slds-truncate" style="color: rgb(0, 95, 178); font-size: 0.8125rem;font-weight:bold;text-align:left" title="{!rep.Name}">
+                                                                {!rep.Name}
+                                                            </a><br></br>
+                                                            <!--HMO 23/08/2021 - RSIW 9377 -->
+                                                                <aura:if isTrue = "{!v.showReseau}">
+                                                                	{!rep.NOB_NetworkType__c}<br></br>
+                                                                </aura:if>
+                                                            {!rep.BillingAddress.street}<br></br>
+                                                            {!rep.BillingAddress.postalCode} {!rep.BillingAddress.city}<br></br>
+                                                            {!rep.BillingAddress.country}<br></br>
+                                                            {!rep.Phone}<br></br>
+                                                        </lightning:layoutItem>
+                                                        <lightning:layoutItem  size="4">
+                                                            <aura:if isTrue="{!rep.NOB_NetworkType__c == 'Réseau Platinium' || rep.NOB_NetworkType__c == 'Réseau Premium'}">
+                                                              
+                                                                    
+                                                               		<aura:if isTrue="{!rep.NOB_Ranking__c == 'Gold'}">
+                                                                    	<!--<img src="{!$Resource.gold}"/>-->
+                                                                        
+                                                                        <!--HMO -23-08-2021 RSIW 9377-->
+                                                                        <aura:if isTrue = "{!not(v.userAssureur)}">
+                                                                            <img src="{!$Resource.gold}"/>
+                                                                        </aura:if>
+                                                                        
+                                                                	</aura:if>
+                                                                    
+                                                               		 <aura:if isTrue="{!rep.NOB_Ranking__c == 'Bronze' || rep.NOB_Ranking__c == '' || rep.NOB_Ranking__c == NULL}">
+                                                                    	<!--<img src="{!$Resource.bronze}"/>-->
+                                                                        <!--HMO -23-08-2021 RSIW 9377-->
+                                                                        <aura:if isTrue = "{!not(v.userAssureur)}">
+                                                                            <img src="{!$Resource.bronze}"/>
+                                                                        </aura:if>
+                                                                	 </aura:if>
+                                                                    
+                                                                	<aura:if isTrue="{!rep.NOB_Ranking__c == 'Silver'}">
+                                                                    	<!--<img src="{!$Resource.silver}"/>-->
+                                                                        <!--HMO -23-08-2021 RSIW 9377-->
+                                                                        <aura:if isTrue = "{!not(v.userAssureur)}">
+                                                                            <img src="{!$Resource.silver}"/>
+                                                                        </aura:if>
+                                                                	</aura:if>
+                                                                
+                                                                    <aura:set attribute="else">
+                                                                        <div style="height:48px;"></div>
+                                                                    </aura:set>
+                                                                
+                                                                </aura:if>
+          
+                                                      
+                                                            <lightning:ButtonIcon title="Choisir ce réparateur" name="{!rep.Id}" iconName="utility:button_choice" class="slds-button_stretch sel-rep"  variant="brand" onclick="{!c.handleSelectHors}"></lightning:ButtonIcon>
+                                                        </lightning:layoutItem>
+                                                    </lightning:layout>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" colspan="5">
+                                            
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    
+                                </aura:iteration> 
+                            </tbody>
+                        </table>
+                        
+                    </ui:scrollerWrapper>
+                    <lightning:layout>
+                        <lightning:layoutItem size="9">
+                            <p style="padding:1rem;font-size:1rem">{!v.numResults} Resultat(s)</p>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="3" padding="around-medium">
+                            
+                            <lightning:button label="Sélectionner" variant="brand" onclick="{!c.handleSelect}" disabled="{!!v.selectedDispo }"></lightning:button>
+                        </lightning:layoutItem>
+
+                    </lightning:layout>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="4" class="tab-right">
+                    <lightning:map aura:id="mpp"
+                                   mapMarkers="{! v.mapMarkers }"
+                                   markersTitle="{!v.markersTitle}"
+                                   selectedMarkerValue="{!v.selectedMarkerValue}"
+                                   onmarkerselect="{!c.handleMarkerSelect}" 
+                                   center="{!v.center}"
+                                   listView="none"/>
+                </lightning:layoutItem>
+                
+            </lightning:layout>
+        </lightning:card>
+    </aura:if>
+    </div>
+</aura:component>

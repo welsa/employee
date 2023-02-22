@@ -1,0 +1,43 @@
+.slds-global-header{
+    /* background-color: rgb(69,181,170); */
+    /* background-color: rgb(186 229 214); */
+    /* background-color: rgb(197 216 225); */
+    height: 5rem;
+}
+
+.slds-global-header_container{
+   position: inherit;
+}
+
+.slds-global-header__item_search{
+    padding-top: 12px;
+}
+
+.slds-global-header__logo {
+    /* background-image: url("https://alpha-scale--nob0.my.salesforce.com/file-asset-public/mcrlogo1867x582png?oid=00D5E000000A5qI"); */
+    height:3.5rem;
+    }
+
+.slds-avatar_medium{
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.main-content{
+    height: calc(100% - 5rem);
+    background-color: FFF;
+}
+
+.slds-illustration.slds-illustration_large .slds-illustration__svg{
+    margin-top:30vh;
+}
+
+.slds-button{
+    border-radius: 50% ;
+}
+
+.pbi-report-container{
+    height: 100%;
+    /* background-color: blue; */
+
+}

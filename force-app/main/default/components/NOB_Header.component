@@ -1,0 +1,60 @@
+<!--
+ @File Name          : NOB_VFP49_EtatDesLieux Header Component
+ @Description        : custom component for Etat Des Lieux Pdf form
+ @Author             : HMO
+ @Group              :
+ @Last Modified By   : HMO
+ @Last Modified On   : 25/08/2020, 10.00
+ @Modification Log   :
+ ==============================================================================
+  Ver         Date                     Author      Modification
+ ==============================================================================
+  1.0    25/08/2020, 10:00      HMO      1.0
+-->
+
+<apex:component >
+    <apex:attribute name="acctName" type="String" description=""/>
+    <apex:attribute name="acctBillingStreet" type="String" description=""/>
+    <apex:attribute name="acctBillingPostalCode" type="String" description=""/>
+    <apex:attribute name="acctBillingCity" type="String" description=""/>
+    <apex:attribute name="acctPhone" type="String" description=""/>
+    <apex:attribute name="acctFax" type="String" description=""/>
+    <apex:attribute name="contactName" type="String" description=""/>
+    <apex:attribute name="vehiculeBrand" type="String" description=""/>
+    <apex:attribute name="vehiculeRegistrationNumber" type="String" description=""/>
+    <apex:attribute name="localdt" type="String" description=""/>
+
+    <div class="header">
+        <div style="float: left; width: auto; display: inline-block;">
+            <div><apex:image url="{!URLFOR($Resource.VFP49,'VFP49/Prefikar.png')}" style="width: 200px"/></div>
+            <div style="float:left;padding-top:20px;">{!localdt}</div>
+        </div>
+
+        <div style="width: 60%; display:inline-block; float: right;">
+            <div style="color: #000000; border: 1px solid black">
+                <div style="font-size: 16px; font-weight: bold;">{!acctName}</div>
+                <div style="font-size: 14px;">{!acctBillingStreet}&nbsp;{!acctBillingPostalCode}&nbsp;{!acctBillingCity}</div>
+                <div style="font-size: 14px;">Tél : {!acctPhone} - Fax : {!acctFax}</div>
+            </div>
+
+            <table class = "header-table">
+                <tr>
+                    <td>Dossier</td>
+                    <td>:&nbsp; n° 1592836</td>
+                </tr>
+                <tr>
+                    <td>Client</td>
+                    <td>:&nbsp;{!contactName}</td>
+                </tr>
+                <tr>
+                    <td>Vehicule</td>
+                    <td>:&nbsp;{!vehiculeBrand}</td>
+                </tr>
+                <tr>
+                    <td>Immatriculation</td>
+                    <td>:&nbsp;{!vehiculeRegistrationNumber}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</apex:component>

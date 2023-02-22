@@ -1,0 +1,115 @@
+<template>
+<!-- Legal Notice
+This code is the property of Salesforce.com and is protected by U.S. and International
+copyright laws. Reproduction, distribution without written permission of Salesforce is
+strictly prohibited. In particular this code has been delivered by Salesforce.com for
+its Client’s internal purposes pursuant to specific terms and conditions, and cannot be
+re-used, reproduced or distributed for any other purposes.
+Author: P-E GROS / Dec. 2020
+-->
+    <div class={pathClass}>
+
+    <!-- Tab mode Display -->
+    <template if:true={isTab}>
+        <lightning-tabset   active-tab-value={currentStep}
+                            variant="standard"
+                            title={currentStep}>
+            <template for:each={steps} for:item="step">
+                <lightning-tab  label={step}
+                                value={step}
+                                key={step}
+                                onactive={enterStep}>
+                </lightning-tab>
+            </template>
+        </lightning-tabset>
+    </template>
+
+    <!-- Path mode Display -->
+    <template if:true={isPath}>
+        <lightning-progress-indicator   current-step={currentStep}
+                                        type="path"
+                                        variant="shaded" >
+            <template for:each={steps} for:item="step">
+                <lightning-progress-step    label={step}
+                                            value={step}
+                                            key={step}
+                                            onstepfocus={enterStep} >
+                </lightning-progress-step>
+            </template>
+        </lightning-progress-indicator>
+    </template>
+
+    <!-- Progress Bar mode Display -->
+    <template if:true={isProgress}>
+        <lightning-progress-indicator   current-step={currentStep}
+                                        type="base"
+                                        variant="shaded" >
+            <template for:each={steps} for:item="step">
+                <lightning-progress-step    label={step}
+                                            value={step}
+                                            key={step}
+                                            onstepfocus={enterStep}>
+                </lightning-progress-step>
+            </template>
+        </lightning-progress-indicator>
+    </template>
+
+    <!-- Button bar mode Display -->
+    <template if:true={isButton}>
+
+        <div if:false={usingMobilePhone}>
+            <lightning-layout multiple-rows > 
+                <!-- <div class="slds-button_stretch"> -->
+                    <template for:each={steps} for:item="step">
+                        <lightning-layout-item flexibility="auto" padding="around-small" key={step.label}>
+                        <lightning-button   key={step.label}
+                                            label={step.label}
+                                            title={step.label}
+                                            variant={step.variant}
+                                            onclick={enterStep}
+                                            class="axa-button no-click"
+                                            style="display: grid; width: 100%;"
+                                            >
+                        </lightning-button>
+                        </lightning-layout-item>
+                    </template>
+                <!-- </div> -->
+            </lightning-layout>        
+        </div>
+
+        <div if:true={usingMobilePhone}>
+            <lightning-layout horizontal-align="center">
+                <lightning-layout-item padding="around-small" size="2">
+                    <div class="slds-align_absolute-center">
+                        <lightning-button-icon icon-name="utility:chevronleft" variant="border-filled"
+                        alternative-text="Précedent" disabled={disablePrevBtn} onclick={handlePrevious}
+                        class="brand-button"
+                        title="Précedent" >
+                        </lightning-button-icon>
+                    </div>
+                </lightning-layout-item >
+
+                <lightning-layout-item padding="around-small" size="8">
+                    <lightning-button
+                        label={currentStep}
+                        title={currentStep}
+                        variant="brand"
+                        class="brand-button"
+                        style="display: grid; width: 100%;">
+                    </lightning-button>
+                </lightning-layout-item>
+
+                <lightning-layout-item padding="around-small" size="2">
+                    <div class="slds-align_absolute-center">
+                        <lightning-button-icon icon-name="utility:chevronright" variant="border-filled" label="Suivant"
+                            alternative-text="Suivant" class="brand-button" onclick={handleNext} disabled={disableNextBtn} title="Suivant">
+                        </lightning-button-icon>      
+                    </div>    
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+
+
+    </template>
+    </div>
+</template>

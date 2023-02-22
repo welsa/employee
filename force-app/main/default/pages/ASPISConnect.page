@@ -1,0 +1,396 @@
+<apex:page showHeader="false" 
+            standardStylesheets="false" 
+            sidebar="false" 
+            applyHtmlTag="false" 
+            applyBodyTag="false" 
+            docType="html-5.0"
+            controller="ASPISConnect"
+            language="{!language}"
+            cache="false">
+
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <title>{!$Label.ASPISConnectTitle}</title>
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <!-- Initalise the global variable first as these values are used in the external javascript files -->
+            <script>
+                window.params = {
+                                    // URL For Icons
+                                    "languageSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#location')}",
+                                    "languagePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility/location_60.png')}",
+                                    "closeSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                                    "closePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                                };
+            </script>
+        </head>
+        <body>
+            <apex:form id="loginForm">
+                <div class="slds">
+                    <div class="slds-text-align_center slds-m-top_large">
+                        <object data="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}" 
+                                type="image/svg+xml"
+                                width="500"/>
+                    </div>
+                    <div class="slds-grid slds-m-top_large">
+                        <div class="slds-col"></div>
+
+                        <div class="slds-col slds-m-bottom_large">
+                            <div class="slds-box">
+                                <h1 class="slds-text-heading_medium slds-m-bottom_medium">{!$Label.Register}</h1>
+                                <div class="slds-grid">
+                                    <div class="slds-col slds-size_1-of-2 slds-p-right_medium slds-col_rule-right">
+                                        <h2 class="slds-text-heading_medium slds-m-bottom_small">{!$Label.NewClient}</h2>
+                                        <p class="slds-text-body_regular"><apex:outputText value="{!$Label.NewClientBody}" escape="false"/></p>
+
+                                    </div>
+
+                                    <div class="slds-col slds-size_1-of-2 slds-p-left_medium slds-col_rule-left">
+                                        <h2 class="slds-text-heading_medium slds-m-bottom_small">{!$Label.SignInTitle}</h2>
+                                        <div class="slds-form_stacked">
+                                            <!-- AMI 15/06/18 : Community Rollout : adding rendered attribute -->
+                                            <apex:outputText rendered="{!showUserNameOnly && !showPwdOnly}">
+                                                <br/>
+                                            </apex:outputText>
+
+                                            <!-- AMI 15/06/18 : Community Rollout : adding rendered attribute -->
+                                            <apex:outputText rendered="{!showUserNameOnly && !showPwdOnly}">
+                                                <div class="slds-form-element" id="usernamePanel">
+                                                    <label class="slds-form-element__label" for="username">{!$Label.Username}</label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="username"
+                                                                        styleClass="slds-input"
+                                                                        html-placeholder="{!$Label.Username}"
+                                                                        html-type="username"
+                                                                        value="{!username}"
+                                                                        onkeypress="return validateOnEnter(event);" />
+                                                    </div>
+                                                </div>
+                                            </apex:outputText>
+
+                                            <!-- AMI 15/06/18 : Community Rollout : adding rendered attribute -->
+                                            <apex:outputText rendered="{!!showUserNameOnly && showPwdOnly}">
+                                                <div class="slds-form-element" id="usernamePanel">
+                                                    <label class="slds-form-element__label" for="username">{!$Label.Username}</label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="username1"
+                                                                        styleClass="slds-input"
+                                                                        html-placeholder="{!$Label.Username}"
+                                                                        html-type="username"
+                                                                        value="{!username}"
+                                                                        disabled="true"/>
+                                                    </div>
+                                                </div>
+                                            </apex:outputText>
+                                            
+                                            <!-- AMI 15/06/18 : Community Rollout : rendered attribute -->
+                                            <apex:outputText rendered="{!!showUserNameOnly && showPwdOnly}">
+                                                <div class="slds-form-element" id="pwdPanel">
+                                                    <label class="slds-form-element__label" for="password">{!$Label.Password}</label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputSecret id="password"
+                                                                            styleClass="slds-input"
+                                                                            html-placeholder="{!$Label.Password}"
+                                                                            html-type="password"
+                                                                            value="{!password}"
+                                                                            onkeypress="return validateOnEnter(event);" />
+                                                        <script type="text/javascript">
+                                                            $j(function(){
+                                                                $j('[id$="password"]').focus();
+                                                            });
+                                                        </script>
+                                                    </div>
+                                                </div>
+                                            </apex:outputText>
+
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <span class="slds-checkbox">
+                                                        <apex:inputCheckbox id="rememberMeCheckbox" value="{!rememberMe}"/>
+                                                        <label class="slds-checkbox__label" for="{!$Component.rememberMeCheckbox}">
+                                                            <span class="slds-checkbox_faux"></span>
+                                                            <span class="slds-form-element__label">{!$Label.RememberMe}</span>
+                                                        </label>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="slds-grid slds-m-top_large">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <apex:outputText rendered="{!showCreateAccountButton}">
+                                            <a  class="slds-button slds-button_brand" 
+                                                href="{!$Page.ASPISJoinUs & '?' & currentPageParameters}">{!$Label.CreateNewAccount}</a>
+                                        </apex:outputText>
+                                    </div>
+
+                                    <div class="slds-col slds-size_1-of-2  slds-p-left_medium">
+                                        <div class="slds-grid slds-grid_vertical-align-center">
+                                            <!-- AMI 15/06/18 : Community Rollout : rendered attribute -->
+                                            <apex:outputText rendered="{!!showUserNameOnly && showPwdOnly && userType !='std1'}">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <button id= "btnLogin" class="slds-button slds-button_brand"
+                                                            type="button"
+                                                            onclick="validatePwd();">{!$Label.SignIn}</button>
+                                                </div>
+                                            </apex:outputText>
+
+                                            <!-- AMI 15/06/18 : Community Rollout : rendered attribute -->
+                                            <apex:outputText rendered="{!showUserNameOnly && !showPwdOnly}">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <button id= "btnLogin" class="slds-button slds-button_brand"
+                                                            type="button"
+                                                            onclick="validateUsername();">{!$Label.Continue}</button>
+                                                </div>
+                                            </apex:outputText>
+
+                                            <div class="slds-col slds-size_1-of-2 slds-text-align_right">
+                                                <!--<a href="{!$Page.ASPISForgotPassword & '?' & currentPageParameters}">{!$Label.ForgotPassword}</a>-->
+                                                <button class="slds-button slds-text-link"
+                                                        type="button"
+                                                        onclick="forgotPassword();">{!$Label.ForgotPassword}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <button class="slds-button slds-button_brand slds-m-top_large"
+                                        type="button"
+                                        onclick="toggleLanguageSection();">
+                                    <span class="languageSVG"/>
+                                    {!$Label.Language}:
+                                    {!mapLanguageCodeLanguage[language]}
+                                </button>
+
+                                <div id="languageSection" class="slds-box slds-m-top_medium">
+                                    <div>
+                                        <p>{!$Label.ChooseLanguage}:</p>
+                                        <ul class="slds-list_horizontal slds-has-inline-block-links_space">
+                                            <apex:repeat value="{!setLanguageCodeLanguage}" var="languageCode">
+                                                <li>
+                                                    <button type="button"
+                                                            class="slds-button slds-text-link_reset slds-text-link"
+                                                            onclick="changeLanguage('{!languageCode}');">
+                                                        {!mapLanguageCodeLanguage[languageCode]}
+                                                    </button>
+                                                </li>
+                                            </apex:repeat>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-col"></div>
+                    </div>
+
+                    <!-- Error Manager -->
+                    <apex:outputPanel id="errorMessage">
+                        <div id="toastMessage" 
+                            class="slds-notify_container slds-hide">
+                            <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                                <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                        title="{!$Label.Close}"
+                                        type="button"
+                                        onclick="hideError();">
+                                </button>
+                                <div class="slds-notify__content">
+                                    <p class="slds-text-align_center customErrorMsg"></p>
+                                    <!-- AMI 15/06/18 : Community Rollout : rendered attribute -->
+                                    <apex:pagemessages id="toastErrorMessage" escape="false" rendered="{!doNotShowStdLoginError}"/>
+                                    <apex:pageMessage id="loginError" severity="Error" summary="{!$Label.IncorrectPwd}" rendered="{!showStdLoginError}"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="errorModal"
+                            class="slds-modal slds-modal_prompt"
+                            aria-hidden="false"
+                            role="dialog">
+                            <div class="slds-modal__container">
+                                <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                    <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                                </div>
+                                <div class="slds-modal__content slds-p-around_medium">
+                                    <p class="slds-m-bottom_medium">
+                                        {!$Label.ErrorModalBody}
+                                    </p>
+                                    <apex:pagemessages escape="false" />
+                                </div>
+                                <div class="slds-modal__footer slds-theme_default">
+                                    <input  type="button"
+                                            class="slds-button slds-button_destructive"
+                                            value="{!$Label.Close}"
+                                            onclick="hideError();" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                    </apex:outputPanel>
+
+                    <div id="browserMessage"
+                         class="slds-notify_container container-bottom slds-hide">
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                    title="{!$Label.Close}"
+                                    type="button"
+                                    onclick="hideBrowserMessage();">
+                            </button>
+                            
+                            <h2>
+                                <apex:outputText value="{!$Label.BrowserSupported}"
+                                                 escape="false"/>
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div id="spinner"
+                         class="slds-spinner_container"
+                         style="display:none;">
+                        <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                    <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+                </div>
+                
+                <apex:actionfunction name="changeLanguage"
+                                        action="{!changeLanguage}"
+                                        rerender="loginForm">
+                    <apex:param name="language"
+                                value=""
+                                assignto="{!language}" />
+                </apex:actionfunction>
+
+                <apex:actionfunction name="forgotPassword"
+                                        action="{!forgotPassword}"
+                                        rerender="loginForm"/>
+
+                <!-- AMI 15/06/18 : Community Rollout : new action function
+                                                      : correct redirection to domain -->
+                <apex:actionfunction name="redirect"
+                                        action="{!redirectToCorrectDomain}"
+                                        rerender="loginForm"
+                                        status="statusSpinner"/>
+
+                <!-- AMI 15/06/18 : Community Rollout : new action function
+                                                      : new login -->
+                <apex:actionfunction name="systemLogin"
+                                        action="{!systemLogin}"
+                                        rerender="loginForm"
+                                        status="statusSpinner"
+                                        oncomplete="$j('#btnLogin').attr('disabled',false);"/>
+
+                <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+
+                <script>
+                    if (typeof jQuery != 'undefined')
+                    {
+                        $j = jQuery.noConflict();
+                    }
+
+                    /*********************************/
+                    //AMI 15/06/18 : Community Rollout  
+                    function validateUsername(){
+                        // Ensuring that there is no error appearing when triggering the function validateUsername
+                        clearError();
+
+                        if($j('[id$="username"]').val()){
+                            redirect();
+                        }else{
+                            $j('.customErrorMsg').text('{!JSENCODE($Label.IncorrectUsername)}');
+
+                            $j('[id$="username"]').parent().addClass("slds-has-error");
+
+                            showError(true, true);
+                        }
+                    }
+
+                    /*********************************/
+                    //AMI 15/06/18 : Community Rollout
+                    function validatePwd(){
+                        // Ensuring that there is no error appearing when triggering the function validatePwd
+                        clearError();
+
+                        $j('#btnLogin').attr('disabled',true);
+
+                        if($j('[id$="password"]').val()){
+                            systemLogin();
+                        }else{
+                            $j('.customErrorMsg').text('{!JSENCODE($Label.UsernamePasswordBlank)}');
+
+                            $j('[id$="password"]').parent().addClass("slds-has-error");
+
+                            showError(true, true);
+
+                            $j('#btnLogin').attr('disabled',false);
+                        }
+                    }
+
+                    /*********************************/
+                    //AMI 15/06/18 : Community Rollout
+                    function validateOnEnter(event){
+                        if((window.event && window.event.keyCode == 13) || event.which == 13){
+                            if($j('[id$="username"]').length){
+                                validateUsername();
+                            }
+
+                            if($j('[id$="password"]').length){
+                                validatePwd();
+                            }
+
+                            return false;
+                        }   
+                    }
+
+                    if({!unauthorizedId}){
+                        $j("#btnLogin").attr('disabled',true);
+                    }
+                    else
+                        $j("#btnLogin").attr('disabled',false);
+
+                    function addError()
+                    {
+                        $j('.customErrorMsg').text('{!JSENCODE($Label.UsernamePasswordBlank)}');
+
+                        if(!$j('[id$="username"]').val())
+                        {
+                            $j('[id$="username"]').parent().addClass("slds-has-error");
+                        }
+
+                        if(!$j('[id$="password"]').val())
+                        {
+                            $j('[id$="password"]').parent().addClass("slds-has-error");
+                        }
+
+                        showError(true, true);
+                    }
+
+                    function clearError()
+                    {
+                        $j('.customErrorMsg').text('');
+                        $j('[id$="toastErrorMessage"]').text('');
+                        $j('[id$="loginError"]').text('');
+                        $j('[id$="username"]').parent().removeClass("slds-has-error");
+                        $j('[id$="password"]').parent().removeClass("slds-has-error");
+
+                        hideError();
+                    }
+
+                    displayBrowserMessage();
+                    renderIcons();
+                    checkPageMessage({!hasErrors});
+                    showError({!hasErrors}, {!isToastError});
+                </script>
+            </apex:form>
+        </body>
+    </html>
+</apex:page>

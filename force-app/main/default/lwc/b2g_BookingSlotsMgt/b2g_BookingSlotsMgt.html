@@ -1,0 +1,45 @@
+<template>
+    <div class="c-container">
+        <lightning-layout multiple-rows="true"  horizontal-align="center" pull-to-boundary="small">
+            <template for:each={getBookings} for:item="booking">
+                <lightning-layout-item  size={layoutItemSize} key={booking.branch} padding="around-small">
+                <div class={booking.disableClass}>
+                <div class="slds-m-top_small slds-col lgc-bg"  key={booking.branch} >
+                        <a onclick={setBookingSelection} id={booking.branch} >
+                            <div class={booking.selectionClass}>
+                                <lightning-tile type="media" >
+
+                                    <!-- Title-->
+                                    <div class="slds-text-heading_small">
+                                        <p class="" title={booking.branchName}>{booking.branchName}</p>
+                                    </div>
+
+                                    <!-- Icon -->
+                                    <lightning-icon slot="media" icon-name={booking.icon}></lightning-icon>
+
+                                    <!-- No Slots Available -->
+                                    <div if:false={booking.hasSlots}>
+                                        <div class="slds-text-color_destructive slds-text-align_left">
+                                            <p><lightning-formatted-text value="Aucune Disponibilité " slot="label"></lightning-formatted-text></p>
+                                        </div>
+                                    </div>
+
+                                    <!--Has slots available-->
+                                    <div if:true={booking.hasSlots}>
+                                        <div class="slds-text-color_success slds-text-align_left">
+                                            <p><lightning-formatted-text value="Première disponibilité: " slot="label"></lightning-formatted-text> <br>
+                                            <b><lightning-formatted-date-time value={booking.firstAvailSlot}  month="short" day="2-digit" weekday="long" hour="2-digit" minute="2-digit"  time-zone={booking.timezone}>
+                                            </lightning-formatted-date-time></b></p>
+                                        </div>
+                                    </div>
+                                </lightning-tile>
+                            </div>
+                        </a>
+                </div>
+                </div>
+            </lightning-layout-item>
+            </template>
+
+        </lightning-layout>
+    </div>
+</template>

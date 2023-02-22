@@ -1,0 +1,4 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global">
+   <aura:attribute name="recordId" type="String"/> 
+   <c:nobLwcNewPret recordId = "{!v.recordId}" onclose="{!c.closeScreen}" onrefresh = "{!c.refresh}"></c:nobLwcNewPret>
+</aura:component>

@@ -1,0 +1,208 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="ASPISMyInvoices" extensions="RESTPostInvoice">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>File Not Found</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'css/bootstrap-iso.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.BootstrapDatePicker, 'css/bootstrap-datepicker3.css')}" />
+
+        <script>
+            window.params = {
+                "locale": "{!locale}",
+                "pdfSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/doctype-sprite/svg/symbols.svg#pdf')}",
+                "pdfPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/doctype/pdf_60.png')}",
+                "eventSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#event')}",
+                "eventPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/event_60.png')}",
+                "arrowUpSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#arrowup')}",
+                "arrowUpPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/arrowup_60.png')}",
+                "arrowDownSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#arrowdown')}",
+                "arrowDownPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/arrowdown_60.png')}",
+                "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+            };
+
+            var translationMap =  jQuery.parseJSON('{!JSENCODE(mapOriginalTranslatedJson)}');
+                console.log('translationMap',translationMap);
+
+        </script>
+
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.MomentJS)}" />
+        <apex:includescript value="{!URLFOR($Resource.Bootstrap, 'js/bootstrap.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'js/bootstrap-datepicker.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.en-GB.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.es.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.fr.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.it.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.de.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.nl-BE.min.js')}" />
+        <apex:includeScript value="{!URLFOR($Resource.FixedHeader, 'floatThead-2.0.0/dist/jquery.floatThead.min.js')}" />
+        <apex:includeScript value="{!URLFOR($Resource.TableSorter, 'tablesorter-master/js/jquery.tablesorter.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/FileSaver.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.CurrencyFormatter, 'JsWorld.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.CurrencyFormatter, 'fr_FR_EURO.js')}" />
+
+        <style>
+            .searchDateButton {
+                background: #103184;
+                color: #fff;
+                font-size: 14px;
+                height: 32px;
+            }
+
+            .slds-grid.slds-grid--align-end {
+                margin-bottom: 10px;
+            }
+
+            .slds .slds-card {
+                overflow-x: hidden;
+            }
+
+            .divWrapper {
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            table.floatThead-table {
+                border-bottom-width: 1px!important;
+            }
+
+            .sortClass {
+                cursor: pointer;
+            }
+            .redColor{
+                fill : #FF0000;
+            }
+
+        </style>
+    </head>
+
+    <body class="slds-scope">
+        <apex:form id="InvoiceFrm">
+            <div class="slds" style="min-width: 1300px;">
+                <c:ASPISHeader />
+                <div class="slds-card">
+                    <div class="slds-card__header">
+                    </div>
+
+                    <div class="divWrapper">
+
+                    </div>
+
+                    <div id="calendar" class="bootstrap-iso calendar-div" style="position: absolute; z-index:1005!important">
+                    </div>
+
+                </div>
+                <apex:outputPanel id="errorMessage">                
+                     <div id="errorModal"
+                        class="slds-modal slds-modal_prompt"
+                        aria-hidden="false"
+                        role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                            </div>
+                                <div class="slds-modal__content slds-p-around_medium">
+                                    <div id="errorModalBody">
+                                         <p class="slds-m-bottom_medium">
+                                            {!$Label.ErrorModalBody}
+                                        </p>
+                                     </div>
+                                <apex:pagemessages escape="false" />
+                                    <!-- <div id='privilege' class="message errorM3" role="alert">
+                                        <table class="messageTable">
+                                            <tbody>
+                                                <tr valign="top">
+                                                    <td><img alt="ERROR" class="msgIcon" src="/s.gif" title="ERROR"/></td>
+                                                    <td class="messageCell">
+                                                        <div class="messageText">
+                                                            <span>
+                                                                <h4 style='color:#cc0000'>  {!$Label.Error_Status}:
+                                                                </h4>
+                                                            </span>
+                                                           <apex:outputText value="{!$Label.InsufficientPrivileges}" escape="false"/>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div> -->
+                                </div>
+                                <div class="slds-modal__footer slds-theme_default">
+                                    <div id="closeButton">
+                                        <input type="button"
+                                            class="slds-button slds-button_destructive"
+                                            value="{!$Label.Close}"
+                                            onclick="hideError();" />
+                                     </div>
+                                     
+                                     <div id = "okButton">
+                                             <apex:commandButton action="{!redirectPage}" 
+                                                                value="{!$Label.ModalOK}" 
+                                                                styleClass="slds-button slds-button_destructive"
+                                                                reRender="InvoiceFrm" 
+                                                                status="statusSpinner"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div id="errorModalBackdrop" class="slds-backdrop"></div> 
+
+
+                </apex:outputPanel>
+            </div>
+
+            <script>
+
+            </script> 
+        </apex:form>
+
+        <br></br>
+        <div class="slds-grid">
+        <div class="slds-col">
+            <span></span>
+        </div>
+        <div class="slds-col">
+            <article class="slds-card" >
+                <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+
+                    <span class="slds-icon_container slds-icon-standard-process_exception" title="description of icon when needed"> 
+                        <svg aria-hidden="true" class="slds-icon slds-icon-text-default slds-icon">
+                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#process_exception')}"></use>
+                        </svg>
+                        <span class="slds-assistive-text">Icon Assistive Text</span>
+                    </span>
+
+
+                    </div>
+                    <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <span>Page Not Found</span>
+                    </h2>
+                    </div>
+                </header>
+                </div>
+                <div class="slds-card__body slds-card__body_inner">
+                    <apex:outputText value="{!$Label.ASPISPageNotFoundPage}" escape="false" />
+                </div> 
+                <footer class="slds-card__footer">
+                </footer>
+            </article>
+        </div>
+        <div class="slds-col">
+            <span></span>
+        </div>
+    </div>
+
+    </body>
+
+    </html>
+</apex:page>

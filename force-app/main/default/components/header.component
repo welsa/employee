@@ -1,0 +1,63 @@
+<!--
+ @File Name          : NOB_VFP49_EtatDesLieux Header Component
+ @Description        : custom component for Etat Des Lieux Pdf form
+ @Author             : HMO
+ @Group              : 
+ @Last Modified By   : HMO
+ @Last Modified On   : 25/08/2020, 10.00
+ @Modification Log   : 
+ ==============================================================================
+  Ver         Date                     Author      Modification
+ ==============================================================================
+  1.0    25/08/2020, 10:00      HMO      1.0
+-->
+
+<apex:component >
+<apex:attribute name="acctName" type="String" description=""/>
+<apex:attribute name="acctShippingStreet" type="String" description=""/>
+<apex:attribute name="acctShippingPostalCode" type="String" description=""/>
+<apex:attribute name="acctShippingCity" type="String" description=""/>
+<apex:attribute name="acctPhone" type="String" description=""/>
+<apex:attribute name="acctFax" type="String" description=""/>
+<apex:attribute name="contactName" type="String" description=""/>
+<apex:attribute name="vehiculeBrand" type="String" description=""/>
+<apex:attribute name="vehiculeRegistrationNumber" type="String" description=""/>
+
+    <div class="header">
+        <div style="float: left; width: auto; display: inline-block;">
+                <apex:image url="{!URLFOR($Resource.VFP49,'VFP49/VFP49_EtatDesLieux/images/NOB_VFP49_EtatsDeLieu_logo.PNG')}" style="width: 115px; height: 95px;margin-left :-55px;"/>
+                <div style = "padding-top:20px;">
+                    Date :&nbsp;<apex:outputText value="{0,date,dd/MM/YYYY HH:mm a}">
+                    <apex:param value="{!Now()}" />
+                </apex:outputText>
+                </div>
+        </div>
+
+        <div style="width: 60%; display:inline-block; float: right;">
+            <div style="color: #000000; border: 1px solid black">
+                <div style="font-size: 16px; font-weight: bold;">{!acctName}</div>
+                <div style="font-size: 14px;">{!acctShippingStreet}&nbsp;{!acctShippingPostalCode}&nbsp;{!acctShippingCity}</div>
+                <div style="font-size: 14px;">Tél : {!acctPhone} - Fax : {!acctFax}</div>
+            </div>
+
+            <table class = "header-table">
+                <tr>
+                    <td>Rapport</td>
+                    <td>:&nbsp;dossier n° 1592836</td>
+                </tr>
+                <tr>
+                    <td>Client</td>
+                    <td>:&nbsp;{!contactName}</td>
+                </tr>
+                <tr>
+                    <td>Vehicule</td>
+                    <td>:&nbsp;{!vehiculeBrand}</td>
+                </tr>
+                <tr>
+                    <td>Immatriculation</td>
+                    <td>:&nbsp;{!vehiculeRegistrationNumber}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</apex:component>

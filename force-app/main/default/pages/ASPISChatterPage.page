@@ -1,0 +1,22 @@
+<apex:page showHeader="false" sidebar="false" controller="ASPISChatterPage">
+	<head>
+		<apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+	</head>
+
+	<body>
+		<chatter:feedWithFollowers entityId="{!decodedId}"/>
+	</body>
+
+	<script type="text/javascript">
+		if (typeof jQuery != "undefined") {
+            $j = jQuery.noConflict();
+        }
+
+        $j(document).ready(function(){
+        	//disable all click on hyperlink
+		    $j(document).on('click','a', function(e){
+			    e.preventDefault();
+			});
+        });
+	</script>
+</apex:page>

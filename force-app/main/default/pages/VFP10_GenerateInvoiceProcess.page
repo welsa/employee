@@ -1,0 +1,2 @@
+<apex:page standardcontroller="PrerequisiteOrder__c" extensions="VFC10_GenerateInvoiceProcess" action="{!callInvoiceProcess}">
+</apex:page>

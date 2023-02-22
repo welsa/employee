@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property 
+                name="isDebug" 
+                type="Boolean" 
+                label="Debug logs ?" 
+                default="false"
+                role="inputOnly"
+            />
+
+            <property 
+                name="mapMarkers" type="String"
+                label="OBSOLETE"/>
+
+            <property 
+                name="latitude" 
+                type="String" 
+                label="latitude" 
+            />
+
+
+            <property 
+                name="longitude" 
+                type="String" 
+                label="longitude" 
+            />
+
+
+            <property 
+                name="city" 
+                type="String" 
+                label="city" 
+            />
+
+
+            <property 
+                name="country" 
+                type="String" 
+                label="country" 
+            />
+
+            <property 
+                name="street" 
+                type="String" 
+                label="street" 
+            />
+
+
+            <property 
+                name="PostalCode" 
+                type="String" 
+                label="PostalCode" 
+            />
+
+            <!-- [Input field] Search label [Input] -->
+            <property 
+                name="markersTitle" 
+                type="String" 
+                label="Markers title" 
+                default="Réparateurs"
+                role="inputOnly"
+            />
+
+            <!-- [Button] Prendre RDV label -->
+            <property 
+                name="btnAppointmentLabel" 
+                type="String" 
+                label="Button 'Prendre RDV' Label: " 
+                default="Prendre RDV"
+                role="inputOnly"
+            />
+
+            <property 
+                name="mySelectedLocation" 
+                type="String" 
+                label="mySelectedLocation" 
+                default="Ma position"
+                role="inputOnly"
+            />
+
+            <property 
+                name="selectRepairmenMsg" 
+                type="String" 
+                label="selectRepairmenMsg" 
+                default="Veuillez sélectionner un centre de reparations dans la liste pour prendre RDV"
+                role="inputOnly"
+            />
+
+            <property 
+                name="searchRepairmenMsg" 
+                type="String" 
+                label="searchRepairmenMsg" 
+                default="Recherchez un centre proche de chez vous dans la barre de recherche"
+                role="inputOnly"
+            />
+
+            <property 
+                name="noRepairmenFoundMsg" 
+                type="String" 
+                label="No repairmen found message" 
+                default="😔 Aucun centre de réparateurs trouvé près de chez vous. Veuillez choisir un autre endroit dans la barre de recherche."
+                role="inputOnly"
+            />
+
+            <property   name="selectionMsg"
+                label="Selection Message"
+                type="String"
+                role="inputOnly"
+                description="Selection message displayed on item select in previous screen"/>
+
+            <property   
+                name="selectionMsgType"
+                label="Selection Message Type"
+                type="String"
+                role="inputOnly"
+                description="Type of selection Message : Error, Info, Success from previous screen"
+            />    
+
+            <property   
+                name="selectedMarkerValue"
+                label="Selected Repairman reference number"
+                type="String"
+                role="outputOnly"
+                description="Selected Repairmen reference number"
+             />   
+
+             <property   
+                name="mobileSelectionHelpMsg"
+                label="[Mobile] Selection Help Message"
+                type="String"
+                role="inputOnly"
+                description="[Mobile] Selection Help Message"
+             />   
+
+             <property   
+                name="maxDistance_ToQueryRepCenters"
+                label="Max. distance to query Rep. centers (KM)"
+                type="Integer"
+                role="inputOnly"
+                description="Max. distance to query Rep. centers (KM)"
+            />   
+
+            <property   
+                name="maxNumber_RepCentersToDisplay"
+                label="Max. Number of repair centers to display"
+                type="Integer"
+                role="inputOnly"
+                description="maxNumber_RepCentersToDisplay;"
+            />   
+
+             
+
+        </targetConfig>
+    </targetConfigs>
+
+</LightningComponentBundle>

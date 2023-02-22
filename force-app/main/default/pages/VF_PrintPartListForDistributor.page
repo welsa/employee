@@ -1,0 +1,131 @@
+<apex:page standardController="PurchaseOrder__c" extensions="VFC_PrintPartListForDistributor" showHeader="false" renderAs="{!renderAs}" cache="true">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+
+<style type="text/css">
+@page{
+    size:A4 portrait;
+
+    @bottom-right {
+        content: "Page " counter(page) " - " counter(pages);
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        font-size:10px;
+    }
+}
+</style>
+</head>
+<h3 style="clear:both;margin-bottom:0px;padding-bottom:0px;font-size:34px;">{!$Label.Delivery_note}</h3>
+<div style="float:left;width:50%;margin-right:10px;">
+<img src="{!$Resource.logo}" />
+</div>
+<apex:outputtext escape="false" value="{!address}"></apex:outputtext>
+<div style="clear:both;color:#FFFFFF;">.</div>
+<br/>
+<apex:repeat value="{!PurchaseOrder}" var="po" id="theRepeat1">
+<div style="width:40%;margin-right:10px;float:left;">
+    
+        <div class="test" style="width:40%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+            <apex:outputText escape="false" value="{!$Label.Order_number}" />: 
+        </div>
+        <div style="width:40%;margin-right:10px;float:left;">
+            {!po.Name}
+        </div>
+        <div style="width:40%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+            <apex:outputText escape="false" value="{!$Label.Claim_number}" />: 
+        </div>
+        <div style="width:40%;margin-right:10px;float:left;">
+            {!po.ClaimNumber__c}
+        </div>
+        <!--
+        <div style="width:40%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+            No de Bastidor: 
+        </div>
+        <div style="width:40%;margin-right:10px;float:left;">
+            blaa blaa
+        </div>
+        -->
+    
+</div>
+<div style="width:55%;margin-right:10px;float:left;">
+    <div class="test" style="width:70%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.Delivery_note_creation_date}" />: 
+    </div>
+    <div style="width:20%;margin-right:10px;float:left;">
+        {!dateToday}
+    </div>
+    <div style="width:70%;margin-right:10px;float:left;text-align:right;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.Plate_number}" />: 
+    </div>
+    <div style="width:20%;margin-right:10px;float:left;">
+        {!po.PlateNumber__c}
+    </div>
+    <div style="clear:both;color:#FFFFFF;">.</div>
+</div>
+</apex:repeat>
+<div style="clear:both;color:#FFFFFF;">.</div>
+<!--
+<apex:dataTable value="{!SalesOrder}" var="so" width="90%" cellPadding="6" border="2" styleClass="test">
+-->
+<table class="pdftable" border="2" width="100%">
+<tr>
+    <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+        <!--DUN changed reference to part number<apex:outputText escape="false" value="{!$Label.Reference}" /> -->
+        <apex:outputText escape="false" value="{!$Label.PartNumber}" />
+    </th>
+    <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.PartDescription}" />    
+    </th>
+    <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.Qty}" />
+    </th>     
+    <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.Type}" />
+    </th>
+    <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.CataloguePrice}" />
+    </th>
+    <!--
+    <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.UnitPrice}" />
+    </th>
+
+    <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.TotalPrice}" />
+    </th>
+
+    <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.DiscountPercentage}" />    
+    </th>
+    -->
+    <th style="font-size:13px;padding:6px;background-color:#000066;color:white;font-weight:bold;">
+        <apex:outputText escape="false" value="{!$Label.CreatedDate}" />
+    </th>     
+</tr>
+
+    <apex:repeat value="{!OrderLines}" var="ol" id="theRepeat2">
+        <tr>
+            <!--DUN changed reference to part number<td style="font-size:13px;padding:6px;">{!ol.Name}</td>-->
+            <td style="font-size:13px;padding:6px;">{!ol.PartNumber__c}</td>
+            <td style="font-size:13px;padding:6px;">{!ol.Description__c}</td>
+            <td style="font-size:13px;padding:6px;">{!ol.Quantity__c}</td>            
+            <td style="font-size:13px;padding:6px;">{!ol.Type__c}</td>
+            <td style="font-size:13px;padding:6px;">{!ol.CataloguePrice__c}</td>
+            <!--
+            <td style="font-size:13px;padding:6px;">{!ol.AXAPrice__c}</td>
+            
+            <td style="font-size:13px;padding:6px;">{!ol.AXATotalPrice__c}</td>
+            
+            <td style="font-size:13px;padding:6px;">{!ol.TotalDiscount__c}</td>
+            -->
+            <td style="font-size:13px;padding:6px;">
+                <apex:outputText value="{0, date, d'/'MM'/'YYYY}">
+                    <apex:param value="{!ol.CreatedDate}" /> 
+                </apex:outputText>
+            </td>                        
+        </tr>
+    </apex:repeat>
+
+</table>
+
+</apex:page>

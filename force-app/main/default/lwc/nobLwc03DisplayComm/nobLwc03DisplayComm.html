@@ -1,0 +1,22 @@
+<template>
+    <div class = {flexipageRegionWidth}>
+        <lightning-card icon-name="standard:read_receipts">
+            <h2 slot="title">{nom} > {sujet}</h2>
+
+            <div class="slds-card__body slds-card__body_inner slds-m-top_large">
+                <lightning-formatted-rich-text value={versionData} class = "slds-text-body_medium"></lightning-formatted-rich-text>
+            </div>
+            
+
+            <div slot="footer">
+                <template if:true={isOnPortal}>
+                    <div class = "slds-card__footer-action slds-align_absolute-center">
+                        <lightning-button data-target-id = "lueButton" variant = "Brand" label = {buttonLabel} onclick = {handleLue} disabled = {isDisabled}>
+                            <span class="slds-assistive-text">{buttonLabel}</span>
+                        </lightning-button>
+                    </div>
+                </template>
+            </div>
+        </lightning-card>
+    </div>
+</template>

@@ -1,0 +1,739 @@
+<apex:page controller="ASPISContactUs" showHeader="false" sidebar="true" standardStylesheets="false" applyBodyTag="false" docType="html-5.0" applyHtmlTag="false" language="{!language}">
+<apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        
+        <!-- Bootstrap -->
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/bootstrap.min.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/animate.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/font-awesome.min.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/jquery.bxslider.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/normalize.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/demo.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/set1.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/overwrite.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.CustomerSiteV3, 'css/style.css')}" /> 
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+
+        <script>  
+            window.params = {  
+                "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+            };
+        </script>
+
+        <title>{!$Label.ASPISContactUsTitle}</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" /> <!-- WCH 02/08/2019 C-002781 -->
+    <!-- =======================================================
+        Theme Name: eNno
+        Theme URL: https://bootstrapmade.com/enno-free-simple-bootstrap-template/
+        Author: BootstrapMade
+        Author URL: https://bootstrapmade.com
+    ======================================================= -->
+
+        <style>
+            #containerTop{
+                padding-top: 100px;
+            }
+            /*DUN  17/04/2018 C-002340 */
+            .slds-text-heading_medium{
+                color: #fff;
+                font-family: "Salesforce Sans",Arial,sans-serif;
+            }
+        </style>
+    </head>
+  
+    <body class="slds-scope">
+        <apex:form >
+            <div class="slds" style="min-width: 1300px;">
+                <c:ASPISHeader />
+            </div>
+
+            <div class="bootstrap-iso">
+                <div class="container">
+                    <div class="row">
+                        <div class="slider">
+                        </div>
+                    </div>
+                </div>
+
+                <apex:outputText rendered="{!IF(language=='en_US' || language=='fr',true,false)}">  
+                        
+                    <div class="container" id="containerTop">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <div class="grid">
+                                        <figure class="effect-zoe">
+                                            <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}"/>           
+                                        </figure>
+                                    </div>
+                                <hr/>
+                                    <h2>Nous contacter</h2>
+                                    <p>Contactez-nous dès maintenant pour ouvrir gratuitement votre compte et commander directement depuis votre outil de chiffrage<br/>
+                                    <br/>
+                                    Du Lundi au vendredi de  9H à 12H et de 13H à 17H<br/>
+                                    <br/>
+                                    Par téléphone au {!$Label.AspisStandardPhoneNumber}<br/><!-- WCH 31/05/2019 C-003212 -->
+                                    ou par e-mail à {!$Label.AspisServiceEmailAddress}<br/>
+                                    </p>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <h2>Alpha Scale France</h2>
+                                    <p>Commandez la simplicité</p>
+                                </div>
+                                <hr/>              
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                        <div class="inner-footer">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-4 f-about">
+                                    </div>
+                                    <div class="col-md-4 f-about">
+                                        <a><h1>A propos d’Alpha Scale SAS</h1></a>
+                                        <div class="text-center">
+                                        <p>Créee en Juillet 2015, Alpha Scale offre une large gamme de services à ses clients, centrée autour de la distribution de pièces automobiles détachées avec plus de 2000 partenaires en Europe.<br/>
+                                        </p>
+                                        </div>
+                                        <hr/>
+                                    </div>
+                                    <div class="col-md-4 f-about">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </apex:outputText> 
+
+                <apex:outputText rendered="{!IF(language=='fr_BE',true,false)}">  
+                        
+                    <div class="container" id="containerTop">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <div class="grid">
+                                        <figure class="effect-zoe">
+                                            <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}"/>           
+                                        </figure>
+                                    </div>
+                                <hr/>
+                                    <h2>Nous contacter</h2>
+                                    <p>Contactez-nous dès maintenant pour ouvrir gratuitement votre compte et commander plus de 37 marques directement depuis votre outil de chiffrage<br/>
+                                    <br/>
+                                    Du Lundi au vendredi de 9H à 17H<br/>
+                                    <br/>
+                                    <!-- Par téléphone au +32 2 678 678 8<br/>
+                                    ou --> Par e-mail à alphascale@axa.be<br/><!--VSU C-002632-->
+                                    ou en contactant votre expert interne AXA<br/>
+                                    </p>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                        <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <h2>Les marques distribuées :</h2>
+                                    <p>ALFA ROMEO, AUDI, BMW, CHEVROLET-GM, CHRYSLER, CITROEN, DACIA, DAIHATSU, DODGE, FIAT, FORD, HYUNDAI, INFINITI, ISUZU, IVECO, JAGUAR, JEEP-CHRYSLER, KIA, LANCIA, LAND ROVER, LEXUS, MAZDA, MERCEDES, MINI, MITSUBISHI, NISSAN, PEUGEOT, PORSCHE, RENAULT, SEAT, SKODA, SSANGYONG, SUBARU, SUZUKI, TOYOTA, VOLKSWAGEN, VOLVO<br/>
+                                    </p>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <div class="box">
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="0.4s">
+                                        <h4>37 Marques Distribuées</h4>                 
+                                            <div class="icon">
+                                              <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon2.png')}" style = "width:60px;"/>
+                                            </div>                      
+                                        <p>Avec plus de 37 marques distribuées et bien plus à venir, Alpha Scale vous garantit l'efficacité d'un interlocuteur unique</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.0s">
+                                        <h4>Commande depuis le Chiffrage</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon6.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>Commandez vos pièces en toute simplicité directement depuis Winformex2</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.6s">
+                                        <h4>Substitution dans le Chiffrage</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon5.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>Un mécanisme efficace pour réduire le coût de vos pièces tout en conservant votre marge</p>
+                                        <p style = "font-style: italic;">Disponible courant 2018</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div> 
+                         </div>
+                    </div>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <h2>Alpha Scale Belgium</h2>
+                                    <p>Commandez la simplicité</p>
+                                </div>
+                                <hr/>              
+                            </div>
+                        </div>
+                    </div>
+                    
+                        <div class="inner-footer">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-4 f-about">
+                                    </div>
+                                    <div class="col-md-4 f-about">
+                                        <a><h1>A propos d’Alpha Scale SAS</h1></a>
+                                        <div class="text-center">
+                                        <p>Créee en Juillet 2015, Alpha Scale offre une large gamme de services à ses clients, centrée autour de la distribution de pièces automobiles détachées avec plus de 2000 partenaires en Europe.<br/>
+                                        </p>
+                                        </div>
+                                        <hr/>
+                                    </div>
+                                    <div class="col-md-4 f-about">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </apex:outputText> 
+
+                <apex:outputText rendered="{!IF(language=='nl_BE',true,false)}">  
+                        
+                    <div class="container" id="containerTop">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <div class="grid">
+                                        <figure class="effect-zoe">
+                                            <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}"/>           
+                                        </figure>
+                                    </div>
+                                <hr/>
+                                    <h2>ONS CONTACTEREN</h2>
+                                    <p>U kan ons vanaf dit moment contacteren om gratis uw account bij Alpha Scale te openen. U kan met direkte ingang koetswerkonderdelen voor minstens 37 verschillende automerken bestellen vanuit uw bestektool.<br/>
+                                    <br/>
+                                    Van maandag tot vrijdag van 9u tot 37u<br/>
+                                    <br/>
+                                    <!-- Via telefoon op het nr +32 2 678 678 8<br/>
+                                    of per email via alphascale@axa.be   <br/> -->
+                                    Voor al uw vragen omtrent Alpha Scale Belgium, of indien u uw e-mailadres wenst te wijzigen, gelieve contact opnemen met uw interne AXA expert of ons uw aanvraag via mail door te sturen alphascale@axa.be
+                                    <br/>
+                                    </p>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                        <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <h2>BESCHIKBARE AUTOMERKEN</h2>
+                                    <p>ALFA ROMEO, AUDI, BMW, CHEVROLET-GM, CHRYSLER, CITROEN, DACIA, DAIHATSU, DODGE, FIAT, FORD, HYUNDAI, INFINITI, ISUZU, IVECO, JAGUAR, JEEP-CHRYSLER, KIA, LANCIA, LAND ROVER, LEXUS, MAZDA, MERCEDES, MINI, MITSUBISHI, NISSAN, PEUGEOT, PORSCHE, RENAULT, SEAT, SKODA, SSANGYONG, SUBARU, SUZUKI, TOYOTA, VOLKSWAGEN, VOLVO<br/>
+                                    </p>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <div class="box">
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="0.4s">
+                                        <h4>37 beschikbare merken</h4>                 
+                                            <div class="icon">
+                                              <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon2.png')}" style = "width:60px;"/>
+                                            </div>                      
+                                        <p>Met 37 beschikbare merken, en binnenkort meer, beschikt U met Alpha Scale over een efficiënt en één uniek kanaal voor de bestelling van uw onderdelen.</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.0s">
+                                        <h4>Bestel uw onderdelen vanuit uw schadeberekening</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon6.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>Bestel uw onderdelen in alle eenvoud rechtstreeks vanuit Winformex II</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.6s">
+                                        <h4>Prijsaanpassing in uw schadeberekening</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon5.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>Een doeltreffend mechanisme om de kost van uw wisselstukken te reduceren MET behoud van uw winstmarge.</p>
+                                        <p style = "font-style: italic;">Beschikbaar in de loop van 2018</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div> 
+                         </div>
+                    </div>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <h2>Alpha Scale Belgium</h2>
+                                    <p>Bestellen in alle eenvoud</p>
+                                </div>
+                                <hr/>              
+                            </div>
+                        </div>
+                    </div>
+                    
+                        <div class="inner-footer">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-4 f-about">
+                                    </div>
+                                    <div class="col-md-4 f-about">
+                                        <a><h1>OVER ONS</h1></a>
+                                        <div class="text-center">
+                                        <p>Opgericht in 2015, Alpha Scale biedt een breed gamma van diensten aan haar klanten aan met als core business de distributie van auto-onderdelen met meer dan 2000 partners in Europa.
+                                        </p>
+                                        </div>
+                                        <hr/>
+                                    </div>
+                                    <div class="col-md-4 f-about">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </apex:outputText> 
+
+                <apex:outputText rendered="{!IF(language=='it',true,false)}">  
+                    <div class="container" id="containerTop">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <div class="grid">
+                                        <figure class="effect-zoe">
+                                            <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}"/>           
+                                        </figure>
+                                    </div>
+                                <hr/>
+                                    <h2>Contatti</h2>
+                                    <p>Da Lunedì a Venerdì<br/>
+                                    <br/>
+                                    Dalle 9.00 alle 18.00<br/>
+                                    <br/>
+                                    Telefono: +39 02 48084.588<br/>
+                                    <br/>
+                                    Mail: carrozzerie@axa.it<br/>
+                                    </p>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                </apex:outputText> 
+
+                <apex:outputText rendered="{!IF(language=='de',true,false)}">  
+                    <div class="container" id="containerTop">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <h2>Verfügbar für folgende Hersteller:</h2>
+                                    <p>RAlfa Romeo, Audi, Citroen, Dacia, Fiat, Ford, Kia, Lancia, Lexus, Mercedes, Mitsubishi, Nissan, Opel, Peugeot, Renault, Seat, Skoda, Suzuki, Toyota, Volkswagen<br/>
+                                    </p>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="box">
+                                <div class="col-md-6 col-md-offset-3">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.0s">
+                                        <h4>Mehr als 20 Hersteller</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon2.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>Mit Teilen von mehr als 20 unterschiedlichen Herstellern (weitere werden folgen) bietet Alpha Scale  Ihnen die Möglichkeit über einen Prozess fast alle Bestellungen vornehmen zu können.</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                           </div>
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="box">
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="0.4s">
+                                        <h4>Rabatte für alle Hersteller</h4>                 
+                                            <div class="icon">
+                                                <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon4.png')}" style = "width:60px;"/>
+                                            </div>                      
+                                        <p>CUnabhängig von Ihrem Bestellvolumen erhalten Sie auf jede Bestellung einen Nachlass (für alle angebotenen Hersteller)</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.0s">
+                                        <h4>Originalteile zu geringeren Verkaufspreisen</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon5.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>Eine effektive Möglichekit zur Reduzierung des Schadens bei Gleichbleibender Marge</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.6s">
+                                        <h4>Bestellungen direkt aus dem Kalkulationstool</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon6.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>Bei Kalkulationen über Audatex oder DAT (bei beiden Anbietern abhängig von derzum Einsatz kommenden Softwareversion) Können Sie einfach und schnell direkt aus der Kalkulation die Bestellung vornehmen</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div> 
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>   
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <h2>Alpha Scale Germany</h2>
+                                </div>
+                                <hr/>              
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <div class="grid">
+                                        <figure class="effect-zoe">
+                                            <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}"/>           
+                                        </figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </apex:outputText> 
+
+                <!-- AMI 24/10/2018  C-002781 : Migrate Spain to R4
+                                              : Enabling Translation for Spain -->
+                <apex:outputText rendered="{!IF(language=='es',true,false)}">   
+                    <div class="container" id="containerTop">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <div class="grid">
+                                        <figure class="effect-zoe">
+                                            <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}"/>
+                                        </figure>
+                                    </div>
+                                <hr/>
+                                    <h2>{!$Label.ASPISContactUsMsg1}</h2>
+                                    <p>
+                                        {!$Label.ASPISContactUsMsg2}
+                                        <br/>
+                                        <br/>
+                                        {!$Label.ASPISContactUsMsg3}
+                                        <br/>
+                                        <br/>
+                                        {!$Label.ASPISContactUsMsg4}
+                                        <br/>
+                                        {!$Label.ASPISContactUsMsg5}
+                                        <br/>
+                                    </p>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Do not display follwing info for Spain
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <h2>{!$Label.ASPISContactUsMsg6}</h2>
+                                    <p>
+                                        {!$Label.ASPISContactUsMsg7}
+                                        <br/>
+                                    </p>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <div class="box">
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="0.4s">
+                                        <h4>{!$Label.ASPISContactUsMsg8}</h4>                 
+                                            <div class="icon">
+                                              <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon1.png')}" style = "width:60px;"/>
+                                            </div>                      
+                                        <p>{!$Label.ASPISContactUsMsg9}</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.0s">
+                                        <h4>{!$Label.ASPISContactUsMsg10}</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon2.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>{!$Label.ASPISContactUsMsg11}</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.6s">
+                                        <h4>{!$Label.ASPISContactUsMsg12}</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon3.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>{!$Label.ASPISContactUsMsg13}</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="row">
+                            <div class="box">
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="0.4s">
+                                        <h4>{!$Label.ASPISContactUsMsg14}</h4>                 
+                                            <div class="icon">
+                                                <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon4.png')}" style = "width:60px;"/>
+                                            </div>                      
+                                        <p>{!$Label.ASPISContactUsMsg15}</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.0s">
+                                        <h4>{!$Label.ASPISContactUsMsg16}</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon5.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>{!$Label.ASPISContactUsMsg17}</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="wow bounceIn" data-wow-offset="0" data-wow-delay="1.6s">
+                                        <h4>{!$Label.ASPISContactUsMsg18}</h4>
+                                        <div class="icon">
+                                            <img src="{!URLFOR($Resource.CustomerSiteV3, 'img/icon6.png')}" style = "width:60px;"/>
+                                        </div>
+                                        <p>{!$Label.ASPISContactUsMsg19}</p>
+                                        <div class="ficon">
+                                            <br/>
+                                        </div>
+                                    </div> 
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="text-center">
+                                    <h2>{!$Label.ASPISContactUsMsg20}</h2>
+                                    <p>{!$Label.ASPISContactUsMsg21}</p>
+                                </div>
+                                <hr/>              
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="inner-footer">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-4 f-about">
+                                </div>
+                                <div class="col-md-4 f-about">
+                                    <a><h1>{!$Label.ASPISContactUsMsg22}</h1></a>
+                                    <div class="text-center">
+                                    <p>{!$Label.ASPISContactUsMsg23}<br/>
+                                    </p>
+                                    </div>
+                                    <hr/>
+                                </div>
+                                <div class="col-md-4 f-about">
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                </apex:outputText>
+
+                <footer>   
+                    <div class="last-div" style = "background: linear-gradient(to right, #3989C9, #103184);">
+                        <div class="container">
+                            <div class="row">         
+                            </div>
+                        </div>          
+                    </div>  
+                </footer>
+                    
+                <script>
+                        if (typeof jQuery != "undefined") {
+                            $j = jQuery.noConflict();
+                        }
+
+                        $j(document).ready(function(){
+                            inputTermInSearchBox();
+
+                        });
+
+                        $j(document).click(function(event) {
+                            closeDropdowns(event);
+                        });
+
+                        $j('#logoHeader').click(function(event){
+                            window.location.href="/apex/Search";
+                        });
+
+                        var tabNumber;
+
+                        var currentHref = window.location.href,
+                        tabNumber = currentHref.substring(currentHref.indexOf('tabNo=')+6);
+                        if (tabNumber != undefined && tabNumber.length ==1){
+                            $j('#tab'+tabNumber).addClass('active');              
+                        }
+
+                        $j('.slds-tabs_default__item').click(function(e) {
+                            $j(".slds-tabs_default__item").removeClass("active");
+                            $j(this).addClass('active');
+                        });
+                        
+                        function redirectToSearch(){
+                            if(!$j('[id$="searchInput"]').val()){
+                                return false;
+                            }else{
+                                window.location.href="/apex/Search?inputTerm="+$j('[id$="searchInput"]').val();
+                            }                     
+                        }
+
+                        function inputTermInSearchBox(){
+                            var winhref = window.location.href;
+                                if(winhref.indexOf('inputTerm') != -1){
+                                        $j('[id$="searchInput"]').val(winhref.substring(winhref.indexOf('=')+1));
+                                }
+                        }
+
+                        $j('[id$="searchInput"]').on({
+                            "keypress": function(event) {[]
+                                // Key press to prevent enter key on blank input
+                                if ((window.event && window.event.keyCode == 13) || event.which == 13) {
+                                    if (!$j('[id$="searchInput"]').val()) {
+                                        return false;
+                                    } else {
+                                        window.location.href="/apex/Search?inputTerm="+$j('[id$="searchInput"]').val();
+                                        return false;
+                                    }
+                                }
+                            }
+                        });
+                </script>
+
+                <apex:includescript value="{!URLFOR($Resource.CustomerSiteV3, 'js/jquery-2.1.1.min.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.CustomerSiteV3, 'js/bootstrap.min.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.CustomerSiteV3, 'js/wow.min.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.CustomerSiteV3, 'js/jquery.easing.1.3.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.CustomerSiteV3, 'js/jquery.isotope.min.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.CustomerSiteV3, 'js/jquery.bxslider.min.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.CustomerSiteV3, 'js/fliplightbox.min.js')}" />
+                <apex:includescript value="{!URLFOR($Resource.CustomerSiteV3, 'js/functions.js')}" />
+            </div>
+        </apex:form>
+    </body>
+</apex:page>

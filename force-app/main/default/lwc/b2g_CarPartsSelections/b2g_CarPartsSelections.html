@@ -1,0 +1,64 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <!-- Legal Notice
+    This code is the property of Salesforce.com and is protected by U.S. and International
+    copyright laws. Reproduction, distribution without written permission of Salesforce is
+    strictly prohibited. In particular this code has been delivered by Salesforce.com for
+    its Client’s internal purposes pursuant to specific terms and conditions, and cannot be
+    re-used, reproduced or distributed for any other purposes.
+    Author: P-E GROS / Feb. 2021
+    -->
+        <div class={cardClass}>
+        <lightning-card >
+    
+            <template if:true={isReady}>
+                <div class="slds-card__body_inner"> 
+    
+                    <!-- Record List display   -->
+                    <div class=" " >
+                        <!-- Content Display -->
+                        <div class={searchDivClass} style={searchDivStyle} >
+                            <!-- Tiles mode content display -->
+                            <template if:true={isTiles}>
+                                <lightning-layout   multiple-rows="true"   horizontal-align="center" >
+                                    <template for:each={displayItems} for:item="eachItem">
+                                        <template if:true={eachItem.isFiltered}>
+                                            <lightning-layout-item  key={eachItem.id}  size="6" small-device-size="3" medium-device-size="3" >
+                                                <a id={eachItem.id} onclick={handleSelect}>
+    
+    
+                                                    <div class={eachItem.class}>
+                                                        <lightning-formatted-text   value={eachItem.label}  class="slds-text-heading_small slds-align_absolute-center">
+                                                        </lightning-formatted-text><br/>
+    
+                                                            <img src={eachItem.imageName} width="150" height="150" class="slds-align_absolute-center">
+                                                        <!-- <ul class="slds-list_horizontal  slds-has-dividers_left slds-listbox slds-listbox_horizontal">
+                                                            <template for:each={eachItem.details} for:item="eachField">
+                                                                <li key={eachField.label} class="slds-item slds-text-body_small" title={eachField.label}>
+                                                                    {eachField.value}
+                                                                </li>
+                                                            </template>
+                                                        </ul> -->
+                                                    </div>
+                                                </a>
+                                            </lightning-layout-item>
+                                        </template>
+                                    </template>
+                                </lightning-layout>
+                            </template>
+    
+                        </div>
+                    </div>
+                </div>
+            </template>
+    
+            <!-- Loading Spinner DDisplay -->
+            <template if:false={isReady}>
+                 <div style="height:120px;">
+                    <lightning-spinner alternative-text="Loading" size="medium">
+                    </lightning-spinner>
+                </div>
+            </template>     
+        </lightning-card>
+        </div>
+    </template>

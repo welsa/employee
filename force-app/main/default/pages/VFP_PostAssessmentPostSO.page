@@ -1,0 +1,116 @@
+<apex:page standardcontroller="PrerequisiteOrder__c"
+           extensions="VFC_PostAssessmentPostSO"
+           sidebar="false"
+           showheader="false"
+           standardstylesheets="false"> 
+    <head>
+      <apex:slds />
+      <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+    </head>
+
+    <body class="slds-scope">
+        <div class="demo-only demo--inverse" style="height: 6rem;" id="loadTable">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_medium">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-only" style="height: 4rem;">
+            <div class="slds-notify_container slds-is-relative" id="status">
+
+            </div>
+        </div>
+    </body>
+
+    <script>
+        var sOrderId = "{!$CurrentPage.parameters.Id}"; 
+
+        var $j = jQuery.noConflict();                
+                    
+        $j(document).ready(function(){
+            //on initial load,show spinner
+            $j('#loadTable').show();
+
+            //hide status panel
+            $j('#status').hide();
+
+            //clear status panel
+            $j('#status').empty();
+
+            VFC_PostAssessmentPostSO.launchPostAssessmentCallOut(sOrderId,function(result,event){
+                if(event.status){
+                    if(result){
+                        console.log('result ' + result);
+                        var callOutStatus =  result.split(';');
+                        console.log('callOutStatus ' + callOutStatus);
+
+                        if(callOutStatus[0] == 'OK'){
+                            VFC_PostAssessmentPostSO.launchPostSalesOrderCallOut(sOrderId,function(result,event){
+                                if(event.status){
+                                    if(result){
+                                        var soResult = result.split(';');
+                                        console.log('soResult ' + soResult);
+
+                                        if(soResult[0] == 'OK'){
+                                            content = buildContent(false,soResult[1],false);
+                                            $j('#status').append(content);
+                                        }else if(soResult[0] == 'KO'){
+                                            content = buildContent(true,soResult[1],false);
+                                            $j('#status').append(content);
+                                        }
+                                    }
+                                }
+                            });
+                        }else if(callOutStatus[0] == 'KO'){
+                            content = buildContent(true,callOutStatus[1],false);
+                            $j('#status').append(content);
+                        }
+
+                        //hide spinner
+                        $j('#loadTable').hide();
+
+                        //show status panel
+                        $j('#status').show();
+                    }//end if result
+                }//end if event.status
+            });
+        });
+
+        function buildContent(isError,message,attention){
+            var content = '';
+            if(isError == true){
+                content = '<div class="slds-notify slds-notify_toast slds-theme_error" role="alert">';
+            }else if(isError == false){
+                content = '<div class="slds-notify slds-notify_toast slds-theme_success" role="alert">';
+            }else if(attention){
+                content = '<div class="slds-notify slds-notify_toast slds-theme_warning" role="alert">';
+            }
+
+            content += '<span class="slds-assistive-text">error</span>';
+            content += '<span class="slds-icon_container slds-icon-utility-error slds-m-right_small ';
+            content += 'slds-no-flex slds-align-top" title="">';
+            content += '<svg class="slds-icon slds-icon_small" aria-hidden="true">';
+
+            if(isError == true){
+                content += '<use xlink:href="{!URLFOR($Asset.SLDS,"/assets/icons/utility-sprite/svg/symbols.svg#error")}"></use>';
+            }else if(isError == false){
+                content += '<use xlink:href="{!URLFOR($Asset.SLDS,"/assets/icons/utility-sprite/svg/symbols.svg#success")}"></use>';
+            }else if(attention){
+                content += '<use xlink:href="{!URLFOR($Asset.SLDS,"/assets/icons/utility-sprite/svg/symbols.svg#warning")}"></use>';
+            }
+
+            content += '</svg></span>';
+            content += '<div class="slds-notify__content">';
+            content += '<h2 class="slds-text-heading_small ">';
+            content += message;
+
+            content += '</h2></div></div>';
+
+            return content;
+        }
+    </script>
+</apex:page>

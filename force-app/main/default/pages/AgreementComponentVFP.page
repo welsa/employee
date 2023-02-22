@@ -1,0 +1,14 @@
+<apex:page sidebar="false" showHeader="false">
+    <div id="AgreementComponent">
+        <!-- AMI 09/08/2018 : Community Rollout -->
+        <!-- Changing relative url so that iframe can be exexcuted for both force.com and community -->
+        <iframe  height="1000px" src="../apex/AgreementSideBarVFPage?core.apexpages.devmode.url=1" frameborder="0" width="1000px" id=""></iframe>
+        <script type = "text/javascript" >
+            if (document.getElementById("AgreementComponent") != null) {
+                if (document.getElementById("AgreementComponent").parentNode.parentNode.className.indexOf("htmlAreaComponentModule") != -1) {
+                    document.getElementById("AgreementComponent").parentNode.parentNode.style.display = "none";
+                }
+            }
+        </script> 
+    </div>
+</apex:page>

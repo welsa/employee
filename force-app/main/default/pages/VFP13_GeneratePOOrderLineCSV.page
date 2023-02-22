@@ -1,0 +1,37 @@
+<apex:page showHeader="false" 
+            sidebar="false"
+            standardController="PurchaseOrder__c"
+            extensions="VFC13_GeneratePOOrderLineCSV"
+            contentType="application/vnd.ms-excel#{!currentPurchaseOrder.Name}.csv">
+    <apex:outputField value="{!PurchaseOrder__c.Name}"
+                        rendered="false"/>
+    <apex:outputField value="{!PurchaseOrder__c.Status__c}"
+                        rendered="false"/>
+    <apex:outputField value="{!PurchaseOrder__c.RecordTypeId}"
+                        rendered="false"/>{!header}
+    <apex:repeat value="{!mapIdOrderLineWrapper}" var="currentWrapper">
+        <apex:outputText rendered="{!isQuotation}">
+            <apex:outputText rendered="{!mapIdOrderLineWrapper[currentWrapper].isOriginalOnly}">
+<!-- Do not add space in front the line ;) -->"","","","","{!mapIdOrderLineWrapper[currentWrapper].originalOrderLine.PartNumber__c}","{!mapIdOrderLineWrapper[currentWrapper].originalOrderLine.Quantity__c}"
+            </apex:outputText>
+            <apex:outputText rendered="{!(mapIdOrderLineWrapper[currentWrapper].isFinalOriginal || mapIdOrderLineWrapper[currentWrapper].isFinalAltenative) && mapIdOrderLineWrapper[currentWrapper].finalOrderLine.Suppliable__c != 'NO'}">
+<!-- Do not add space in front the line ;) -->"","","","","{!mapIdOrderLineWrapper[currentWrapper].finalOrderLine.PartNumber__c}","{!mapIdOrderLineWrapper[currentWrapper].finalOrderLine.Quantity__c}"
+            </apex:outputText>
+            <apex:outputText rendered="{!mapIdOrderLineWrapper[currentWrapper].isBundle && mapIdOrderLineWrapper[currentWrapper].originalOrderLine.Suppliable__c != 'NO'}">
+                <apex:repeat value="{!mapIdOrderLineWrapper[currentWrapper].bundleItemList}" var="currentBundle">
+<!-- Do not add space in front the line ;) -->"","","","","{!currentBundle.PartNumber__c}","{!currentBundle.Quantity__c}"
+                </apex:repeat>
+            </apex:outputText>
+        </apex:outputText>
+        <apex:outputText rendered="{!!isQuotation}">
+            <apex:outputText rendered="{!(mapIdOrderLineWrapper[currentWrapper].isFinalOriginal || mapIdOrderLineWrapper[currentWrapper].isFinalAltenative) && mapIdOrderLineWrapper[currentWrapper].finalOrderLine.AcceptedCheck__c}">
+<!-- Do not add space in front the line ;) -->"","","","","{!mapIdOrderLineWrapper[currentWrapper].finalOrderLine.PartNumber__c}","{!mapIdOrderLineWrapper[currentWrapper].finalOrderLine.Quantity__c}"
+            </apex:outputText>
+            <apex:outputText rendered="{!mapIdOrderLineWrapper[currentWrapper].isBundle && mapIdOrderLineWrapper[currentWrapper].originalOrderLine.AcceptedCheck__c}">
+                <apex:repeat value="{!mapIdOrderLineWrapper[currentWrapper].bundleItemList}" var="currentBundle">
+<!-- Do not add space in front the line ;) -->"","","","","{!currentBundle.PartNumber__c}","{!currentBundle.Quantity__c}"
+                </apex:repeat>
+            </apex:outputText>
+        </apex:outputText>
+    </apex:repeat>
+</apex:page>

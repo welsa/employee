@@ -1,0 +1,580 @@
+<apex:page controller="AddNewParts" showHeader="false" sidebar="true" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>{!$Label.AddNewPartsTitle}</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.jQueryDataTable, 'media/css/jquery.dataTables.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.MultiSwitch, 'multi-switch.min.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/ordermakeselection.css')}" />
+
+        <!-- Initalise the global variable first as these values are used in the external javascript files -->
+        <script>
+            window.params = {
+                // URL For Icons
+                "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}",
+                "attentionSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#warning')}",
+                "attentionPNGUrl": "{!URLFOR($Resource.PagedeCommandeResources, '/PagedeCommandeResources/warningOrdered.png')}",
+                "alternativeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action-sprite/svg/symbols.svg#change_record_type')}",
+                "alternativePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/change_record_type_60.png')}",
+                "bundleSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/custom-sprite/svg/symbols.svg#custom57')}",
+                "bundlePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/custom/custom57_60.png')}",
+                "packageOrgSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#package_org')}",
+                "packageOrgPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/package_org_60.png')}",
+                "editFormSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#edit_form')}",
+                "editFormPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/edit_form_60.png')}",
+                "quickTextSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#quick_text')}",
+                "quickTextPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/quick_text_60.png')}",
+                "shipmentSVGUrl":"{!URLFOR($Resource.slds, '/assets/icons/standard-sprite/svg/symbols.svg#shipment')}",
+                "shipmentPNGUrl":"{!URLFOR($Resource.shipmentGrey)}",
+                "addressSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#checkin')}",
+                "addressPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility/checkin_60.png')}"
+
+            };
+        </script>
+
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.dataTables.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.CurrencyFormatter, 'JsWorld.min.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.CurrencyFormatter, 'fr_FR_EURO.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.MultiSwitch, 'multi-switch.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/FileSaver.min.js')}" />
+        <style>
+            .searchDateButton {
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    height: 32px;
+            }
+            .fixedHeader{
+                position: fixed;
+                width:100%;
+                background: #fdfdfd;
+                z-index:1;
+            }
+            
+            .agencyLogo{
+            width: 30px;
+            height: 30px;
+            margin-top: -5px;
+            }
+            
+            .agencyLogoSection{
+            width: 24px;
+            height: 24px;
+            margin-top: -5px;
+            }
+            .slds-checkbox--add-button input[type=checkbox][disabled]+.slds-checkbox--faux, .slds-checkbox--add-button input[type=checkbox][disabled]+.slds-checkbox_faux, .slds-checkbox--add-button input[type=checkbox][disabled]~.slds-checkbox--faux, .slds-checkbox--add-button input[type=checkbox][disabled]~.slds-checkbox_faux, .slds-checkbox_add-button input[type=checkbox][disabled]+.slds-checkbox--faux, .slds-checkbox_add-button input[type=checkbox][disabled]+.slds-checkbox_faux, .slds-checkbox_add-button input[type=checkbox][disabled]~.slds-checkbox--faux, .slds-checkbox_add-button input[type=checkbox][disabled]~.slds-checkbox_faux {
+                background-color: #4bca81;
+                border-color: transparent;
+                color: #fff;
+            }
+            .header_top_logo{
+            /*width: 170px;*/
+            height: 60px;
+            background: url("{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}") no-repeat;
+            cursor: pointer;
+            margin: 12px 0px 12px 0;
+            }
+            .columnWidthCustom{
+                width: 60%;
+            }
+            
+        </style>
+    </head>
+
+    <body>
+        <apex:form id="AddNewParts">
+            <div class="slds" >
+                <div class="slds-col slds-size--1-of-3" title="Alpha-scale" style="margin-left: 16px;"><div id ="logoHeader" class="header_top_logo" style="width:150px"></div></div>
+                <!-- <c:ASPISHeader /> -->
+                <div class="slds-p-around_medium">
+                    <apex:outputText >
+                        <div class="slds-card">
+                            <div class="slds-card__header">
+                                <h2 class="slds-text-heading_small">{!$Label.AddNewParts}</h2>
+                            </div>
+                            <div class="slds-card__body">
+                                <table class="slds-table slds-table_bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="slds-text-heading_label slds-text-align_center">
+                                                {!$ObjectType.PartList__c.fields.PartNumber__c.label}
+                                            </th>
+                                            <th class="slds-text-heading_label slds-text-align_center">
+                                                {!$ObjectType.PartList__c.fields.Name.label}
+                                            </th>
+                                            <th class="slds-text-heading_label  slds-text-align_center">
+                                                {!$ObjectType.PartList__c.fields.Description__c.label}
+                                            </th>
+                                            <th class="slds-text-heading_label slds-text-align_center">
+                                                {!$ObjectType.PartList__c.fields.Price__c.label}
+                                            </th>
+                                            <th class="slds-text-heading_label slds-text-align_center">
+                                                {!$ObjectType.PartList__c.fields.Type__c.label}
+                                            </th>
+                                            <th class="slds-text-heading_label slds-text-align_center">
+                                                {!$ObjectType.PartList__c.fields.Quantity__c.label}
+                                            </th>
+                                            <th class="slds-text-heading_label slds-text-align_center">
+                                                {!$Label.AddThePart}
+                                            </th>
+                                        </tr>   
+                                    </thead>
+                                    <tbody>
+                                        <apex:variable var="rowNumber" value="{!0}" />
+                                        <apex:repeat var="newPartList" value="{!listNewPartList}">
+                                            <tr>
+                                                <td class="slds-text-body_regular slds-text-align_center">
+                                                    <apex:inputText value="{!newPartList.PartNumber__c}" styleclass="slds-input PartNumber PartNumber_{!rowNumber} {!newPartList.SelectedByBS__c}"/>
+                                                </td>
+                                                <td class="slds-text-body_regular slds-text-align_center">
+                                                    <apex:inputfield value="{!newPartList.Name}" styleclass="slds-input PartName PartName_{!rowNumber} {!newPartList.SelectedByBS__c}"/>
+                                                </td>
+                                                <td class="slds-text-body_regular slds-truncate slds-text-align_center">
+                                                    <apex:inputfield value="{!newPartList.Description__c}" styleclass="slds-input PartDescription PartDescription_{!rowNumber} {!newPartList.SelectedByBS__c}"/>
+                                                </td>
+                                                <td class="slds-text-body_regular slds-truncate slds-text-align_center">
+                                                    <apex:inputfield value="{!newPartList.Price__c}" styleclass="slds-input PartPrice PartPrice_{!rowNumber} {!newPartList.SelectedByBS__c} columnWidthCustom"/>
+                                                </td>
+                                                <td class="slds-text-body_regular slds-truncate slds-text-align_center">
+                                                    <!-- <apex:inputfield value="{!newPartList.Type__c}" styleclass="slds-input PartType PartType_{!rowNumber} {!newPartList.SelectedByBS__c}"/> -->
+                                                    <apex:selectList value="{!newPartList.Type__c}" styleclass="form-control slds-select slds-input slds-combobox__input"> 
+                                                        <apex:selectOptions value="{!PartTypeOptions}"/>
+                                                    </apex:selectList>  
+                                                </td>
+                                                <td class="slds-text-body_regular slds-truncate slds-text-align_center">
+                                                    <apex:inputfield value="{!newPartList.Quantity__c}" styleclass="slds-input PartQuantity PartQuantity_{!rowNumber} {!newPartList.SelectedByBS__c} columnWidthCustom"/>
+                                                </td>
+                                                <td class="slds-text-body_regular slds-truncate slds-text-align_center">
+                                                    <div class="slds-checkbox_add-button" style="display:inline-block; vertical-align:middle;">  
+                                                        <!-- <apex:outputText rendered="{!newPartList.SelectedByBS__c}" > 
+                                                            <apex:inputCheckbox value="{!newPartList.SelectedByBS__c}" styleclass="slds-assistive-text accpetedCheckbox" id="fauxCheckboxId_disabled" disabled="disabled"/>
+                                                            <label class="slds-checkbox_faux" for="{!$Component.fauxCheckboxId}">
+                                                            </label>  
+                                                        </apex:outputText>
+                                                        <apex:outputText rendered="{!!newPartList.SelectedByBS__c}" > 
+                                                            <apex:inputCheckbox value="{!newPartList.SelectedByBS__c}" styleclass="slds-assistive-text accpetedCheckbox PartSelected_{!rowNumber}" id="fauxCheckboxId"/>
+                                                            <label class="slds-checkbox_faux" for="{!$Component.fauxCheckboxId}">
+                                                            </label>  
+                                                        </apex:outputText> -->
+                                                        <apex:inputCheckbox value="{!newPartList.SelectedByBS__c}" styleclass="slds-assistive-text accpetedCheckbox PartSelected_{!rowNumber}" id="fauxCheckboxId"/>
+                                                        <label class="slds-checkbox_faux" for="{!$Component.fauxCheckboxId}">
+                                                        </label> 
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <apex:variable var="rowNumber" value="{!rowNumber + 1}" />
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="slds-card__footer">
+                                <!-- <h2 class="slds-text-heading_small"><span id="noOfSelectedParts">{!noOfSelectedParts}</span> {!$Label.PartSelected} {!noOfParts} {!$Label.Parts}</h2> -->  
+                                <apex:commandbutton action="{!addNewPL}" value="{!$Label.AddNewPartsButton}" styleclass="searchDateButton slds-button slds-button_brand" rerender="AddNewParts" status="statusSpinner"/> 
+                            </div>
+                        </div>
+                    </apex:outputText>
+                </div>
+
+                <div class="slds-grid">
+                    <div class="slds-p-around_medium slds-size--1-of-2 slds-col--padded">
+                    </div>
+                    <div class="slds-p-around_medium slds-size--1-of-2 slds-col--padded">
+                        <div class="slds-card">
+                            <div class="slds-card__header">
+                                <h2 class="slds-text-heading_small">{!$Label.DeliveryInformation}</h2>
+                            </div>
+                            <div class="slds-card__body">
+                            </div>
+
+                            <div class="slds-card__body">
+                                <table class="slds-table">
+                                    <apex:outputText rendered="{!isAgencyMode}">
+                                        <tr>
+                                            <td class="slds-text-align_center">
+                                                <apex:image url="{!$Resource.AgencyLogo}" styleclass="agencyLogoSection"/>
+                                            </td>
+                                            <td>
+                                                <apex:outputText value="{!$Label.AssessmentAgencyMode}"/>
+                                            </td>
+                                        </tr>
+                                    </apex:outputText>
+                                    <tr>
+                                        <td class="slds-text-align_center">
+                                            <span class="payMethodIcon">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="slds-form-element">
+                                                {!$Label.PaymentMethod} :&nbsp;
+                                                <apex:outputText rendered="{!previousPO.Assessment__r.Compensated__c}">
+                                                    {!$Label.Compensated}
+                                                </apex:outputText>
+                                                <apex:outputText rendered="{!!previousPO.Assessment__r.Compensated__c}">
+                                                    {!$Label.DirectDebit}
+                                                </apex:outputText>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <apex:outputText rendered="{!displayBodyshopOrderNumber}">
+                                   
+                                        <tr>
+                                            <td class="slds-text-align_center">
+                                                <span class="bsONumberIcon">
+                                                </span> 
+                                            </td>
+                                            <td>
+                                                <div class="slds-form-element">
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="bodyShopOrderNumber" html-placeholder="{!$ObjectType.PurchaseOrder__c.fields.BodyShopOrderNumber__c.label}" styleclass="slds-input" value="{!bodyShopOrderNumber}" style="width:40%"/>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </apex:outputText> 
+                                    <tr>
+                                        <td class="slds-text-align_center">
+                                            <span class="commentIcon slds-icon_container">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputTextarea styleclass="slds-textarea commentfield slds-cell-wrap slds-truncate" html-placeholder="{!$Label.Comment}... ({!$Label.CommentWarning})" value="{!assessmentComment}" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr> 
+                                    <apex:outputText rendered="{!isShippingEligible}">
+                                        <tr>
+                                            <td class="slds-text-align_center">
+                                                <span class="ShippingCostIcon">
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <apex:outputText value="{!shippingLabel}"  style="width:40%"/>
+                                            </td>
+                                        </tr>
+                                    </apex:outputText>
+                                </table>
+                            </div>
+                            <div class="slds-card__footer">
+                                <div class="slds-grid">
+                                    <div class="slds-size--1-of-2" style="text-align: left">
+                                        <apex:commandbutton action="{!back}" value="{!$Label.Back}" styleclass="searchDateButton slds-button slds-button_brand" rerender="AddNewParts" status="statusSpinner"/>
+                                    </div>
+                                    <div class="slds-size--1-of-2">
+                                        <button type="button" id= "orderBtn" class="searchDateButton slds-button slds-button_brand" onclick="callOrder();">{!$Label.Order}</button>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="spinner" class="slds-spinner_container hide positionFixed">
+                    <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+
+                <!-- Error Manager -->
+                <apex:outputPanel id="errorMessage">
+                    <div id="toastMessage" class="slds-notify_container slds-hide">
+                        <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" title="{!$Label.Close}" type="button" onclick="hideError();">
+                                </button>
+                            <div class="slds-notify__content">
+                                <p class="slds-text-align_center customErrorMsg"></p>
+                                <apex:pagemessages id="toastErrorMessage" escape="false" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="errorModal" class="slds-modal slds-modal_prompt" aria-hidden="false" role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <p class="slds-m-bottom_medium">
+                                    {!$Label.ErrorModalBody}
+                                </p>
+                                <apex:pagemessages escape="false" />
+                            </div>
+                            <div class="slds-modal__footer slds-theme_default">
+                                <apex:outputText rendered="{!!redirectionInErrorModal}">
+                                    <input type="button"
+                                        class="slds-button slds-button_destructive"
+                                        value="{!$Label.Close}"
+                                        onclick="hideError();" />
+                                </apex:outputText>
+                                <apex:outputText rendered="{!redirectionInErrorModal}">
+                                    <apex:commandButton action="{!redirectPage}" 
+                                                        value="{!$Label.ModalOK}" 
+                                                        styleClass="slds-button slds-button_destructive"
+                                                        reRender="AddNewParts" 
+                                                        status="statusSpinner"/>
+                                </apex:outputText>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                </apex:outputPanel>
+            </div>
+
+            <apex:actionfunction name="order" action="{!createNewAssPOSO}" rerender="AddNewParts" status="statusSpinner" />
+            <apex:actionfunction name="addNewPL" action="{!addNewPL}" rerender="AddNewParts" status="statusSpinner" />
+
+            <script>
+                if (typeof jQuery != "undefined") {
+                    $j = jQuery.noConflict();
+                }
+
+                showError({!hasErrors}, {!isToastError});
+                checkPageMessage({!hasErrors});
+                
+
+                function callOrder(){
+                    clearError();
+
+                    var isValid = true;
+                    if (isValid) {
+                        $j(".PartNumber").each(function(index) {
+                            if (!$j(this).val() && $j(this).hasClass('true')) {
+                                isValid = false;
+                                $j(this).addClass("slds-has-error");
+                                showError(true, true);
+                            } 
+                        });
+                        $j(".PartName").each(function(index) {
+                            if (!$j(this).val() && $j(this).hasClass('true')) {
+                                isValid = false;
+                                $j(this).addClass("slds-has-error");
+                                showError(true, true);
+                            } 
+                        });
+                        $j(".PartDescription").each(function(index) {
+                            if (!$j(this).val() && $j(this).hasClass('true')) {
+                                isValid = false;
+                                $j(this).addClass("slds-has-error");
+                                showError(true, true);
+                            } 
+                        });
+                        $j(".PartPrice").each(function(index) {
+                            if (!$j(this).val() && $j(this).hasClass('true')) {
+                                isValid = false;
+                                $j(this).addClass("slds-has-error");
+                                showError(true, true);
+                            } 
+                        });
+                        $j(".PartType").each(function(index) {
+                            if (!$j(this).val() && $j(this).hasClass('true')) {
+                                isValid = false;
+                                $j(this).addClass("slds-has-error");
+                                showError(true, true);
+                            } 
+                        });
+                        $j(".PartQuantity").each(function(index) {
+                            if (!$j(this).val() && $j(this).hasClass('true')) {
+                                isValid = false;
+                                $j(this).addClass("slds-has-error");
+                                showError(true, true);
+                            } 
+                        });
+                    }
+
+                    if(!isValid){
+                        $j(".customErrorMsg").html("{!JSENCODE($Label.FillAllFields)}");
+                    }
+                    
+                    if(isValid){
+                        if (!$j("[id$='bodyShopOrderNumber']").val() && '{!previousPO.TECH_AssessmentCountryCode__c}' == 'FR') {
+                            isValid = false;
+                            $j("[id$='bodyShopOrderNumber']").parent().addClass("slds-has-error");
+                            $j(".customErrorMsg").html("{!JSENCODE($Label.InputBSNumber)}");
+
+                            showError(true, true);
+                        } 
+                        if ($j('.commentfield').length > 0 && $j('.commentfield').val().length > 255) {
+                            isValid = false;
+                            $j(".commentfield").parent().addClass("slds-has-error");
+                            $j(".customErrorMsg").html("{!JSENCODE($Label.CommentErrorMsg)}");
+                            showError(true, true);
+                        } 
+                        if($j("[id$='bodyShopOrderNumber']").length > 0 && $j("[id$='bodyShopOrderNumber']").val().length > 255){
+                            isValid = false;
+                            $j("[id$='bodyShopOrderNumber']").parent().addClass("slds-has-error");
+                            $j(".customErrorMsg").html("{!JSENCODE($Label.BodyshopNumberMsg)}");
+                            showError(true, true);
+                        }
+                    }
+
+                    if(isValid){
+                        order();
+                    }
+                }
+
+                function clearError(){
+
+                    $j(".PartNumber").removeClass("slds-has-error");
+                    $j(".PartName").removeClass("slds-has-error");
+                    $j(".PartDescription").removeClass("slds-has-error");
+                    $j(".PartPrice").removeClass("slds-has-error");
+                    $j(".PartType").removeClass("slds-has-error");
+                    $j(".PartQuantity").removeClass("slds-has-error");
+
+                }
+
+                $j(".accpetedCheckbox").change(function() {
+
+                    var partSelectednum = $j(this).prop("class").match(/PartSelected_(\w+|\s|$)/)[0];
+                    var partnum = partSelectednum.split('_')[1];
+
+                    if (!$j(this).is(":checked")) {
+                        $j(".PartNumber_" + partnum).removeClass("true");
+                        $j(".PartName_" + partnum).removeClass("true");
+                        $j(".PartDescription_" + partnum).removeClass("true");
+                        $j(".PartPrice_" + partnum).removeClass("true");
+                        $j(".PartType_" + partnum).removeClass("true");
+                        $j(".PartQuantity_" + partnum).removeClass("true");
+                    }
+                    else{
+                        $j(".PartNumber_" + partnum).addClass("true");
+                        $j(".PartName_" + partnum).addClass("true");
+                        $j(".PartDescription_" + partnum).addClass("true");
+                        $j(".PartPrice_" + partnum).addClass("true");
+                        $j(".PartType_" + partnum).addClass("true");
+                        $j(".PartQuantity_" + partnum).addClass("true");
+                    }
+
+                    
+                });
+
+                // $j(".accpetedCheckbox").change(function() {
+
+                //     clearError();
+                //     var partSelectednum = $j(this).prop("class").match(/PartSelected_(\w+|\s|$)/)[0];
+                //     var partnum = partSelectednum.split('_')[1];
+                //     var checked = $j(this).is(":checked");
+                //     var isValid = true;
+      
+                //     if (isValid) {
+                //         if (!$j(".PartNumber_" + partnum).val()) {
+                //             isValid = false;
+                //             $j(".PartNumber_" + partnum).addClass("slds-has-error");
+                //             showError(true, true);
+                //         } 
+                //         if (!$j(".PartName_" + partnum).val()) {
+                //             isValid = false;
+                //             $j(".PartName_" + partnum).addClass("slds-has-error");
+                //             showError(true, true);
+                //         } 
+                //         if (!$j(".PartDescription_" + partnum).val()) {
+                //             isValid = false;
+                //             $j(".PartDescription_" + partnum).addClass("slds-has-error");
+                //             showError(true, true);
+                //         } 
+                //         if (!$j(".PartPrice_" + partnum).val()) {
+                //             isValid = false;
+                //             $j(".PartPrice_" + partnum).addClass("slds-has-error");
+                //             showError(true, true);
+                //         } 
+                //         if (!$j(".PartType_" + partnum).val()) {
+                //             isValid = false;
+                //             $j(".PartType_" + partnum).addClass("slds-has-error");
+                //             showError(true, true);
+                //         } 
+                //         if (!$j(".PartQuantity_" + partnum).val()) {
+                //             isValid = false;
+                //             $j(".PartQuantity_" + partnum).addClass("slds-has-error");
+                //             showError(true, true);
+                //         } 
+                //         if(!isValid){
+                //             $j(".customErrorMsg").html("Please fill all the fields");
+                //         }
+                //     }
+
+                //     if (checked && isValid) {
+                //         $j(this).prop("checked", true);
+                //         $j(this).attr("disabled", true);
+                //         addNewPL();
+                //     }
+                //     else if(!isValid){
+                //         $j(this).prop("checked", false);
+                //     }
+
+                    
+                // });
+
+                function showError(hasErrors, isToastMessage) {
+                    if (hasErrors) {
+                        if (!isToastMessage) {
+                            $j("#errorModal").addClass("slds-fade-in-open");
+                            $j("#errorModalBackdrop").addClass("slds-backdrop_open");
+                        } else {
+                            $j("#toastMessage").show();
+                        }
+                    }
+                }
+
+                function hideError() {
+                    $j("#errorModal").removeClass("slds-fade-in-open");
+                    $j("#errorModalBackdrop").removeClass("slds-backdrop_open");
+
+                    $j("#toastMessage").hide();
+                }
+
+                function checkPageMessage(hasErrors) {
+                    if (!hasErrors) {
+                        if ($j('[id$="toastErrorMessage"]').html() !== "") {
+                            showError(true, true);
+                        }
+                    }
+                }
+
+                function renderCloseSVG() {
+                    if ($j(".slds-notify__close").length > 0) {
+                        var version = detectIE();
+
+                        if (version === false || version > 11) {
+                            var svgTag = $j("<svg/>", {
+                                "aria-hidden": "true",
+                                "class": "slds-button__icon slds-button__icon_large"
+                            });
+
+                            var useTag = $j("<use/>", {
+                                "xlink:href": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"
+                            });
+
+                            $j(".slds-notify__close").html(svgTag.append(useTag));
+                        } else {
+                            var imgTag = $j("<img/>", {
+                                "src": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}",
+                                "class": "slds-button__icon slds-button__icon_large",
+                                "width": "24",
+                                "height": "24"
+                            });
+
+                            $j(".slds-notify__close").html(imgTag);
+                        }
+
+                        $j(".slds-notify__close").html($j(".slds-notify__close").html());
+                    }
+                }
+            </script>
+        </apex:form>
+    </body>
+
+    </html>
+</apex:page>

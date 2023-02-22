@@ -1,0 +1,356 @@
+<!--
+  @description       : 
+  @author            : BBH
+  @group             : 
+  @last modified on  : 08-19-2020
+  @last modified by  : BBH
+  Modifications Log 
+  Ver   Date         Author   Modification
+  1.0   08-18-2020   BBH   Initial Version
+-->
+
+<apex:page standardController="workOrder" extensions="NOB_VFC49_PVDeRestitution" renderAs="pdf" showHeader="false"
+   sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+
+   <head>
+      <style type="text/css" media="print">
+         @page {
+            size: A4;
+            /* margin-top: 0.1in; */
+            margin-top: 0.2in; 
+            margin-bottom: 0.5in;
+            margin-left: 0.35in;
+            margin-right: 0.35in;
+         }
+
+         body {
+            font-family: sans-serif;
+         }
+
+         table {
+            width: 100%;
+            border-collapse: collapse;
+         }
+
+         .row-1 {
+            background-color: #F0F7FF;
+            height: 150px;
+         }
+
+         .row2 {
+            background-color: #EBEBEB;
+            height: 100px;
+         }
+
+         .dotcolor {
+            color: #9e9e9e;
+         }
+
+         .title {
+            margin-top: 20px;
+            text-align: center;
+         }
+
+         .Ptitle {
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 25px;
+            margin: 10px;
+            display: inline-block;
+         }
+
+         .imgc {
+            position: absolute;
+            width: 100%;
+            margin-top: 15px;
+            z-index: -1;
+         }
+
+         .p1 {
+            font-size: 14px;
+         }
+
+         /* .Ptop {
+            margin-left: 15px;
+            font-size: 15px;
+         }
+
+         .PBottom {
+            font-size: 13px;
+         } */
+
+         .imgIcon {
+            margin-left: 12px;
+            width: 70%;
+            height: 70%;
+         }
+
+         .leftTd {
+            width: 15%;
+            border: none;
+         }
+
+         .rightTd {
+            width: 85%;
+         }
+
+         /* div.a {
+            width: 39%;
+
+            display: inline-block;
+         }
+
+         div.b {
+            width: 39%;
+
+            display: inline-block;
+         }
+
+         div.c {
+            width: 19%;
+
+            display: inline-block;
+         }
+
+         div.d {
+            width: 48%;
+
+            display: inline-block;
+         }
+
+         div.parent {
+
+            width: 100%;
+            margin-left: 15px;
+         } */
+         
+         /* div.parentz {
+
+         width: 100%;
+        
+         } */
+         table.details-pv{
+             margin-top:10px;
+         }
+
+      </style>
+   </head>
+
+   <body>
+      <div width="100%">
+         <div class="title">
+            <p style="font-weight:bold;">
+               <img class="imgc" src="{!URLFOR($Resource.VFP49,'VFP49/VFP49_PVDeRestitution/Images/BorderRadius.png')}" />
+            </p>
+            <span class="Ptitle"> PV de Restitution de votre véhicule</span>
+         </div>
+         <div width="100%" style="margin-left:15px;margin-right:15px;">
+            <table class="details-pv" width="100%">
+               <tr>
+                  <td width="40%;">
+                     <b>Nom:</b>
+                     <span>&nbsp;{!wo.NOB_TECH_ContactPickupLastName__c}&nbsp;&nbsp;</span>
+                  </td>
+                  <td width="40%;">
+                     <b>Prénom:</b>
+                     <span>&nbsp;{!wo.NOB_TECH_ContactPickupFirstName__c} &nbsp;&nbsp;</span>
+                  </td>
+                  <td width="20%;">
+                     <b>Date:</b>
+                     <span>&nbsp;{!IF(DAY(TODAY()) > 9, DAY(TODAY()), '0'+TEXT(DAY(TODAY())))}/{!IF(MONTH(TODAY()) > 9, MONTH(TODAY()), '0'+TEXT(MONTH(TODAY())))}/{!Year(TODAY())}</span>&nbsp;
+                  </td>
+               </tr>
+            </table>
+
+            <table class="details-pv" width="100%">
+               <tr>
+                  <td width="50%;">
+                     <b>Téléphone:</b>
+                     <span>&nbsp;{!wo.NOB_TECH_ContactPickupPhone__c} &nbsp;&nbsp;</span>
+                  </td>
+
+                  <td width="50%;">
+                     <b>Mail:</b>
+                     <span>&nbsp;{!wo.NOB_TECH_ContactPickupEmail__c} &nbsp;&nbsp;</span>
+                  </td>
+               </tr>
+            </table>
+
+            <table class="details-pv" width="100%">
+               <tr>
+                  <td width="50%;">
+                     <b>Immatriculation:</b>
+                     <span>&nbsp;{!wo.NOB_TECH_VehicleRegistrationNumber__c} &nbsp;&nbsp;</span>
+                  </td>
+                   <td width="50%;">
+                     <b>Marque/Modèle:</b>
+                     <span>&nbsp;{!wo.NOB_VehicleBrand__c}/{!wo.NOB_VehicleModel__c}</span>
+                  </td>
+               </tr>
+            </table>
+
+            <table class="details-pv" width="100%">
+               <tr>
+                  <td width="100%;">
+                     <b>Date de restitution du véhicule:</b>
+                     <span>{!dateRetour} {!timeRetour}
+                     </span>
+                  </td>
+                  <!--<td width="30%;">
+                     <b>Heure:</b>
+                     <span>&nbsp;{!timeRetour}</span>
+                  </td>-->
+               </tr>
+            </table>
+
+            <p></p>
+            <table>
+               <tr class="row-1">
+                  <td class="leftTd">
+                     <img class="imgIcon" src="{!URLFOR($Resource.VFP49,'VFP49/VFP49_PVDeRestitution/Images/Settings.PNG')}" />
+                  </td>
+                  <td class="rightTd">
+                     <p class="p1">
+                        <b> Tous les dommages déclarés ont-ils été réparés?</b>
+                     </p>
+                     <p class="p1">
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black; "></div>
+                        Oui &nbsp;
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black; "></div>
+                        Non &nbsp; &nbsp; &nbsp; &nbsp; Observations
+                        <span class="dotcolor">............................................................................&nbsp;</span>
+                     </p>
+                     <p class="p1">
+                        <b>Si non, une explication vous a-t-elle été apportée ?</b>
+                     </p>
+                     <p class="p1">
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black; "></div>
+                        Oui &nbsp;
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  "></div>
+                        Non &nbsp; &nbsp; &nbsp; &nbsp;Observations
+                        <span class="dotcolor">.............................................................................&nbsp;</span>
+                     </p>
+                     <p class="p1">
+                        <b>Avez-vous été informé(e) de l'avancement des travaux ?</b>
+                     </p>
+                     <p class="p1">
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black; "></div>
+                        Oui &nbsp;
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  "></div>
+                        Non &nbsp; &nbsp; &nbsp; &nbsp; Observations
+                        <span class="dotcolor">...........................................................................&nbsp;</span>
+                     </p>
+                     <br/>
+                     <br/>
+                  </td>
+               </tr>
+               <tr class="row2">
+                  <td class="leftTd">
+                     <img class="imgIcon" src="{!URLFOR($Resource.VFP49,'VFP49/VFP49_PVDeRestitution/Images/Thumbsup.PNG')}" />
+                  </td>
+                  <td>
+                     <p class="p1">
+                        <b> Vous avez contrôlé la qualité des réparations, est-elle satisfaisante?</b>
+                     </p>
+                     <p class="p1">
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  box-shadow: 15px 15px;"></div>
+                        Oui &nbsp;
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  "></div>
+                        Non &nbsp; &nbsp; &nbsp; &nbsp; Observations
+                        <span class="dotcolor">...........................................................................&nbsp;</span>
+                     </p>
+                     <p class="p1">
+                        <b>Etes-vous satisfait de la propreté de votre véhicule</b>
+                        <br></br>
+                        <b>(nettoyage extérieur et dépoussiérage interieur)</b>
+                     </p>
+                     <p class="p1">
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black; "></div>
+                        Oui &nbsp;
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  "></div>
+                        Non, &nbsp; pourquoi
+                        <span class="dotcolor">........................................................................................&nbsp;</span>
+                     </p>
+                     <br/>
+                  </td>
+               </tr>
+               <tr class="row-1">
+                  <td class="leftTd">
+                     <img class="imgIcon" src="{!URLFOR($Resource.VFP49,'VFP49/VFP49_PVDeRestitution/Images/Doc.PNG')}" />
+                  </td>
+                  <td>
+                     <p class="p1">
+                        <b> La facture des réparations vous a-t-elle été remise et commentée par le réparateur ?</b>
+                     </p>
+                     <p class="p1">
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  box-shadow: 15px 15px;"></div>
+                        Oui &nbsp;
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  "></div>
+                        Non &nbsp; &nbsp; &nbsp; &nbsp; Observations
+                        <span class="dotcolor">...........................................................................&nbsp;</span>
+                     </p>
+                     <p class="p1">
+                        <b>Le cas échéant, avez-vous été informé(e) en temps voulu, de la part qui serait à</b>
+                        <br></br>
+                        <b>votre charge? (cela peut être de la vétusté, de la TVA, de la franchise, de la reprise</b>
+                        <b>de travaux anterieurs)</b>
+                     </p>
+                     <p class="p1">
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black; vertical-align: middle;"></div>
+                        Oui &nbsp;
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  "></div>
+                        Non &nbsp; &nbsp; &nbsp; &nbsp; Observations
+                        <span class="dotcolor">...........................................................................&nbsp;</span>
+                     </p>
+                     <p class="p1">
+                        <b>Recommanderiez-vous cette prestation à votre entourage, vos connaissances ?</b>
+                     </p>
+                     <p class="p1">
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  box-shadow: 15px 15px;"></div>
+                        Oui &nbsp;
+                        <div style="display: inline-block; width: 7px; height: 7px; border: 1px solid black;  "></div>
+                        Non &nbsp; &nbsp; &nbsp; &nbsp; Observations
+                        <span class="dotcolor">...........................................................................&nbsp;</span>
+                     </p>
+                     <br/>
+                     <br/>
+                  </td>
+               </tr>
+            </table>
+            <div style = "margin-top:20px;">Une question, un doute ? Appelez-nous !</div>
+            <div class="dotcolor" style = "width:100%;">
+               <p>.........................................................................................................................................................</p>
+               <p style = "margin-top:-5px;">.........................................................................................................................................................</p>
+               <p style = "margin-top:-5px;">.........................................................................................................................................................</p>
+            </div>
+            <div>Nous restons à votre écoute pour tout renseignement</div>
+            <br/>
+            <table class="details-pv" width="100%">
+               <tr>
+                  <td width="50%;">
+                     <b>Téléphone du réparateur:</b>
+                     <span>&nbsp;{!wo.NOB_TECH_ReparateurPhone__c}</span>
+                  </td>
+
+                  <td width="50%;">
+                     <b>Mail du réparateur:</b>
+                     <span>&nbsp;{!wo.NOB_TECH_ReparateurEmailAddress__c}</span>
+                  </td>
+               </tr>
+            </table>
+            <table class="details-pv" width="100%">
+               <tr>
+                  <td width="50%;">
+                     Signature du Client
+                  </td>
+
+                  <td width="50%;">
+                     Signature du Réparateur
+                  </td>
+               </tr>
+            </table>
+         </div>
+      </div>
+   </body>
+</apex:page>

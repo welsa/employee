@@ -1,0 +1,204 @@
+<template>
+    <lightning-layout multiple-rows="true" >
+        <!-- Header Section [Contains (1) Search bar (2) Get Current Location Btn] -->
+        <lightning-layout-item  size="12">
+            <div class="slds-align_absolute-center ">
+                <div class={formFactorSize}>
+                    <lightning-input 
+                        type="Search"
+                        class="slds-form-element__control slds-input-has-icon slds-input-has-icon searchInput immat-text"
+                        value={searchTerm} 
+                        onchange={getSuggestions} 
+                        placeholder={searchPlaceholder}>
+                    </lightning-input>
+
+                    <!-- Combobox to display Autosearch results -->
+                    <template if:true={canShowPredictions}>
+                        <template if:true={predictionNotEmpty}>
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-combobox_container">
+                                        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                            <div id="listbox-id-4" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+                                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                    <template for:each={predictions} for:item="pred">
+                                                        <li role="presentation" class="slds-listbox__item" key={pred.place_id}>
+                                                            <a id={pred.place_id} onclick={getPlaceInformation} data-id={pred.place_id}>
+                                                                <div 
+                                                                class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                                    role="option">
+                                                                    <span class="slds-media__figure slds-listbox__option-icon">
+                                                                        <lightning-icon icon-name="utility:checkin" size="small" class="slds-var-m-right_x-small" alternative-text={pred.description} title={pred.description}></lightning-icon>
+                                                                    </span>
+                                                                    <span class="slds-media__body">
+                                                                        <span class="slds-truncate" title={pred.description}><p  class="slds-text-body_regular">{pred.description}</p></span>
+                                                                    </span>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+
+
+                <lightning-button-icon icon-name="utility:checkin" 
+                    class="slds-m-top_large slds-var-m-horizontal_x-small"
+                    size="large"
+                    onclick={getCurrentPosition} 
+                    variant="brand" 
+                    label={btnCurrLocationLabel} 
+                    alternative-text={btnCurrLocationLabel}
+                    title={btnCurrLocationLabel}>
+                </lightning-button-icon>
+
+                <div if:false={isMobileScreen}>
+                    <div if:false={isDisableApppointment}>
+                        <div class="slds-m-top_large slds-var-m-horizontal_medium">
+                            <lightning-button-stateful
+                                label-when-off={HomeInterventionLabel}
+                                label-when-on={HomeInterventionLabel}
+                                icon-name-when-off="utility:add"
+                                icon-name-when-on="utility:check"
+                                icon-name-when-hover="utility:close"
+                                variant={variant_HomeApt}
+                                selected={isSelected_HomeApt}
+                                class="slds-var-m-horizontal_medium"
+                                disabled={isDisableApppointment}
+                                onclick={handleCLickHomeApt}>
+                            </lightning-button-stateful>
+    
+                            <lightning-button-stateful
+                                label-when-off={needLoanVehicleLabel}
+                                label-when-on={needLoanVehicleLabel}
+                                icon-name-when-off="utility:add"
+                                icon-name-when-on="utility:check"
+                                icon-name-when-hover="utility:close"
+                                variant={variant_LoanVehicle}
+                                disabled={isDisableApppointment}
+                                selected={isSelected_LoanVehicle}
+                                onclick={handleCLickLoanVehicle}>
+                            </lightning-button-stateful>
+                        </div>
+                    </div>
+                    <div if:true={isDisableApppointment}>
+                        <div class="slds-m-top_large slds-var-m-horizontal_medium">    
+                            <lightning-button-stateful
+                                label-when-off={needLoanVehicleLabel}
+                                label-when-on={needLoanVehicleLabel}
+                                icon-name-when-off="utility:add"
+                                icon-name-when-on="utility:check"
+                                icon-name-when-hover="utility:close"
+                                variant={variant_LoanVehicle}
+                                disabled={isDisableApppointment}
+                                selected={isSelected_LoanVehicle}
+                                onclick={handleCLickLoanVehicle}>
+                            </lightning-button-stateful>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning-layout-item>
+
+        
+        <lightning-layout-item size="12">
+            <div if:true={isMobileScreen}>
+                <div class="slds-clearfix slds-var-m-left_x-small slds-m-bottom_xx-small">
+                    <div class="slds-text-color_default slds-float_left">
+                        <p>  <lightning-icon icon-name="utility:home" class="slds-var-m-right_x-small" size="small" variant="brand" alternative-text={HomeInterventionLabel} title={HomeInterventionLabel}></lightning-icon>
+                            <lightning-formatted-text value={HomeInterventionLabel} ></lightning-formatted-text></p>
+                    </div>
+                    <div class="slds-float_right">
+                        <lightning-input 
+                            type="toggle" 
+                            label="‎" 
+                            message-toggle-active="" 
+                            message-toggle-inactive="" 
+                            name="input1"
+                            disabled={isDisableApppointment}
+                            checked={isSelected_HomeApt}
+                            onchange={handleCLickHomeApt}
+                        >
+                        </lightning-input>
+                    </div>
+                </div>
+            </div>
+        </lightning-layout-item>
+
+
+        <lightning-layout-item size="12">
+            <div if:true={isMobileScreen}>
+                <div if:false={isSelected_HomeApt}>
+                    <div class="slds-clearfix slds-var-m-left_x-small slds-m-bottom_xx-small">
+                        <div class="slds-text-color_default slds-float_left">
+                            <p>  <lightning-icon icon-name="utility:travel_and_places" class="slds-var-m-right_x-small" size="small" variant="brand" alternative-text={HomeInterventionLabel} title={HomeInterventionLabel}></lightning-icon>
+                                <lightning-formatted-text value={needLoanVehicleLabel} ></lightning-formatted-text></p>
+                        </div>
+                        <div class="slds-float_right">
+                            <lightning-input 
+                                type="toggle" 
+                                label="‎" 
+                                message-toggle-active="" 
+                                message-toggle-inactive="" 
+                                name="input1"
+                                disabled={isDisableApppointment}
+                                checked={isSelected_LoanVehicle}
+                                onchange={handleCLickLoanVehicle}
+                            >
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12">
+            <lightning-card>
+                <div if:true={isSelected_HomeApt}>
+                    <lightning-input-address
+                        address-label={AddressLabel}
+                        street-label={streetLabel}
+                        city-label={cityLabel}
+                        country-label={countryLabel}
+                        postal-code-label={postalCodeLabel}
+                        street={route}
+                        city={locality}
+                        country={country}
+                        postal-code={postal_code}
+                        province="‎"
+                        variant="label-stacked"
+                        onchange={handleChangeAddress}
+                        required>
+                    </lightning-input-address> 
+                    
+
+                    <div class="slds-align_absolute-center slds-border_top">
+                        <div class="slds-m-top_small">
+                            <lightning-button 
+                                label={btnAppointmentLabel} 
+                                title={btnAppointmentLabel}
+                                onclick={handleAppointment}
+                                disabled={cantMakeAppointment}
+                                variant="Brand" 
+                                icon-name="utility:event" 
+                                slot="footer">
+                            </lightning-button>
+                        </div>
+                    </div>
+
+                </div>
+            </lightning-card>
+        </lightning-layout-item>
+        
+
+        <div if:true={showSpinner}>
+            <lightning-spinner alternative-text="Loading" size="large" ></lightning-spinner>
+        </div>
+    </lightning-layout>
+</template>

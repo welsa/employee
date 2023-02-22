@@ -1,0 +1,7 @@
+<!--
+ - Created by Bhavish Bhowany on 17/08/2020.
+ -->
+
+<aura:component  implements="force:lightningQuickAction,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+</aura:component>

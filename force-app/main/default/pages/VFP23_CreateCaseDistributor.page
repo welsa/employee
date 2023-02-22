@@ -1,0 +1,151 @@
+<apex:page controller="VFC23_CreateCaseDistributor" showHeader="false" sidebar="false" >
+	<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<head>
+			<apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+			<apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+		</head>
+
+		<body>
+			<apex:form >
+				<div id="spinner" class="slds-spinner_container slds-hide">
+                    <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+
+                <div id="statusModal" class="toast slds-align_absolute-center slds-hide" style="height:150px;">
+				  <div class="slds-notify_container slds-is-relative">
+				    <div id="statusTheme" class="slds-notify slds-notify_toast slds-theme_success" role="status">
+				      <span class="slds-assistive-text">success</span>
+				      <div class="slds-notify__content">
+				        <h2 class="slds-text-heading_small" id="statusText"></h2>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+
+				<div class="slds-form-element" style="padding-top: 18px;" id="frmElement">
+	  				<div class="slds-form-element__control">
+	    				<textarea id="textarea-id-01" class="slds-textarea" placeholder="{!$Label.AdvanceMgtPlaceHolder}"></textarea>
+	  				</div>
+				
+					<div>
+						<div class="slds-docked-form-footer">
+							<input type="button"
+	                                        id="reqBtn"
+	                                        class="slds-button slds-button_brand"
+	                                        value="Send Request"
+	                                        onclick="sendReq();"/>
+						</div>
+					</div>
+				</div>
+			</apex:form>
+
+			<script type="text/javascript">
+				if (typeof jQuery != "undefined") {
+                    $j = jQuery.noConflict();
+                }
+
+                var poid = '';
+                var resultArray = {};
+                var msg = '';
+
+                $j(document).ready(function(){
+                	//get page id
+                	poid = '{!$currentpage.parameters.Id}';
+                	resultArray = {};
+
+                	//show loading
+                	$j('#spinner').removeClass('slds-hide');
+
+                	if({!displayErrorMsg}){
+                		//hide loading
+	                    $j('#spinner').addClass('slds-hide');
+
+	                    //hide form element
+	                    $j('#frmElement').addClass('slds-hide');
+
+	                    //add status color
+                    	$j('#statusTheme').removeClass('slds-theme_success');
+                    	$j('#statusTheme').addClass('slds-theme_error');
+
+                    	//add status text
+                    	$j('#statusText').html('{!$Label.AdvanceMgtErrMsg2}');
+
+                    	//show modal
+                    	$j('#statusModal').removeClass('slds-hide');
+                	}else{
+                		//hide loading
+	                    $j('#spinner').addClass('slds-hide');
+                	}
+                });
+
+                function sendReq(){
+                	//show loading
+                	$j('#spinner').removeClass('slds-hide');
+
+                	if(poid){
+                		if($j('#textarea-id-01').val()){
+                			msg = $j('#textarea-id-01').val();
+                		}
+
+                		VFC23_CreateCaseDistributor.createDiscussionCase(poid,msg,function(result,event){
+	                        if(event.status){
+	                            
+	                            resultArray = result;
+
+	                            //hide loading
+	                        	$j('#spinner').addClass('slds-hide');
+
+	                        	//hide form element
+	                        	$j('#frmElement').addClass('slds-hide');
+
+	                            if(resultArray.OK){
+	                            	//add status text
+	                            	$j('#statusText').html('<a href="javascript:void(0);" onclick="redirect(\'' + resultArray.OK +'\')">'+ '{!$Label.AdvanceMgtSuccessMsg1}' + '</a>');
+	                            }else if(resultArray.KO){
+	                            	//add status color
+	                            	$j('#statusTheme').removeClass('slds-theme_success');
+	                            	$j('#statusTheme').addClass('slds-theme_error');
+
+	                            	//add status text
+	                            	$j('#statusText').html(resultArray.KO);
+	                            }else{
+	                            	//add status color
+	                            	$j('#statusTheme').removeClass('slds-theme_success');
+	                            	$j('#statusTheme').addClass('slds-theme_error');
+
+	                            	//add status text
+	                            	$j('#statusText').html('{!$Label.AdvanceMgtErrMsg1}'); 
+	                            }
+	                            //show modal
+	                            $j('#statusModal').removeClass('slds-hide');
+	                        }
+	                    },false);
+                	}else{
+                		//hide loading
+	                    $j('#spinner').addClass('slds-hide');
+
+	                    //hide form element
+	                    $j('#frmElement').addClass('slds-hide');
+
+	                    //add status color
+                    	$j('#statusTheme').removeClass('slds-theme_success');
+                    	$j('#statusTheme').addClass('slds-theme_error');
+
+                    	//add status text
+                    	$j('#statusText').html('{!$Label.AdvanceMgtErrMsg1}');
+
+                    	//show modal
+                    	$j('#statusModal').removeClass('slds-hide');
+                	}
+                }
+
+                function redirect(caseid){
+                	window.parent.postMessage({csid:caseid }, '*');
+                }
+			</script>
+		</body>
+	</html>
+</apex:page>

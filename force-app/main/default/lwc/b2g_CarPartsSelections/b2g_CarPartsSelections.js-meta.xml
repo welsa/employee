@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>B2G Car Parts Selections</masterLabel>
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+
+            <property   name="b2g_FlowConfigId"
+                        label="Flow Config Id"
+                        type="String"
+                        role="inputOnly"
+                        description="[Required] Id of Custom Metadata b2g_FlowConfiguration"/>
+            <property   name="selectionMsg"
+                        label="Selection Message"
+                        type="String"
+                        role="outputOnly"
+                        description="Selection message displayed on item select"/>
+            <property   name="selectionMsgType"
+                        label="Selection Message Type"
+                        type="String"
+                        role="outputOnly"
+                        description="Type of selection Message : Error, Info, Success"/>
+            <property   name="canPublishWarnings"
+                        label="Can publish warnings/success messages ?"
+                        type="Boolean"
+                        default="true"
+                        role="inputOnly"
+                        description="If true, display warning/info messages about selection below (if exist)"/>
+            <property   name="cardClass"
+                        label="Card CSS Class"
+                        type="String"
+                        role="inputOnly"
+                        default="slds-var-m-bottom_x-small"
+                        description="CSS Classes for the wrapping card div"/>
+            <property   name="displayMode"
+                        label="Display Mode"
+                        type="String"
+                        role="inputOnly"
+                        description="Display mode of the records (list,pills,tiles,table)."/>
+            <property   name="tileSize"
+                        label="Tile Size"
+                        type="Integer"
+                        role="inputOnly"
+                        description="Tile width (X on 12)."/>
+            <property   name="tileSizeMedium"
+                        label="Medium Tile Size (For Desktops)"
+                        type="Integer"
+                        role="inputOnly"
+                        description="Tile width (X on 12)."/>
+            <property   name="tileSizeSmall"
+                        label="Small Tile Size (For Mobile Phones)"
+                        type="Integer"
+                        role="inputOnly"
+                        description="Tile width (X on 12)."/>
+                       
+            <property   name="nameField"
+                        label="Title Field"
+                        type="String"
+                        role="inputOnly"
+                        description="API name of the Name field to be used as Title to display records."/>
+            <property   name="nameLabel"
+                        label="Title Label"
+                        type="String"
+                        role="inputOnly"
+                        description="Label of the Name field to be used as Title to display records."/>
+            <property   name="keyField"
+                        label="Key Field"
+                        type="String"
+                        role="inputOnly"
+                        default="Id"
+                        description="API name of the field to be used as unique record identifier for selection (Salesforce Id by default)."/>        
+            <property   name="selectName"
+                        label="Title as default Search?"
+                        type="Boolean"
+                        role="inputOnly"
+                        description="Flag to set record title fields as default search option."/>
+            <property   name="isDebug"
+                        label="Show Debug?"
+                        type="Boolean"
+                        role="inputOnly"/>
+
+            <propertyType name="T"
+                        extends="SObject"
+                        label="Object"
+                        description="Select an object API Name." />
+            <property   name="recordList"
+                        label="RecordList"
+                        type="{T[]}"
+                        role="inputOnly" 
+                        required="true" 
+                        description="List of records to choose from."/>
+            <property   name="selectionList"
+                        label="Selected Records"
+                        type="{T[]}"
+                        description="Selected Record in the list."/>
+
+            <property   name="preselectionList"
+                        label="Preselected Records"
+                        role="inputOnly"
+                        type="{T[]}"
+                        description="Records preselected in the list."/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

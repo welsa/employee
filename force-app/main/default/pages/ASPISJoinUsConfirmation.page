@@ -1,0 +1,115 @@
+<apex:page showHeader="false" 
+			standardStylesheets="false" 
+			sidebar="false" 
+			applyHtmlTag="false" 
+			applyBodyTag="false" 
+			docType="html-5.0"
+            controller="ASPISJoinUsConfirmation"
+            language="{!language}">
+
+	<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+		<head>
+			<title>{!$Label.ASPISJoinUsConfirmationTitle}</title>
+			<link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+			<apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+			<apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+			<apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+			<apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+			<script>
+            window.params = {
+                "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+            };
+			</script>
+		</head>
+		<body>
+			<apex:form id="joinUsConfirmationForm">
+				<div class="slds">
+					<div class="slds-text-align_center slds-m-top_large">
+						<object data="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}" 
+								type="image/svg+xml"
+								width="500"/>
+					</div>
+					<div class="slds-grid slds-m-top_large">
+						<div class="slds-col"></div>
+
+						<div class="slds-col slds-m-bottom_large">
+							<div class="slds-box">
+								<div class="slds-card">
+									<!--<div class="slds-card__header"/>-->
+									<div class="slds-card__body slds-m-top_medium slds-p-left_medium">
+										<apex:pagemessages id="errorMessage" />
+                                        <apex:outputText rendered="{!isValidLink}">
+											<apex:outputText rendered="{!country != 'IT'}">
+												<p>
+													{!$Label.ConfirmationMessage}
+													<a href="javascript:void(0)" onclick="downloadPDF();">{!$Label.ClickHere}</a>
+												</p>
+											</apex:outputText>
+											<apex:outputText rendered="{!country == 'IT'}">
+												<p>
+													{!$Label.ConfirmationMessage_IT}
+												</p>
+											</apex:outputText>
+                                        </apex:outputText>
+                                        <apex:outputText rendered="{!!isValidLink}">
+                                            <p class="text-red">{!$Label.InvalidRequest}</p>
+                                        </apex:outputText>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="slds-col"></div>
+					</div>
+				</div>
+                
+				 <apex:actionfunction name="downloadPDF"
+									 action="{!downloadPDF}"
+									 rerender="errorMessage"/>
+
+				<apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+
+				  
+                <div id="toastMessage" 
+                    class="slds-notify_container slds-hide">
+                    <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                        <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                title="{!$Label.Close}"
+                                type="button"
+                                onclick="hideError();">
+                        </button>
+                        <div class="slds-notify__content">
+                            <p class="slds-text-align_center customErrorMsg">{!$Label.UnauthorizedID}</p>
+                            <apex:pagemessages id="toastErrorMessage" escape="false" />
+                        </div>
+                    </div>
+                </div>
+
+
+				<script>
+					if (typeof jQuery != 'undefined')
+					{
+						$j = jQuery.noConflict();
+					}
+
+                    $j(document).ready(function()
+                    {
+                        if({!isValidLink} && "{!country}" !== "IT")
+                        {
+                            downloadPDF();
+                        }
+                    });
+                    renderIcons();
+                    
+                    showError({!hasErrors
+	                }, {!isToastError
+	                });
+	                checkPageMessage({!hasErrors
+	                });
+				</script>
+			</apex:form>
+		</body>
+	</html>
+</apex:page>

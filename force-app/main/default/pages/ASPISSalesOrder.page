@@ -1,0 +1,631 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="ASPISSalesOrder" extensions="RESTPostInvoice">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>{!$Label.ASPISSalesOrderTitle}</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.css')}" />
+
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+        <!-- Initalise the global variable first as these values are used in the external javascript files -->
+        <script>
+            window.params = {
+                // URL For Icons
+                "languageSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/custom-sprite/svg/symbols.svg#custom111')}",
+                "languagePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/custom/custom111_60.png')}",
+                "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}",
+                "pdfSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/doctype-sprite/svg/symbols.svg#pdf')}",
+                "pdfPNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/doctype/pdf_60.png')}"
+            };
+        </script>
+
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+        <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/FileSaver.min.js')}" />
+        <style>
+            .fixedHeader{
+                position: fixed;
+                width:100%;
+                background: #fdfdfd;
+                z-index:1;
+            }
+
+            .iframe-container {
+              overflow: hidden;
+              padding-top: 56.25%;
+              position: relative;
+            }
+
+            .iframe-container iframe {
+               border: 0;
+               height: 100%;
+               left: 0;
+               position: absolute;
+               top: 0;
+               width: 100%;
+            }
+
+            .searchDateButton {
+                background: #103184;
+                color: #fff;
+                font-size: 14px;
+                height: 32px;
+            }
+
+            .iconColor{
+                height: 1.5rem;
+                width: 1.5rem;
+                fill: #fff;
+            }
+        </style>
+    </head>
+
+    <body class="slds-scope">
+        <apex:form id="salesOrderForm">
+            <div class="slds" style="min-width: 1300px;">
+                <c:ASPISHeader />
+
+                <div class="slds-card" id="topCard">
+                    <div class="slds-card__header">
+                        <apex:outputPanel rendered="{!IF(hasSalesOrderId && hasReadPermission,true,false)}">
+                            <h2 class="slds-show_inline slds-text-heading_small">{!$Label.MyAssessment}</h2>
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel rendered="{!IF(showFeed,true,false)}">
+                            <!-- AMI 14/12/18 C-002781 : Migrate Spain to R4
+                                                       : Chatter Feed Button -->
+                            <button class="searchDateButton slds-button slds-button_brand slds-col--padded" style="font-weight: 400;margin-left: 35px;margin-bottom: 5px;" type="button" id="btn-showChatter">
+                                <svg aria-hidden="true" class="slds-icon1 iconColor">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#feed"></use>
+                                </svg>
+                                {!$Label.ChatterFeedMsg2}
+                            </button>
+                        </apex:outputPanel>
+                        <!-- WCH 07/08/2019 C-003318 -->
+                        <apex:outputPanel rendered="{!IF(showDownloadDeliveryNoteButton,true,false)}">
+                                <button class="searchDateButton slds-button slds-button_brand slds-col--padded" style="font-weight: 400;margin-left: 35px;margin-bottom: 5px;float:right;" type="button" id="btn-showDownloadDeliveryNote">
+                                        <svg aria-hidden="true" class="slds-icon1 iconColor">
+                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#download"></use>
+                                        </svg>
+                                        {!$Label.R4_DownloadDeliveryNote}
+                                </button>
+                        </apex:outputPanel>
+                        <!-- WCH 21/01/2021 C-004148 -->
+                        <apex:outputPanel rendered="{!showBSCancelSOButton}">
+                             
+                            <button class="searchDateButton slds-button slds-button_brand slds-col--padded" style="font-weight: 400;margin-left: 35px;margin-bottom: 5px;float:right;" type="button" id="CancelSOButtonForBS">
+                                        <svg aria-hidden="true" class="slds-icon1 iconColor">
+                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#delete"></use>
+                                        </svg>
+                                        {!$Label.CancelSOButtonForBS}
+                             </button>
+                        </apex:outputPanel>
+                        
+                    </div>
+
+                    <apex:outputPanel rendered="{!IF(hasSalesOrderId && hasReadPermission,true,false)}">
+                        <div class="slds-card__body">
+                            <table class="slds-table slds-table_bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Assessment__c.fields.PlateNumber2__c.label}</th>
+                                        <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Assessment__c.fields.VINNumber__c.label}</th>
+                                        <th class="slds-text-heading_label slds-text-align_center">{!$Label.Brand}</th>
+                                        <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.Assessment__c.fields.ModelV2__c.label}</th>
+                                        <th class="slds-text-heading_label slds-text-align_center">
+                                            <!--DUN 16/03/2018 Added MissionNumber for BE-->
+                                            <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'BE'}">
+                                                {!$ObjectType.Assessment__c.fields.ClaimReference__c.label}
+                                            </apex:outputText>
+                                            <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'BE'}">
+                                                {!$ObjectType.Assessment__c.fields.MissionNumber__c.label}
+                                            </apex:outputText>
+                                        </th>
+                                        <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.PrerequisiteOrder__c.fields.BodyshopOrderNumber__c.label}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="slds-text-align_center">
+                                            <apex:outputField value="{!currentSalesOrder.Assessment__r.PlateNumber2__c}" />
+                                        </td>
+                                        <td class="slds-text-align_center">
+                                            <apex:outputField value="{!currentSalesOrder.Assessment__r.VINNumber__c}" />
+                                        </td>
+                                        <td class="slds-text-align_center">
+                                            <apex:outputField value="{!currentSalesOrder.Assessment__r.Manufacturer__c}" />
+                                        </td>
+                                        <td class="slds-text-align_center">
+                                            <apex:outputField value="{!currentSalesOrder.Assessment__r.ModelV2__c}" />
+                                        </td>
+                                        <td class="slds-text-align_center">
+                                            <!--DUN 16/03/2018 Added MissionNumber for BE-->
+                                            <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'BE'}">
+                                                <apex:outputField value="{!currentSalesOrder.Assessment__r.ClaimReference__c}"/>
+                                            </apex:outputText>
+                                            <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'BE'}">
+                                                <apex:outputField value="{!currentSalesOrder.Assessment__r.MissionNumber__c}"/>
+                                            </apex:outputText>
+                                        </td>
+                                        <td class="slds-text-align_center">
+                                            <!-- <apex:outputText rendered="{!IF(currentSalesOrder.TECH_BodyshopCountryCode__c!='IT',true,false)}"> --><apex:outputField value="{!currentSalesOrder.BodyshopOrderNumber__c}" /><!-- </apex:outputText>
+                                            <apex:outputText rendered="{!IF(currentSalesOrder.TECH_BodyshopCountryCode__c=='IT',true,false)}"><apex:outputField value="{!currentSalesOrder.Name}" /></apex:outputText> -->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+
+                <!-- AMI 14/12/18 C-002781 : Migrate Spain to R4
+                                           : Chatter Feed Modal -->
+                <apex:outputPanel rendered="{!IF(showFeed,true,false)}">
+                    <div class="slds-hide" id="chatterfeed">
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container" style="max-width: 51rem;width:70%;">
+                                <header class="slds-modal__header">
+                                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close" />
+                                    </svg>
+                                    <span class="slds-assistive-text">{!$Label.Close}</span>
+                                    </button>
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                                        {!$Label.ChatterFeedMsg1}
+                                    </h2>
+                                </header>
+                                
+                                <div class="slds-modal__content slds-p-around_medium iframe-container" id="modal-content-id-1">
+                                    <apex:iframe id="chatter-iframe" src="/apex/ASPISChatterPage?id={!encodedSalesOrderId}" scrolling="true"/>
+                                </div>
+                                
+                                <footer class="slds-modal__footer">
+                                    <button class="searchDateButton slds-button slds-button_brand slds-col--padded" style="font-weight: 400;" type="button" id="closeChatter">
+                                        {!$Label.Close}
+                                    </button>
+                                </footer>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                    </div>
+                </apex:outputPanel>    
+
+                <apex:outputPanel rendered="{!IF(hasSalesOrderId && hasReadPermission,true,false)}">
+                    <div class="slds-m-top_large slds-p-around_large">
+                        <h2 class="slds-text-heading_medium"><apex:outputField value="{!currentSalesOrder.Status__c}" /></h2>
+
+                        <apex:iframe id="soFrame" src="{!$Page.VFP06_SOManageOffers & '?Id=' & currentSalesOrder.Id & '&isOrderPage=true'}"
+                                     width="100%" 
+                                     scrolling="true" />
+                    </div>
+                </apex:outputPanel>
+
+                <apex:outputPanel rendered="{!IF(hasInvoice && hasReadPermission,true,false)}"> 
+                    <div class="slds-p-around_medium" id="invoiceSection">
+                        <div class="slds-card">
+                        <div class="slds-card__header">
+                            <h2 class="slds-text-heading_small slds-truncate">  {!$Label.MyInvoices}
+                            </h2>
+                        </div>
+                        <table class="slds-table slds-table_bordered">
+                            <thead>
+                                <tr>
+                                    <td class="slds-text-heading_label slds-text-align_center" colspan="2">{!$Label.PDF}</td>
+                                    <td class="slds-text-heading_label slds-text-align_center" colspan="2">{!$ObjectType.Invoice__c.fields.Number__c.label}</td>
+                                    <td class="slds-text-heading_label slds-text-align_center" colspan="2">{!$ObjectType.Invoice__c.fields.Type__c.label}</td>
+                                    <td class="slds-text-heading_label slds-text-align_center" colspan="2">{!$ObjectType.Invoice__c.fields.TotalNet__c.label}</td>
+                                    <td class="slds-text-heading_label slds-text-align_center" colspan="2">{!$ObjectType.Invoice__c.fields.Total__c.label}</td>
+                                    <td class="slds-text-heading_label slds-text-align_center" colspan="2">{!$ObjectType.Invoice__c.fields.Status__c.label}</td>
+                                    <td class="slds-text-heading_label slds-text-align_center" colspan="2">{!$ObjectType.Invoice__c.fields.EstimatedPaymentDate__c.label}</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <apex:repeat var="inv" value="{!invoiceList}">
+                                    <tr>
+                                        <td colspan="2" class="slds-text-body_regular slds-text-align_center">
+                                               <a class="pdf" href="javascript:void(0)" target="_self" onclick="callSendRequestJs('{!inv.Number__c}','{!inv.id}','{!inv.Tech_Number__c}','{!inv.TechCountryCode__c}');">                                                   
+                                                </a>                                         
+                                         </td>
+                                        <td colspan="2" class="slds-text-body_regular slds-text-align_center">
+                                            {!inv.Number__c}
+                                        </td>
+                                        <td colspan="2" class="slds-text-body_regular slds-text-align_center">
+                                            {!inv.Type__c}
+                                        </td>
+                                        <td colspan="2" class="slds-text-body_regular slds-text-align_center">
+                                            {!inv.TotalNet__c} {!userCurrency}
+                                        </td>
+                                        <td colspan="2" class="slds-text-body_regular slds-text-align_center">
+                                            {!inv.Total__c} {!userCurrency}
+                                        </td>
+                                        <td colspan="2" class="slds-text-body_regular slds-text-align_center">
+                                            {!inv.Status__c}
+                                        </td>
+                                        <td colspan="2" class="slds-text-body_regular slds-text-align_center">
+                                            {!inv.EstimatedPaymentDate__c}
+                                        </td>
+                                    </tr>
+                                </apex:repeat>  
+                            </tbody>
+                        </table>
+                    </div>   
+                    </div>             
+                </apex:outputPanel>
+
+                <!-- AMI 23/11/18 C-002781 : Migrate Spain to R4
+                                           : Display Cases In Related List -->
+                <apex:outputPanel rendered="{!IF(showCases,true,false)}"> 
+                    <div class="slds-p-around_medium" id="invoiceSection">
+                        <div class="slds-card">
+                            <div class="slds-card__header">
+                                <h2 class="slds-text-heading_small slds-truncate">  {!$Label.MyCases}
+                                </h2>
+                            </div>
+                            <table class="slds-table slds-table_bordered">
+                                <thead>
+                                    <tr>
+                                        <td class="slds-text-heading_label slds-text-align_center">
+                                            {!$ObjectType.Case__c.fields.Name.label}
+                                        </td>
+
+                                        <td class="slds-text-heading_label slds-text-align_center">
+                                            {!$ObjectType.Case__c.fields.Type__c.label}
+                                        </td>
+
+                                        <td class="slds-text-heading_label slds-text-align_center">
+                                            {!$ObjectType.Case__c.fields.Subject__c.label}
+                                        </td>
+
+                                        <td class="slds-text-heading_label slds-text-align_center">
+                                            {!$ObjectType.Case__c.fields.Description__c.label}
+                                        </td>
+
+                                        <td class="slds-text-heading_label slds-text-align_center">
+                                            {!$ObjectType.Case__c.fields.Comment__c.label}
+                                        </td>
+
+                                        <td class="slds-text-heading_label slds-text-align_center">
+                                            {!$ObjectType.Case__c.fields.Status__c.label}
+                                        </td>
+
+                                        <td class="slds-text-heading_label slds-text-align_center">
+                                            {!$ObjectType.Case__c.fields.SLAIcon__c.label}
+                                        </td>
+
+                                        <td class="slds-text-heading_label slds-text-align_center">
+                                            {!$ObjectType.Case__c.fields.Purchase_order__c.label}
+                                        </td>
+
+                                        <td class="slds-text-heading_label slds-text-align_center">
+                                            {!$ObjectType.Case__c.fields.CreatedDate.label}
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <apex:variable var="v" value="'{!lstCaseWrapper}'"/>
+                                    <apex:variable var="v1" value="'[]'"/>
+
+                                    <apex:outputPanel rendered="{!v != v1}">
+                                        <apex:repeat var="cs" value="{!lstCaseWrapper}">
+                                            <tr>
+                                                <td class="slds-text-body_regular slds-text-align_center">
+                                                    <a href="/apex/ASPISMyCaseDetail?id={!cs.cseEncodedId}" onclick="$j('#spinner').show();">
+                                                        {!cs.cse.Name}
+                                                    </a>
+                                                 </td>
+
+                                                <td class="slds-text-body_regular slds-text-align_center">
+                                                    <apex:outputField value="{!cs.cse.Type__c}"/>
+                                                </td>
+
+                                                <td class="slds-text-body_regular">
+                                                    <apex:outputField value="{!cs.cse.Subject__c}"/>
+                                                </td>
+
+                                                <td class="slds-text-body_regular">
+                                                    <apex:outputField value="{!cs.cse.Description__c}"/>
+                                                </td>
+
+                                                <td class="slds-text-body_regular">
+                                                    <apex:outputText value="{!cs.cse.Comment__c}" escape="false"/>
+                                                </td>
+
+                                                <td class="slds-text-body_regular slds-text-align_center">
+                                                    <apex:outputField value="{!cs.cse.Status__c}"/>
+                                                </td>
+
+                                                <td class="slds-text-body_regular slds-text-align_center">
+                                                    <apex:outputField value="{!cs.cse.SLAIcon__c}"/>
+                                                </td>
+
+                                                <td class="slds-text-body_regular">
+                                                    {!IF(cs.cse.Purchase_order__c != null && cs.cse.Purchase_order__c != '',cs.cse.Purchase_order__r.Distributor__r.Name,'')}
+                                                </td>
+
+                                                <td class="slds-text-body_regular slds-text-align_center">
+                                                    <apex:outputText value="{0,date,dd/MM/yy}"> 
+                                                        <apex:param value="{!cs.cse.CreatedDate}" /> 
+                                                    </apex:outputText> 
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>  
+                                    </apex:outputPanel>
+
+                                    <apex:outputPanel rendered="{!v == v1}">
+                                        <tr>
+                                            <td colspan="9" class="slds-text-body_regular slds-text-align_center">
+                                                <apex:outputText value="{!$Label.NoDataFound}"/>
+                                            </td>
+                                        </tr>
+                                    </apex:outputPanel>
+                                </tbody>
+                            </table>
+                        </div>   
+                    </div>             
+                </apex:outputPanel>
+                <!-- WCH 09/08/2019 C-003318 -->
+                <apex:actionfunction name="downloadPDFSO" action="{!downloadPDFSO}" rerender="salesOrderForm"/>
+                <!-- WCH 21/01/2021 C-004148 -->
+                 <apex:actionfunction name="cancelCurrentSO" action="{!cancelCurrentSO}" rerender="salesOrderForm" status="statusSpinner" oncomplete="exitCancelReason();"/>
+
+                <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+                <div id="spinner" class="slds-spinner_container" style="display:none;">
+                    <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                <!-- WCH 21/01/21 C-004148 -->
+                <div id="cancellationReason" class="slds-hide" style="height: 100%;position: absolute;top: 5%;right: 0;bottom: 0;left: 0;">
+                    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                        <div class="slds-modal__container" style="z-index: 100000;width: 55%;">
+                            <div class="slds-modal__header">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.ConfirmCancellationReasonTitle}<input id="focusNodeCancelReason" style="width: 0px;opacity: 0;"/></h2>
+                            </div>
+                            
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                <apex:outputText value="{!$Label.IndicateReason} "/><apex:inputField value="{!currentSalesOrder.CancelationReason__c}" />
+                            </div>
+
+                            <div class="slds-modal__footer slds-text-align_center">
+                                <strong><apex:outputtext >{!$Label.popUpButtonQuestion}</apex:outputtext></strong><br/><br/>
+                                <input type="button"
+                                        id="saveCancelReasonBtn"
+                                        class="slds-button slds-button_brand"
+                                        value="{!$Label.ModalOK}"
+                                        onclick="saveCancelReason();"/>
+                                <input type="button"
+                                        class="slds-button slds-button_neutral"
+                                        value="{!$Label.popUpButtonNo}"
+                                        onclick="exitCancelReason();"/>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+
+                <!-- Error Manager -->
+                <apex:outputPanel id="errorMessage">
+                    <div id="toastMessage" class="slds-notify_container slds-hide">
+                        <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" title="{!$Label.Close}" type="button" onclick="hideError();">
+                                </button>
+                            <div class="slds-notify__content">
+                                <p class="slds-text-align_center customErrorMsg"></p>
+                                <apex:pagemessages id="toastErrorMessage" escape="false" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="errorModal" class="slds-modal slds-modal_prompt" aria-hidden="false" role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <apex:outputText rendered="{!!redirectionInErrorModal}">
+                                    <p class="slds-m-bottom_medium">
+                                        {!$Label.ErrorModalBody}
+                                    </p>
+                                </apex:outputText>
+                                <apex:pagemessages escape="false" />
+                            </div>
+                            <div class="slds-modal__footer slds-theme_default">
+                            <apex:outputText rendered="{!!redirectionInErrorModal}">
+                                <input type="button"
+                                    class="slds-button slds-button_destructive"
+                                    value="{!$Label.Close}"
+                                    onclick="hideError();" />
+                            </apex:outputText>
+                            <apex:outputText rendered="{!redirectionInErrorModal}">
+                                <apex:commandButton action="{!redirectPage}" 
+                                                    value="{!$Label.ModalOK}" 
+                                                    styleClass="slds-button slds-button_destructive"
+                                                    reRender="chooseAssessmentFrm" 
+                                                    status="statusSpinner"/>
+                            </apex:outputText>
+                        </div>
+                        </div>
+                    </div>
+                    <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                </apex:outputPanel>
+            </div>
+            <script>
+                if (typeof jQuery != "undefined") {
+                    $j = jQuery.noConflict();
+                }
+                renderIcons();
+
+                console.log('##redirection: '+"{!redirectionInErrorModal}");
+
+                showError({!hasErrors}, {!isToastError});
+                checkPageMessage({!hasErrors});
+
+                $j(document).ready(function(){
+                    adjustHeight();
+
+                    var headerHeight = $j('.fixedHeader').height();
+                    $j('#topCard').css('padding-top',headerHeight+5);
+
+                    //AMI 20/12/18 C-002781 : Migrate Spain to R4
+                    //                      : Show Chatter Plublisher -->
+                    $j('#btn-showChatter').on('click',function(){
+                        $j('#chatterfeed').removeClass('slds-hide');
+                    });
+
+                    //AMI 20/12/18 C-002781 : Migrate Spain to R4
+                    //                      : Hide Chatter Plublisher -->
+                    $j('#closeChatter').on('click',function(){
+                        $j('#chatterfeed').addClass('slds-hide');
+                    });
+
+                    //WCH 07/08/19 C-003318 : Add "Download Delivery Note" button to R4
+                    $j('#btn-showDownloadDeliveryNote').on('click',function(){
+                        downloadPDFSO();
+                    });
+                });
+
+                function adjustHeight(){                      
+                    var numOfRecords = {!numberOfOffers};
+                    if(numOfRecords <= 1){
+                        $j('#soFrame').css('height','250px');
+                    }
+                    else if(numOfRecords >= 2 && numOfRecords <= 3){
+                        $j('#soFrame').css('height','380px');
+                    }
+                    else if(numOfRecords == 4){
+                        var height = numOfRecords*120;
+                        $j('#soFrame').css('height',height+'px');
+                    }
+                    else if(numOfRecords == 5){
+                        var height = numOfRecords*110;
+                        $j('#soFrame').css('height',height+'px');
+                    }
+                    else if(numOfRecords == 6){
+                        var height = numOfRecords*100;
+                        $j('#soFrame').css('height',height+'px');
+                    }
+                    else if(numOfRecords == 7){
+                        var height = numOfRecords*90;
+                        $j('#soFrame').css('height',height+'px');
+                    }
+                    else if(numOfRecords == 8){
+                        var height = numOfRecords*85;
+                        $j('#soFrame').css('height',height+'px');
+                    }  
+                    else if(numOfRecords >= 9){
+                        var height = numOfRecords*80;
+                        $j('#soFrame').css('height',height+'px');
+                    }                               
+                    //$j('#soFrame').css('min-width','1250px');                          
+                    console.log('##numOfRecords '+numOfRecords);        
+                }
+
+                function b64toBlob(b64Data, contentType, sliceSize) {
+                        contentType = contentType || '';
+                        sliceSize = sliceSize || 512;
+
+                        var byteCharacters = atob(b64Data.replace(/\s/g, ''));
+                        var byteArrays = [];
+
+                        for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                            var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                            var byteNumbers = new Array(slice.length);
+                            for (var i = 0; i < slice.length; i++) {
+                                byteNumbers[i] = slice.charCodeAt(i);
+                            }
+
+                            var byteArray = new Uint8Array(byteNumbers);
+
+                            byteArrays.push(byteArray);
+                        }
+                            
+                        var blob = new Blob(byteArrays, {type: contentType});
+                        return blob;
+                    }                 
+                    
+                function callSendRequestJs(invoiceNo,invoiceId,invoiceTechNo,invCountryCode){
+                    invoiceTechNo = invoiceTechNo == 'undefined'?'':invoiceTechNo;
+                    invoiceNo = invoiceNo == 'undefined'?'':invoiceNo;
+                    invoiceId = invoiceId == 'undefined'?'':invoiceId;
+
+                    RESTPostInvoice.sendRequestForPdf(invoiceNo,invoiceId,invoiceTechNo,invCountryCode,function(result, event){
+                        console.log('##event.status', event.status);
+                        //alert(invoiceNo);
+                            if (event.status){
+                            //console.log('##result', result); 
+                                if(result.indexOf('Error') == -1 && result != ''){         
+                                    var blobData = b64toBlob(result, "application/pdf");
+                                    saveAs(blobData, invoiceNo+".pdf");
+                                    console.log('##sendRequestJS'); 
+                                }                         
+                                else{
+                                    $j(".customErrorMsg").html("{!JSENCODE($Label.CegedimPdfError)}");
+                                    showError(true, true);
+                                }
+                            }else{
+                                console.log(event.message);                                   
+                            }
+                    }, {escape:true});
+                       
+                }
+
+                 function b64toBlob(b64Data, contentType, sliceSize) {
+                    contentType = contentType || '';
+                    sliceSize = sliceSize || 512;
+
+                    var byteCharacters = atob(b64Data.replace(/\s/g, ''));
+                    var byteArrays = [];
+
+                    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                        var byteNumbers = new Array(slice.length);
+                        for (var i = 0; i < slice.length; i++) {
+                            byteNumbers[i] = slice.charCodeAt(i);
+                        }
+
+                        var byteArray = new Uint8Array(byteNumbers);
+
+                        byteArrays.push(byteArray);
+                    }
+                        
+                    var blob = new Blob(byteArrays, {type: contentType});
+                    return blob;
+                }
+                //WCH 21/01/2021 C-004148
+                function exitCancelReason(){
+                    //enable order btn
+                    //$j('#orderBtn').prop("disabled",false);
+
+                    //close modal
+                    $j('#cancellationReason').addClass('slds-hide');
+                }
+                function saveCancelReason(){
+                    //enable order btn
+                    $j('#saveCancelReasonBtn').prop("disabled",false);
+
+                    //close modal
+                    $j('#cancellationReason').addClass('slds-hide');
+                    
+                    //save SO
+                    cancelCurrentSO();
+                }
+                function showCancelReason(){
+                    $j('#cancellationReason').removeClass('slds-hide');
+                    document.getElementById('focusNodeCancelReason').focus();
+                }     
+                $j("#CancelSOButtonForBS").click(function(){
+                    showCancelReason();
+                });
+                
+            </script>
+          
+        </apex:form>
+    </body>
+    </html>
+</apex:page>

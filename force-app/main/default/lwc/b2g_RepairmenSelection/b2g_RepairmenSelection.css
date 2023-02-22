@@ -1,0 +1,42 @@
+.slds-border_right{
+    border-width: thin;
+    border-color: var(--lwc-brandAccessible);
+}
+
+.slds-box{
+    border-width: thin;
+    border-color: var(--lwc-brandAccessible);
+    padding: 0;
+    border-radius: 0;
+}
+
+.slds-coordinates{
+    width: var(--lwc-sizeSmall, 15rem)  !important;
+    height: var(--lwc-sizeLarge, 25rem) !important;
+    padding-top: 0;
+}
+
+.hidecoordinates .slds-coordinates{
+    display: none;
+}
+
+
+.slds-map_container{
+    height: var(--lwc-sizeLarge, 25rem) !important;
+}
+
+.slds-coordinates__header{
+    padding:0;
+}
+
+.slds-coordinates__title{
+    font-size:0;
+}
+
+.slds-map[lightning-map_map] {
+    height: var(--lwc-sizeLarge, 25rem);
+}
+
+.slds-has-coordinates .slds-map:before {
+    padding-top: 0;
+}

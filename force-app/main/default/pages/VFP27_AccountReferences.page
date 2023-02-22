@@ -1,0 +1,77 @@
+<!--
+@description       : 
+@author            : KPA
+@group             : 
+@last modified on  : 09-08-2020
+@last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+Modifications Log 
+Ver   Date         Author   Modification
+1.0   08-28-2020   KPA   Initial Version
+-->
+<apex:page showHeader="false"
+           standardStylesheets="false"
+           standardcontroller="Account"
+           extensions="VFC27_AccountReferences"
+           sidebar="false"
+           applyHtmlTag="false"
+           applyBodyTag="false"
+           docType="html-5.0"
+           lightningStylesheets="true"
+           >
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <style>
+                table, th, td {
+                    border-collapse: collapse;
+                    font-family:Helvetica;
+                    font-size:12px;
+                    color:#4a4a56;
+                    padding: 10px;
+                    margin-left:40px;
+                    text-align:center;
+                }
+                p{
+                    font-family:Helvetica;
+                    font-size:12px;
+                    color:#4a4a56;
+                    margin-left:50px;
+                }
+                tr{
+                    border-bottom:1px solid #D3D3D3;
+                }
+                .hidecolumn{
+                    display:none;
+                }
+            </style>
+        </head>
+        <body>
+            <table class="{!IF(lstAccRef.size > 0,'','hidecolumn')}">
+                <th>{!$ObjectType.AccountRef__c.fields.systemCalling__c.label}</th>
+                <th>{!$ObjectType.AccountRef__c.fields.ExternalReference__c.label}</th>
+                <th>{!$ObjectType.AccountRef__c.fields.SendingAccepted__c.label}</th>
+                <th>{!$ObjectType.AccountRef__c.fields.Name.label}</th>
+                <th>{!$ObjectType.AccountRef__c.fields.LastModifiedDate.label}</th>
+                <th class="{!IF(CONTAINS($Profile.Name, 'System Admin'),'','hidecolumn')}">{!$Label.LastModifiedBy}</th>
+                <th class="{!IF(CONTAINS($Profile.Name, 'System Admin'),'','hidecolumn')}">{!$Label.CreatedBy}</th>
+                <apex:repeat value="{!lstAccRef}" var="a">
+                    <tr>
+                        <td>{!a.systemCalling__c}</td> 
+                        <td>{!a.ExternalReference__c}</td> 
+                        <td>
+                            <apex:outputField value="{!a.SendingAccepted__c}" />
+                        </td>
+                        <td>{!a.Name}</td> 
+                        <td>
+                            <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                <apex:param value="{!a.LastModifiedDate}" /> 
+                            </apex:outputText>
+                        </td> 
+                        <td class="{!IF(CONTAINS($Profile.Name, 'System Admin'),'','hidecolumn')}">{!a.LastModifiedBy.Name}</td> 
+                        <td class="{!IF(CONTAINS($Profile.Name, 'System Admin'),'','hidecolumn')}">{!a.CreatedBy.Name}</td> 
+                    </tr>
+                </apex:repeat>
+            </table>
+            <p class="{!IF(lstAccRef.size > 0,'hidecolumn','')}">{!$Label.DataTableEmptyTable}</p>
+        </body>
+    </html>
+</apex:page>

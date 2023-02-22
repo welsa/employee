@@ -1,0 +1,232 @@
+<aura:component >
+    <aura:attribute name="options" type="List" default="[{'label':'9.30 - 12.00','value':'Value'},{'label':'10.30 - 11.30','value':'Value'}]" />
+    <aura:attribute name="options1" type="List" default="[{'label':'9.30 - 12.00','value':'Value'},{'label':'10.30 - 11.30','value':'Value'}]" />
+    <aura:attribute name="options2" type="List" default="[{'label':'9.30 - 12.00','value':'Value'}]" />
+    <aura:attribute name="options3" type="List" default="[{'label':'9.30 - 12.00','value':'Value'}]" />
+    <aura:attribute name="options4" type="List" default="[{'label':'9.30 - 12.00','value':'Value'},{'label':'10.30-11.30','value':'Value'}]" />                    
+    <aura:attribute name="options5" type="List" default="[{'label':'9.30 - 12.00','value':'Value'},{'label':'10.30-11.30','value':'Value'},{'label':'13.00 - 15.00','value':'Value'},{'label':'15.00 - 18.00','value':'Value'}]" />
+    
+    <aura:attribute name="options11" type="List" default="[{'label':'9.30 - 12.00','value':'Value'}]" />
+    <aura:attribute name="options12" type="List" default="[{'label':'9.30 - 12.00','value':'Value'}]" />
+    <aura:attribute name="options13" type="List" default="[{'label':'9.30 - 12.00','value':'Value'}]" />
+    <aura:attribute name="options14" type="List" default="[{'label':'9.30 - 12.00','value':'Value'},{'label':'10.00 - 12.00','value':'Value'},{'label':'13.00 - 13.30','value':'Value'},{'label':'13.30 - 14.00','value':'Value'},{'label':'14.45 - 16.45','value':'Value'},{'label':'17.00 - 18.00','value':'Value'}]"/>
+    <aura:attribute name="options15" type="List" default="[{'label':'9.30 - 12.00','value':'Value'},{'label':'10.30 - 11.30','value':'Value'}]" />
+    <aura:attribute name="options16" type="List" default="[{'label':'9.30 - 12.00','value':'Value'},{'label':'10.30 - 11.30','value':'Value'}]" />                    
+    <aura:attribute name="options17" type="List" default="[{'label':'9.30 - 12.00','value':'Value'},{'label':'10.30 - 11.30','value':'Value'}]" />
+    
+    <aura:attribute name="options21" type="List" default="[{'label':'10.00 - 12.00','value':'Value'},{'label':'10.30 - 11.00','value':'Value'},{'label':'13.00 - 15.00','value':'Value'},{'label':'15.00 - 17.00','value':'Value'},{'label':'17.00 - 18.00','value':'Value'}]"/>
+    <aura:attribute name="options22" type="List" default="[{'label':'10.00 - 12.00','value':'Value'},{'label':'10.30 - 11.00','value':'Value'}]" />
+    <aura:attribute name="options23" type="List" default="[{'label':'10.00 - 12.00','value':'Value'},{'label':'10.30 - 11.00','value':'Value'}]" />
+    <aura:attribute name="options24" type="List" default="[{'label':'10.00 - 12.00','value':'Value'},{'label':'10.30 - 11.00','value':'Value'}]" />
+    <aura:attribute name="options25" type="List" default="[{'label':'10.00 - 12.00','value':'Value'},{'label':'10.30 - 11.00','value':'Value'}]" />
+    
+    
+    <aura:attribute name="mapMarkers" type="Object"/>
+    <aura:attribute name="center" type="Object" />
+    <aura:attribute name="zoomLevel" type="Integer" />
+    <aura:attribute name="markersTitle" type="String" />
+    <aura:attribute name="showFooter" type="Boolean" />
+  	<aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <div class="slds-p-around_small slds-p-bottom_large slds-text-align_center slds-text-heading_medium" style="color: rgb(255, 255, 255); background-color: rgb(0, 112, 210);">Recherche des réparateurs</div>
+    <lightning:layout class="slds-wrap" multipleRows="true">
+        <lightning:layoutItem size="2">
+            <lightning:input class="slds-m-top_large slds-m-bottom_large" label="Date" placeholder="Placeholder Text" type="date" variant="standard"></lightning:input>
+        </lightning:layoutItem>
+        <lightning:layoutItem size="2">
+            <lightning:select class="slds-m-top_large slds-m-bottom_large" label="Type" variant="standard">
+                <option value=""></option>
+                <option value="">Validé</option>
+                <option value="">Candidat</option>
+            </lightning:select>
+        </lightning:layoutItem>
+        <lightning:layoutItem size="2">
+            <lightning:select class="slds-m-top_large slds-m-bottom_large" label="Ranking" variant="standard">
+                <option value=""></option>
+                <option value="">Gold</option>
+                <option value="">Silver</option>
+                <option value="">Bronze</option>
+            </lightning:select>
+        </lightning:layoutItem>
+        <lightning:button class="slds-m-top_xx-large slds-theme_brand" variant="brand" label="Rechercher"></lightning:button>
+    </lightning:layout>
+    
+    <lightning:layout multipleRows="true">
+        <lightning:layoutItem size="8" padding="horizontal-small">
+            
+            <div style="overflow:auto">
+            
+            <table class="slds-table slds-no-row-hover slds-table_bordered">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th>
+                            <div class="slds-truncate" title="Column 1"></div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" title="Column 1">Lundi</div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" title="Column 1">Mardi</div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" title="Column 1">Mercredi</div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" title="Column 1">Jeudi</div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" title="Column 1">Vendredi</div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" title="Column 1">Samedi</div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" title="Column 1">Dimanche</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="slds-hint-parent">
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            <div class="slds-illustration slds-illustration_small">
+                                <div class="slds-text-longform">
+                                    <div class="slds-text-body_regular" style="color: rgb(0, 95, 178); font-size: 0.8125rem;">
+                                        <p><strong>Garage 1</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options1}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            <div class="slds-text-body_regular" style="font-size: 0.8125rem;">
+                                <p><span style="color: rgb(176, 173, 171);">-</span></p>
+                            </div>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options2}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options3}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options4}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options5}" type="radio"></lightning:radioGroup>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            <div class="slds-text-body_regular slds-text-align_center" style="color: rgb(0, 95, 178); font-size: 0.8125rem;">
+                                <p><strong>Garage 2</strong></p>
+                            </div>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options11}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options12}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options13}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options14}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options15}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options16}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options17}" type="radio"></lightning:radioGroup>
+                            
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            <div class="slds-text-body_regular slds-text-align_center" style="color: rgb(0, 95, 178); font-size: 0.8125rem;">
+                                <p><strong>Garage 3</strong></p>
+                            </div>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            <div class="slds-illustration slds-illustration_small">
+                                <div class="slds-text-longform">
+                                    <div class="slds-text-body_regular" style="font-size: 0.8125rem;">
+                                        <p><span style="color: rgb(176, 173, 171);">-</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options21}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options22}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options23}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options24}" type="radio"></lightning:radioGroup>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            <div class="slds-text-body_regular" style="font-size: 0.8125rem;">
+                                <p><span style="color: rgb(176, 173, 171);">-</span></p>
+                            </div>
+                        </td>
+                        <td class="slds-cell-buffer_left slds-cell-buffer_right">
+                            
+                            <lightning:radioGroup label="Radio Group Label" options="{!v.options25}" type="radio"></lightning:radioGroup>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        	</div>
+     	</lightning:layoutItem>
+        <lightning:layoutItem size="4">
+            
+            <div class="slds-map">
+                <lightning:map
+                               mapMarkers="{! v.mapMarkers }"
+                               center="{! v.center }"
+                               zoomLevel="{! v.zoomLevel }"
+                               markersTitle="{! v.markersTitle }"
+                               showFooter="true" 
+                               onmarkerselect="{!c.handleSelectMarker}"
+                               >
+                </lightning:map>
+                </div>
+        </lightning:layoutItem>
+    </lightning:layout>
+    
+    <lightning:layout class="slds-p-top_large slds-wrap" multipleRows="true">
+        <lightning:layoutItem size="12">
+            <lightning:button class="slds-theme_neutral" variant="neutral" label="Annuler"></lightning:button>
+            <lightning:button class="slds-theme_brand" variant="brand" label="Reserver"></lightning:button>
+        </lightning:layoutItem>
+    </lightning:layout>
+    
+</aura:component>

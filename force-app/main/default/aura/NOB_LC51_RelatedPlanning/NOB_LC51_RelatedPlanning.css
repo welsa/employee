@@ -1,0 +1,12 @@
+.THIS {
+}
+
+.THIS .icon_dispo lightning-primitive-icon .slds-icon{
+    background-color: #65A0CE !important;
+}
+.THIS .icon_absence lightning-primitive-icon .slds-icon{
+    background-color: #425c5a !important;
+}
+.THIS .icon_rdvHorsPrefikar lightning-primitive-icon .slds-icon{
+    background-color: #c4c4c4 !important;
+}

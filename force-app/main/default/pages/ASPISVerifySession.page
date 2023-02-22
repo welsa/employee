@@ -1,0 +1,12 @@
+<apex:page showHeader="false" 
+            sidebar="false"
+            standardStylesheets="false">
+    <script>
+        //window.parent.postMessage("{\"success\": true}", "*");
+        //window.parent.postMessage(true, "*");
+
+        var domainName = window.location.hostname.slice(0, window.location.hostname.indexOf("."));
+
+        window.parent.postMessage('{"success" : true, "isDomain" : ' + (domainName !== "c") +'}', "*");
+    </script>
+</apex:page>

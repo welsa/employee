@@ -1,0 +1,926 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false"  docType="html-5.0" controller="ASPISMyCaseDetail" applyBodyTag="false" applyHtmlTag="false">
+	<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<head>
+            <title>{!$label.MyCases}</title>
+
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'css/bootstrap-iso.css')}" /> 
+            <apex:stylesheet value="{!URLFOR($Resource.VFP06, 'css/VFP06.css')}" />
+
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.MomentJS)}" />
+
+            <style>
+                .slds-grid.slds-grid--align-end{
+                    margin-bottom: 10px;
+                }
+
+                .slds .slds-card {
+                    overflow-x: hidden;
+                }
+
+                .classHeading{
+                    padding-bottom: 0px;
+                }
+
+                .bold{
+               		font-weight: bold;
+                }
+
+                .iframe-container {
+	              overflow: hidden;
+	              padding-top: 56.25%;
+	              position: relative;
+	            }
+
+	            .iframe-container iframe {
+	               border: 0;
+	               height: 100%;
+	               left: 0;
+	               position: absolute;
+	               top: 0;
+	               width: 100%;
+	            }
+
+	            .searchDateButton {
+	                background: #103184;
+	                color: #fff;
+	                font-size: 14px;
+	                height: 32px;
+	            }
+
+	            .iconColor{
+	                height: 1.5rem;
+	                width: 1.5rem;
+	                fill: #fff;
+	            }
+            </style>
+
+            <script type="text/javascript">
+			     var __sfdcSessionId = '{!GETSESSIONID()}';
+			</script>
+			<script src="/soap/ajax/34.0/connection.js" type="text/javascript"></script>
+        </head>
+
+        <body  class="slds-scope">
+        	<apex:form id="CasesForm">
+
+        		<div class="slds" style="min-width: 1300px;">
+                	<c:ASPISHeader />    
+                
+                	<div>
+		                <div class="slds-card slds-card__header" style="padding-bottom: 14px !important;">             
+		                    <h2 class="slds-show_inline slds-text-heading_small">
+		                        {!$Label.MyCaseDetailMsg1}
+		                    </h2>
+
+		                    <!-- AMI 24/12/18 C-002781 : Migrate Spain to R4
+                                                       : Chatter Feed Button -->
+                            <apex:outputPanel rendered="{!IF(showFeed,true,false)}">
+	                            <button class="searchDateButton slds-button slds-button_brand slds-col--padded" style="font-weight: 400;margin-left: 35px;margin-bottom: 5px;" type="button" id="btn-showChatter">
+	                                <svg aria-hidden="true" class="slds-icon1 iconColor">
+	                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#feed"></use>
+	                                </svg>
+	                                {!$Label.ChatterFeedMsg2}
+	                            </button>
+                        	</apex:outputPanel>
+		                </div>
+
+		                <!-- AMI 24/12/18 C-002781 : Migrate Spain to R4
+                                           : Chatter Feed Modal -->
+		                <div class="slds-hide" id="chatterfeed">
+		                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+		                        <div class="slds-modal__container" style="max-width: 51rem;width:70%;">
+		                            <header class="slds-modal__header">
+		                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+		                                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+		                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close" />
+		                                </svg>
+		                                <span class="slds-assistive-text">{!$Label.Close}</span>
+		                                </button>
+		                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.ChatterFeedMsg1}
+		                                </h2>
+		                            </header>
+		                            
+		                            <div class="slds-modal__content slds-p-around_medium iframe-container" id="modal-content-id-1">
+		                                <apex:iframe id="chatter-iframe" src="/apex/ASPISChatterPage?id={!encryptedText}" scrolling="true"/>
+		                            </div>
+		                            
+		                            <footer class="slds-modal__footer">
+		                                <button class="searchDateButton slds-button slds-button_brand slds-col--padded" style="font-weight: 400;" type="button" id="closeChatter">
+	                                        {!$Label.Close}
+	                                    </button>
+		                            </footer>
+		                        </div>
+		                    </section>
+		                    <div class="slds-backdrop slds-backdrop_open"></div>
+		                </div>
+
+		                <div class="divWrapper">
+		                	<div class="demo-only slds-hide" style="height: 4rem;" id="statusSuccess">
+								<div class="slds-notify_container slds-is-relative">
+									<div class="slds-notify slds-notify_toast slds-theme_success" role="status">
+				
+										<span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top">
+											<svg class="slds-icon slds-icon_small" aria-hidden="true">
+											<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS,'/assets/icons/utility-sprite/svg/symbols.svg#success')}"/>
+											</svg>
+										</span>
+
+										<div class="slds-notify__content slds-text-heading_small successContent">
+											
+										</div>
+
+										<div class="slds-notify__close">
+											<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true" onclick="$j('#statusSuccess').hide();">
+												<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS,'/assets/icons/utility-sprite/svg/symbols.svg#close')}"/>
+											</svg>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="demo-only slds-hide" style="height: 4rem;" id="statusError">
+								<div class="slds-notify_container slds-is-relative">
+									<div class="slds-notify slds-notify_toast slds-theme_error" role="status">
+				
+										<apex:pageMessages />
+
+										<div class="{!IF(errorGenerated == true,'slds-hide','')}">
+											<span class="slds-icon_container slds-icon-utility-error slds-m-right_small slds-no-flex slds-align-top">
+												<svg class="slds-icon slds-icon_small" aria-hidden="true">
+												<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS,'/assets/icons/utility-sprite/svg/symbols.svg#error')}"/>
+												</svg>
+											</span>
+
+											<div class="slds-notify__content slds-text-heading_small errorContent">
+												
+											</div>
+
+											<div class="slds-notify__close">
+												<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true" onclick="$j('#statusError').hide();">
+													<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS,'/assets/icons/utility-sprite/svg/symbols.svg#close')}"/>
+												</svg>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+		                	<table width="100%" >
+                                <tr>
+                                    <td colspan="4" style="padding: 20px 10px 0px 25px ; border-bottom: thin solid;">
+                                        <span class="slds-text-heading--small">{!$Label.MyCaseDetailMsg2}</span> 
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tr>
+                                            	<div class="slds-form-element slds-form-element_readonly">
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.Name.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					{!IF(NOT(ISBLANK(caseObj.Name)),caseObj.Name, '')}
+											   				</div>
+											  			</div>                 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.Sales_order__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+							                                    <a href="{!'/apex/ASPISSalesOrder?id=' + encryptedSOId}">
+							                                    	{!IF(NOT(ISBLANK(caseObj.Sales_order__c)),caseObj.Sales_order__r.Name, '')}
+							                                    </a>	   					
+											   				</div>
+											  			</div>                 
+	                                                </td>
+	                                            </div>
+                                            </tr>
+											
+                                            <tr>
+                                            	<div class="slds-form-element slds-form-element_readonly">
+	                                            	<td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.PurchaseOrder__c.fields.Distributor__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					{!IF(NOT(ISBLANK(caseObj.Purchase_order__c)),caseObj.Purchase_order__r.Distributor__r.Name, '')}
+											   				</div>
+											  			</div>                 
+	                                                </td>
+
+
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.Status__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					<!-- read only mode -->
+											   					<apex:outputField value="{!caseObj.Status__c}" id="cseStatusR" styleClass=""/>
+											   					<!-- edit mode -->
+											   					<apex:inputField value="{!caseObj.Status__c}" id="cseStatusE" styleClass="slds-hide slds-input"/>
+											   				</div>
+											  			</div>                 
+	                                                </td>
+	                                            </div>
+                                            </tr>
+
+                                            <tr>
+                                            	<div class="slds-form-element slds-form-element_readonly">
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.SLAIcon__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					<apex:outputText value="{!caseObj.SLAIcon__c}" escape="false"/>
+											   				</div>
+											  			</div>                 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%"/>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%"/>
+	                                            </div>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="4" style="padding: 20px 10px 0px 25px ; border-bottom: thin solid;">
+                                        <span class="slds-text-heading--small">{!$Label.MyCaseDetailMsg3}</span> 
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tr>
+                                            	<div class="slds-form-element slds-form-element_readonly">
+	                                            	<td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.Type__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					<apex:outputField value="{!caseObj.Type__c}"/>
+											   				</div>
+											  			</div>                 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.Case_Reason__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					<apex:outputField value="{!caseObj.Case_Reason__c}"/>
+											   				</div>
+											  			</div>                 
+	                                                </td>
+	                                            </div>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="4" style="padding: 20px 10px 0px 25px ; border-bottom: thin solid;">
+                                        <span class="slds-text-heading--small">{!$Label.MyCaseDetailMsg4}</span> 
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tr>
+                                            	<div class="slds-form-element slds-form-element_readonly">
+	                                            	<td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.Subject__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					<!-- read only mode -->
+											   					<apex:outputText value="{!caseObj.Subject__c}" id="cseSubjectR" styleClass=""/>
+											   					<!-- edit mode -->
+											   					<apex:inputField value="{!caseObj.Subject__c}" id="cseSubjectE" styleClass="slds-hide slds-input" style="width:100%;"/>
+											   				</div>
+											  			</div>                 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%"/>  
+
+	                                                <td style="padding: 20px 0px 0px 25px" width="40%"/>   
+	                                            </div>
+                                            </tr>
+
+                                            <tr>
+                                            	<div class="slds-form-element slds-form-element_readonly">
+	                                            	<td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.Description__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%" colspan="3">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					<!-- read only mode -->
+											   					<apex:outputText value="{!caseObj.Description__c}" escape="false" id="cseDescR" styleClass=""/>
+											   					<!-- edit mode -->
+											   					<apex:inputField value="{!caseObj.Description__c}" id="cseDescE" styleClass="slds-hide slds-input" style="width:100%;"/>
+											   				</div>
+											  			</div>                 
+	                                                </td>
+	                                            </div>
+                                            </tr>
+
+                                            <tr>
+                                            	<div class="slds-form-element slds-form-element_readonly">
+	                                            	<td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.Comment__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%" colspan="3">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					<!-- read only mode -->
+											   					<apex:outputText value="{!caseObj.Comment__c}" id="cseCommR" escape="false" styleClass=""/>
+											   					<!-- edit mode -->
+											   					<div id="cseCommE" class="slds-hide">
+											   						<apex:inputField value="{!caseObj.Comment__c}" id="cseCommEE" style="width:100%;" styleClass="slds-input"/>
+											   					</div>
+											   				</div>
+											  			</div>                 
+	                                                </td>
+	                                            </div>                                                  
+                                            </tr>
+
+                                            <tr>
+			                                    <td colspan="4" style="padding: 20px 10px 0px 25px ; border-bottom: thin solid;">
+			                                        <span class="slds-text-heading--small">{!$Label.MyCaseDetailMsg5}</span> 
+			                                    </td>
+			                                </tr>
+
+			                                <tr>
+                                            	<div class="slds-form-element slds-form-element_readonly">
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.SLAAssignationDate__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					<apex:outputText value="{0,date,dd/MM/yy}"> 
+											   						<apex:param value="{!caseObj.SLAAssignationDate__c}" /> 
+											   					</apex:outputText> 
+											   				</div>
+											  			</div>                 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.SLAClosedEntryDate__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					<apex:outputText value="{0,date,dd/MM/yy}"> 
+											   						<apex:param value="{!caseObj.SLAClosedEntryDate__c}" /> 
+											   					</apex:outputText> 
+											   				</div>
+											  			</div>                 
+	                                                </td>
+	                                            </div>
+                                            </tr>
+
+                                            <tr>
+                                            	<div class="slds-form-element slds-form-element_readonly">
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%">
+	                                                	<span class="slds-text-body--medium bold">{!JSENCODE($ObjectType.Case__c.fields.SLAResolutionDurationTEXT__c.label)}</span> 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%">    
+	                                                	<div class="slds-form-element__control">
+											   				<div class="slds-text-body--medium">
+											   					{!IF(NOT(ISBLANK(caseObj.SLAResolutionDurationTEXT__c)),caseObj.SLAResolutionDurationTEXT__c, '')}
+											   				</div>
+											  			</div>                 
+	                                                </td>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="10%"/>
+
+	                                                <td style="padding: 25px 0px 0px 25px" width="40%"/>    
+	                                            </div>
+                                            </tr>
+
+                                            <tr>
+		                                        <td colspan="4" style=" text-align: center; padding: 20px 10px 20px 10px">
+		                                        	<button type="button" class="slds-button slds-button--neutral slds-not-selected" id="btn-edit" onclick="editMode();">
+		                                                {!$Label.MyCaseDetailMsg6}
+		                                            </button>
+		                                            <button type="button" class="slds-button slds-button--neutral slds-not-selected" id="btn-cancel" onclick="cancel();">
+		                                                {!$Label.MyCaseDetailMsg7}
+		                                            </button>
+		                                            <button type="button" class="slds-button slds-button--neutral slds-not-selected" id="btn-save" onclick="updateCse();">
+		                                                {!$Label.Save}
+		                                            </button>
+		                                        </td>
+		                                    </tr>
+
+		                                    <tr>
+			                                    <td colspan="4" style="padding: 20px 10px 0px 25px ; border-bottom: thin solid;">
+			                                        <span class="slds-text-heading--small">{!$Label.MyCaseDetailMsg9}</span> 
+
+			                                        <button type="button" class="slds-button slds-button--neutral slds-not-selected" id="btn-upload">
+		                                                {!$Label.MyCaseDetailMsg8}
+		                                            </button>
+
+		                                            <div id="hiddenInput" class="slds-hide">
+		                                            	<input type="file" id="fileupload"/>
+		                                            </div>
+
+		                                            <input id="uploadName" readonly="true" class="slds-input" type="text" value="" style="width:20%"/>
+		                                            
+		                                            <button type="button" class="slds-button slds-button--neutral slds-not-selected" id="btn-saveatt" onclick="addAttachment();">
+		                                                {!$Label.Save}
+		                                            </button>
+			                                    </td>
+			                                </tr>
+
+			                                <tr>
+			                                	<td colspan="4">
+			                                		<div class="attWrapper">
+
+
+
+
+			                                		</div>
+			                                	</td>
+			                                </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+		                </div>
+
+		                <div class="demo-only" style="height: 6rem;" id="loadTable">
+		                	<div class="slds-spinner_container">
+			                    <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+			                        <span class="slds-assistive-text">{!$label.Loading}</span>
+			                        <div class="slds-spinner__dot-a"></div>
+			                        <div class="slds-spinner__dot-b"></div>
+			                    </div>
+		                    </div>
+		                </div>
+	                </div>
+	            </div>
+
+        		<script>
+        			var $j = jQuery.noConflict();
+        			var fileName = '';
+
+                    $j(document).ready(function() {
+                    	//initialise moment
+                        moment.locale("{!locale}");
+
+                    	//hide save and cancel on load
+                    	$j('#btn-cancel').hide();
+                    	$j('#btn-save').hide();
+
+                    	//hide file name
+                    	$j('#uploadName').hide();
+
+                    	//hide save btn
+	                    $j('#btn-saveatt').hide();
+
+                    	//display error if any
+                    	if({!errorGenerated}){
+                    		$j('#statusError').show();
+                    	} 
+
+                    	retrieveAttachment();
+
+                    	//simulate apex:inputFile click
+                    	$j('#btn-upload').on('click',function(){
+                    		$j('#hiddenInput input').click();
+
+                    		//hide upload btn
+                    		$j('#uploadName').hide();
+
+                    		//hide save btn
+	                    	$j('#btn-saveatt').hide();
+
+                    		//clear input
+                    		$j('#uploadName').val('');
+                    	});
+
+                    	//on change of hidden input
+                    	$j('#hiddenInput input').on('change',function(){
+                    		//get file name
+                    		fileName = getFileName($j('#hiddenInput input').val());
+
+                    		if(fileName){
+                    			//set timeout hack for IE
+	                    		setTimeout(function() {
+	                    			//display uploaded file
+		                    		$j('#uploadName').val(fileName);
+
+		                    		//show input
+		                    		$j('#uploadName').show();
+
+		                    		//show save btn
+		                    		$j('#btn-saveatt').show();
+	                    		});
+                    		}
+                    	});
+
+                    	//AMI 20/12/18 C-002781 : Migrate Spain to R4
+	                    //                      : Show Chatter Plublisher -->
+	                    $j('#btn-showChatter').on('click',function(){
+	                        $j('#chatterfeed').removeClass('slds-hide');
+	                    });
+
+	                    //AMI 20/12/18 C-002781 : Migrate Spain to R4
+	                    //                      : Hide Chatter Plublisher -->
+	                    $j('#closeChatter').on('click',function(){
+	                        $j('#chatterfeed').addClass('slds-hide');
+	                    });
+                    });
+
+                    function editMode(){
+                    	//hide readonly fields
+                    	$j('[id$="cseStatusR"]').addClass('slds-hide');
+                    	$j('[id$="cseSubjectR"]').addClass('slds-hide');
+                    	$j('[id$="cseDescR"]').addClass('slds-hide');
+                    	$j('[id$="cseCommR"]').addClass('slds-hide');
+
+                    	//show editable fields
+                    	$j('[id$="cseStatusE"]').removeClass('slds-hide');
+                    	$j('[id$="cseSubjectE"]').removeClass('slds-hide');
+                    	$j('[id$="cseDescE"]').removeClass('slds-hide');
+                    	$j('[id$="cseCommE"]').removeClass('slds-hide');
+
+                    	//show cancel and save button
+                    	$j('#btn-cancel').show();
+                    	$j('#btn-save').show();
+
+                    	//hide edit button
+                    	$j('#btn-edit').hide();
+
+                    	//hide attachement btn
+                    	$j('#btn-upload').hide();
+                    	$j('#btn-saveatt').hide();
+                    }
+
+                    function cancel(){
+                    	//show loading
+                    	$j('#loadTable').show();
+
+                    	window.parent.location.reload();
+                    }
+
+                    function updateCse(){
+                    	//reset toast
+                    	resetToastAndMsg();
+
+                    	//show loading
+                    	$j('#loadTable').show();
+
+                    	var caseObjArray = [];
+
+                    	var caseObj = {'Id':'{!caseObj.Id}'};
+
+                    	//adding attributes
+                    	if($j('[id$="cseStatusE"]').val() != null && $j('[id$="cseStatusE"]').val() != ''){
+                    		caseObj['Status__c'] = $j('[id$="cseStatusE"]').val();
+                    	}
+
+                    	if($j('[id$="cseSubjectE"]').val() != null && $j('[id$="cseSubjectE"]').val() != ''){
+                    		caseObj['Subject__c'] = $j('[id$="cseSubjectE"]').val();
+                    	}
+
+                    	if($j('[id$="cseDescE"]') != null && $j('[id$="cseDescE"]').val() != ''){
+                    		caseObj['Description__c'] = $j('[id$="cseDescE"]').val();
+                    	}
+
+                    	caseObj['Comment__c'] = document.querySelector('#cseCommE iframe').contentDocument.body.innerHTML;
+
+                    	//push to array
+                    	caseObjArray.push(caseObj);
+                    	console.log('caseObjArray',caseObjArray)
+
+                    	ASPISMyCaseDetail.updateCase(caseObjArray,function(result,event){
+                    		//hide loading
+                    		$j('#loadTable').hide();
+                    		if(event.status){
+                    			console.log('result',result);
+                    			if(!result){
+                    				//clear success div first
+						            $j('.successContent').empty();
+
+						            //add success message
+						            $j('.successContent').html('{!$Label.MyCaseDetailMsg10}');
+
+						            //show success
+						            $j('#statusSuccess').show();
+
+						            window.parent.location.reload();
+                    			}else{
+                    				//clear error div first
+						            $j('.errorContent').empty();
+
+						            //add error message
+						            $j('.errorContent').html(result);
+
+						            $j('#statusError').goTo();
+
+						            //show error
+						            $j('#statusError').show();
+                    			}
+                    		}else if (event.type === 'exception'){
+					            //clear error div first
+					            $j('.errorContent').empty();
+
+					            //add error message
+					            $j('.errorContent').html(event.message);
+
+					            $j('#statusError').goTo();
+
+					            //show error
+					            $j('#statusError').show();
+					        }else {
+					            //clear error div first
+					            $j('.errorContent').empty();
+
+					            //add error message
+					            $j('.errorContent').html(event.message);
+
+					            $j('#statusError').goTo();
+
+					            //show error
+					            $j('#statusError').show();
+					        }
+                    	},{escape: true});
+                    }
+
+                    function resetToastAndMsg(){
+                    	//clear success div 
+				        $j('.successContent').empty();
+
+				        //clear error div 
+			            $j('.errorContent').empty();
+
+			            //hide success div
+			            $j('.statusSuccess').hide();
+
+			            //hide error div
+			            $j('.statusError').hide();
+                    }
+
+                    function retrieveAttachment(){
+                    	//hide attachment save btn
+                    	$j('#btn-saveatt').hide();
+
+                    	ASPISMyCaseDetail.retrieveAtt('{!decryptedCaseId}',function(result,event){
+                    		if(event.status){
+                    			//display attachment
+                    			populate(result);  
+                    			//hide loading after dom initialises
+                    			$j('#loadTable').hide();  
+                    		}
+                    	});
+                    }
+
+                    function populate(listUploads){
+                        var content     = '';
+
+                        content     =  '<table id="tableCase" class="slds-table slds-table_bordered slds-table_cell-buffer" width="100%">';
+                        content     += '<thead>';
+                        content     += '<tr>';
+
+                        content     += '<th class="slds-text-heading_label slds-text-align_center " scope="col"><span>';
+                        content     += '{!$Label.MyCaseDetailMsg11}';
+                        content     += '</span></th>';
+                        
+                        content     += '<th class="slds-text-heading_label slds-text-align_center" scope="col"><span>';
+                        content     += '{!$Label.MyCaseDetailMsg12}';
+                        content     += '</span></th>';
+
+                        content     += '<th class="slds-text-heading_label slds-text-align_center" scope="col"><span>';
+                        content     += '{!$Label.MyCaseDetailMsg13}';;
+                        content     += '</span></th>';                      
+
+                        content     += '<th class="slds-text-heading_label slds-text-align_center" slds-truncate scope="col"><span>';
+                        content     += '{!$Label.MyCaseDetailMsg14}';
+                        content     += '</span></th>';
+
+                        content += '</tr>';
+                        content += '</thead>';
+                           
+                        content += '<tbody>';
+
+                        if(listUploads.length > 0){
+                            //building table body
+                            for(var i = 0; i < listUploads.length; i++) {
+                                content += '<tr>';   
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row" ';
+                                content += 'data-idAtt="' + listUploads[i].Id  + '">';
+                                content += '<a href="javascript:void(0)" onclick="deleteAttachment(\'' + listUploads[i].Id + '\');">';
+                                content += '{!$Label.MyCaseDetailMsg15}';
+                                content += '</a>';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += '<a href="/servlet/servlet.FileDownload?file=' + listUploads[i].Id + '">';
+                                content += listUploads[i].Name;
+                                content += '</a>';
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+								content +=  moment(listUploads[i].LastModifiedDate).format('DD/MM/YYYY')
+                                content += '</td>';
+
+                                content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                content += listUploads[i].CreatedBy.Name;
+                                content += '</td>';
+
+                                content += '</tr>'; 
+                            }//end for
+                            
+                            content += '</tbody>';
+                            content += '</table>';
+                        }
+                        else if (listUploads.length <= 0){
+                            content += '<tr id="emptyTr"><td colspan="4" class="slds-text-body_regular slds-text-align_center">';
+
+                            content += '{!$label.NoDataFound}';
+
+                            content += '</td></tr>';
+
+                            content += '</tbody>';
+                            content += '</table>';
+                        }
+                    
+                        $j('.attWrapper').append(content);
+
+                        //hide spinner
+                        $j('#loadTable').hide();
+                    }
+
+                    function getFileName(str){
+                    	//windows systen
+						if (str.lastIndexOf('\\') != -1) {
+							return str.substring(str.lastIndexOf('\\') + 1);
+					    }
+
+					    //linux system
+						if (str.lastIndexOf('/') != -1) {
+							return str.substring(str.lastIndexOf('/') + 1);
+					    }
+
+						return str;
+					}
+
+					(function($j) {
+					    $j.fn.goTo = function() {
+					        $j('html, body').animate({
+					            scrollTop: $j(this).offset().top + 'px'
+					        }, 'fast');
+					        return this;
+					    }
+					})(jQuery);
+
+					function addAttachment(){
+						//reset toast
+                    	resetToastAndMsg();
+
+                    	//show loading
+                    	$j('#loadTable').show();
+
+					    var reader = new FileReader();
+					    var attachFile = document.getElementById('fileupload').files[0];
+
+					    if(attachFile == undefined){
+					        //clear error div first
+				            $j('.errorContent').empty();
+
+				            //add error message
+				            $j('.errorContent').html('{!$Label.MyCaseDetailMsg16}');
+
+				            //show error
+				            $j('#statusError').show();
+
+				            //hide loading
+                    		$j('#loadTable').hide();
+
+                    		$j('#statusError').goTo();
+					        return;
+					    }
+
+					    if(attachFile.size > 26214400){  //Where 26214400 is byte equivalent of 25MB
+					        //clear error div first
+				            $j('.errorContent').empty();
+
+				            //add error message
+				            $j('.errorContent').html('{!$label.MyCaseDetailMsg17}');
+
+				            //show error
+				            $j('#statusError').show();
+
+				            //hide loading
+                    		$j('#loadTable').hide();
+                    		$j('#statusError').goTo();
+					        return;
+					    }
+
+					    reader.onload = function(e) {
+					    	var binary = "";
+				            var bytes = new Uint8Array(e.target.result);
+				            var length = bytes.byteLength;
+
+				            for (var i = 0; i < length; i++) {
+				                binary += String.fromCharCode(bytes[i]);
+				            }
+
+					        var attachment = new sforce.SObject('Attachment');  
+					        attachment.Name = attachFile.name;
+					        attachment.IsPrivate = false;  
+					        attachment.ContentType = attachFile.type;
+					        attachment.Body = (new sforce.Base64Binary(binary)).toString();;
+					        attachment.Description = attachFile.name;
+					        attachment.ParentId = '{!decryptedCaseId}';
+					        var result = sforce.connection.create([attachment]);  
+					        if(result[0].getBoolean("success")){  
+					            //clear success div first
+					            $j('.successContent').empty();
+
+					            //add success message
+					            $j('.successContent').html('{!$Label.MyCaseDetailMsg18}');
+
+					            //show success
+					            $j('#statusSuccess').show();
+
+					            window.parent.location.reload();
+					        }else{
+					            //clear error div first
+					            $j('.errorContent').empty();
+
+					            //add error message
+					            $j('.errorContent').html('{!$Label.MyCaseDetailMsg19}');
+
+					            //show error
+					            $j('#statusError').show();
+
+					            $j('#statusError').goTo();
+					        }
+					    };
+
+					    reader.readAsArrayBuffer(attachFile);
+					    //hide loading
+                    	$j('#loadTable').hide();
+					}
+
+					function deleteAttachment(attid){
+						//show spinner
+                        $j('#loadTable').show();
+
+						ASPISMyCaseDetail.deleteAtt(attid,function(result,event){
+							if(event.status){
+								window.location.reload();
+							}else{
+								$j('#loadTable').hide();
+								alert(event.message);
+							}
+						});
+					}
+        		</script>	
+        	</apex:form>	        	
+        </body>
+	</html>
+</apex:page>

@@ -1,0 +1,12 @@
+<aura:component implements="force:appHostable,forceCommunity:availableForAllPageTypes,force:hasRecordId,force:recordTab" Access="Public">
+	
+
+	 <div class="slds">  
+	 		<div style="">
+			<lightning:button class="cssButton" variant="brand" label="{!$Label.c.SearchThroughAlphaScaleCatalog}" title="{!$Label.c.SearchThroughAlphaScaleCatalog}" onclick="{!c.goToCrossRef}" disabled="" />  
+		</div>
+	
+	</div>
+
+
+</aura:component>

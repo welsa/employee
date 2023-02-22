@@ -1,0 +1,44 @@
+<!--
+  @description       : 
+  @author            : JPI
+  @group             : 
+  @last modified on  : 14/01/2021
+  @last modified by  : JPI
+  Modifications Log 
+  Ver   Date         Author   Modification
+  1.0   05/01/2021   JPI   Initial Version
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader"  controller='SVR_AP102_NouveauPointEtapes' access="public">
+  	
+	<aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="isSuccess" type="boolean" default="false" />
+    <aura:attribute name="isExecuted" type="boolean" default="false" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!v.isOpen}">
+        <div role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open">
+            <div class="container slds-modal__container" id='modal'>
+
+				<!--Header-->
+                <div class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModal}">
+                        <span class="slds-assistive-text">Cancel</span>
+                    </button>
+                    <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.SVR_NouveauPointdEtape}</h2>
+                </div>
+				
+				<!--Body-->
+                <div class="slds-modal__content slds-p-around--medium">
+                    {!$Label.c.SVR_CreationPointDetape}
+                </div>
+				
+				<!--Footer-->
+                <div class="slds-modal__footer">
+                    <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeModal}">Annuler</lightning:button>
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.createChild}">Créer</lightning:button>
+				</div>
+            </div>
+		</div>
+    </aura:if>
+</aura:component>

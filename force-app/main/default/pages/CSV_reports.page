@@ -1,0 +1,9 @@
+<apex:page controller="VFC_CSV_reports">
+<!-- 
+* Dourga U     07/10/2016   No longer in use -->
+<!-- <apex:form >
+<apex:outputlabel value="Enter email"/>
+       <apex:inputtext value="{!inputEmail}"/> 
+<apex:commandButton id="sendButton" value="Send CSV" action="{!sendAsCSV}" />
+</apex:form> -->
+</apex:page>

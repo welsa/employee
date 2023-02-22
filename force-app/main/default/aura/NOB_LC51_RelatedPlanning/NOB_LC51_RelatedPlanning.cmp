@@ -1,0 +1,173 @@
+<!--
+  @description       :  RSIW-1670
+  @author            : GBH
+  @group             : 
+  @last modified on  : 10-27-2020
+  @last modified by  : GBH
+  Modifications Log 
+  Ver   Date         Author   Modification
+  1.0   10-27-2020   GBH   Initial Version
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:lightningQuickAction"
+    access="global" controller="NOB_LC51_RelatedPlanning">
+    <aura:attribute name="displayFormat" type="String" default="Disponibilité" access="global" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="iconColor" type="String" />
+    <aura:attribute name="status" type="String" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="recordType" type="String" />
+    <aura:attribute type="NOB_Planning__c[]" name="lstPlannings" />
+    <aura:attribute name="showFooter" type="Boolean" default="false" />
+    <aura:attribute name="cols" type="List" />
+    <aura:attribute name="recordTypeId" type="String" />
+    <aura:attribute name="showNewButton" type="Boolean" default="false" />
+
+    <!--###### MODAL BOX Start######-->
+    <aura:if isTrue="{!v.isOpen}">
+
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+            aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                        variant="bare-inverse" class="slds-modal__close" />
+                    <h2>
+                        <span class="slds-text-heading_small">{! v.title}</span>
+                    </h2>
+                    
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:card variant="Narrow" title="{! v.title}" iconName="standard:event"
+                        class="{! v.iconColor}">
+                        <table class="slds-table slds-table_bordered slds-no-row-hover slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Planning Name">Planning Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Début">Début</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Fin">Fin</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Statut">Statut</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Owner">Owner</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Mission">Mission</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.lstPlannings}" var="planning">
+                                    <!-- iteration on record.-->
+                                    <tr class="slds-hint-parent">
+                                        <td scope="row">
+                                            <a href="{!'/'+ planning.Id}" target="_blank">{! planning.Name }</a>
+                                        </td>
+                                        <td>
+                                            <lightning:formattedDateTime value="{! planning.NOB_StartDate__c}"
+                                                year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                minute="2-digit" timeZone="{! $Locale.timezone }" hour12="false" />
+                                        </td>
+                                        <td>
+                                            <lightning:formattedDateTime value="{! planning.NOB_EndDate__c}"
+                                                year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                minute="2-digit" timeZone="{! $Locale.timezone }" hour12="false" />
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">{!planning.NOB_Status__c}</div>
+                                        </td>
+                                        <td>
+                                            <!-- <span>test owner {!planning.Owner.name}</span> -->
+                                            <!-- <a href="">{!planning.Owner.name}</a> -->
+                                            <a href="{!'/'+ planning.OwnerId}">{!planning.Owner.Name}</a>
+                                        </td>
+                                        <td>
+                                            <a
+                                                href="{!'/'+ planning.NOB_WorkOrder__c}">{!planning.NOB_WorkOrder__r.WorkOrderNumber}</a>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </lightning:card>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <!--###### MODAL BOX Part END Here ######-->
+    <div>
+        <lightning:card variant="Narrow" title="{! v.title}" iconName="standard:event" class="{! v.iconColor}">
+
+            <aura:set attribute="title">
+                <a class="slds-card__header-link slds-truncate" href="javascript:void(0);" onclick="{! c.openModel }">
+                    {! v.title} <aura:if isTrue="{!lessthan(v.lstPlannings.length,3)}"> ({! v.lstPlannings.length})
+                        <aura:set attribute="else"> (3+)</aura:set>
+                    </aura:if>
+                </a>
+            </aura:set>
+            <aura:if isTrue="{!v.showNewButton}">
+
+            </aura:if>
+            <aura:set attribute="actions">
+                <aura:if isTrue="{! and(equals(v.status, 'Disponible'), equals(v.recordType, 'Planning Prefikar'), v.showNewButton) }">
+                    <lightning:button label="Nouveau" onclick="{!c.createPlanning}"/>
+                </aura:if>
+                
+            </aura:set>
+
+            <aura:set attribute="footer">
+                <aura:if isTrue="{!v.showFooter}">
+                    <a class="slds-card__footer-action" href="javascript:void(0);" onclick="{! c.openModel }">{!$Label.c.View_All}</a>
+                </aura:if>
+            </aura:set>
+
+            <aura:iteration items="{!v.lstPlannings}" var="item" indexVar="idx">
+                <aura:if isTrue="{!lessthan(idx,3)}">
+                    <div class="slds-p-around_medium">
+                        <lightning:tile label="{! item.Name}" href="{!'/'+ item.Id}">
+
+                            <aura:set attribute="media">
+                                <lightning:icon iconName="standard:event" />
+                            </aura:set>
+                            <dl class="slds-dl_horizontal">
+                                <dt class="slds-dl_horizontal__label">
+                                    <p class="slds-truncate">Début:</p>
+                                </dt>
+                                <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                                    <p>
+                                        <lightning:formattedDateTime value="{! item.NOB_StartDate__c}" year="numeric"
+                                            month="numeric" day="numeric" hour="2-digit" minute="2-digit"
+                                            timeZone="{! $Locale.timezone }" hour12="false" />
+                                    </p>
+                                </dd>
+                                <dt class="slds-dl_horizontal__label">
+                                    <p class="slds-truncate">Fin: </p>
+                                </dt>
+                                <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                                    <p>
+                                        <lightning:formattedDateTime value="{! item.NOB_EndDate__c}" year="numeric"
+                                            month="numeric" day="numeric" hour="2-digit" minute="2-digit"
+                                            timeZone="{! $Locale.timezone }" hour12="false" />
+                                    </p>
+                                </dd>
+                            </dl>
+                        </lightning:tile>
+                    </div>
+                </aura:if>
+            </aura:iteration>
+
+        </lightning:card>
+    </div>
+</aura:component>

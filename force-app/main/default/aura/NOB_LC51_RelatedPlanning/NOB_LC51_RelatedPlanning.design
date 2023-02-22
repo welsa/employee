@@ -1,0 +1,3 @@
+<design:component >
+    <design:attribute name="displayFormat" datasource="Disponibilité,Absences,RDV hors Prefikar" />
+</design:component>

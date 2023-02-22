@@ -1,0 +1,483 @@
+<apex:page showHeader="false" standardStylesheets="false" controller="VFC24_CreateNewCommunityUser">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <title>{!IF(prefikarContactHasUser,$Label.UserActivation,'Related Community User Creation')}</title>
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <script>
+                window.params = {
+                                    // URL For Icons
+                                    "closeSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                                    "closePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                                };
+                var widgetId;
+            </script>
+            <apex:includescript value="https://www.google.com/recaptcha/api.js?render=explicit&hl={!$CurrentPage.Parameters.lang}"/>
+        </head>
+        <body class="slds-scope">
+            <apex:form id="UserCreationForm">
+                <div class="slds">
+                    <div class="slds-text-align_center slds-m-top_small">
+                        <object data="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}" 
+                                type="image/svg+xml"
+                                width="200"/>
+                    </div>
+                    <div class="slds-grid slds-m-top_large">
+                        <div class="slds-col"></div>
+
+                        <div class="slds-col slds-m-bottom_large">
+                            <div class="slds-box">
+                                <h1 class="slds-text-heading_medium boldText slds-m-bottom_medium">{!IF(prefikarContactHasUser,$Label.UserActivation,$Label.NewUserCreation)}</h1>
+                                
+                                <div class="slds-form_compound">
+                                    <div class="slds-form-element__row" style="display:{!IF(prefikarContactHasUser,'none','flex')};">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.User.fields.FirstName.label} </label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="firstName"
+                                                                    styleClass="slds-input"
+                                                                    value="{!newRelatedUser.FirstName}"
+                                                                    required="false" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="name">{!$ObjectType.User.fields.LastName.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="lastName"
+                                                                    styleClass="slds-input requiredField"
+                                                                    value="{!newRelatedUser.LastName}"
+                                                                    required="false" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row" style="display:{!IF(prefikarContactHasUser,'none','flex')};">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="email">{!$ObjectType.User.fields.Email.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="email"
+                                                                    styleClass="slds-input requiredField"
+                                                                    value="{!newRelatedUser.Email}"  
+                                                                    required="false" />
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <label class="slds-form-element__label" for="username">{!$ObjectType.User.fields.Username.label} <em>*</em></label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputfield id="username"
+                                                                    styleClass="slds-input requiredField"
+                                                                    value="{!newRelatedUser.Username}"
+                                                                    required="false" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                   <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <div class="slds-form-element__control">
+                                                <label class="slds-checkbox">
+                                                    <apex:inputCheckbox id="sendEmail" value="{!sendEmail}"/> 
+                                                    <span class="slds-checkbox--faux"></span>
+                                                    <span class="slds-form-element__label">{!$Label.ASPISSendEmail}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2" style="display:{!IF(AND(languageOptionsList.size>1,NOT(prefikarContactHasUser)),'inline','none')};">
+                                            <label class="slds-form-element__label" for="userLanguage">Language</label>
+                                            <div class="slds-form-element__control">
+                                                <apex:selectList id="userLanguage" value="{!newRelatedUser.LanguageLocaleKey}" multiselect="false" size="1" styleClass="slds-select">
+                                                    <apex:selectOptions value="{!languageOptionsList}"/>
+                                                </apex:selectList>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <div class="slds-form-element__control">
+                                                <label class="slds-checkbox">
+                                                    <apex:inPutField id="isUserActive" value="{!newRelatedUser.IsActive}"/>
+                                                    <span class="slds-checkbox--faux"></span>
+                                                    <span class="slds-form-element__label">{!$Label.ASPISConnectionWithAssessmentTool}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2"/>
+                                    </div>
+                                    <div class="userActiveFields" style="display:none;">
+                                        <div class="slds-form-element__row">
+                                            <div class="slds-form-element slds-size--1-of-2 slds-align-middle">
+                                                <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox">
+                                                        <apex:inputCheckbox id="displayPrivacyNotice" value="{!displayPrivacyNotice}"/>
+                                                        <span class="slds-checkbox--faux"></span>
+                                                        <span class="slds-form-element__label">{!$Label.ASPISDisplayPrivacyNotice}</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="slds-form-element slds-size--1-of-2">
+                                                <label class="slds-form-element__label" for="externalReference">{!$ObjectType.AccountRef__c.fields.ExternalReference__c.label}</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="externalReference"
+                                                                        styleClass="slds-input"
+                                                                        value="{!newExternalReference}"
+                                                                        required="{!IF(prefikarContactHasUser,'true','false')}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element__row">
+                                            <div class="slds-form-element slds-size--1-of-2">
+                                                <label class="slds-form-element__label">{!$ObjectType.AccountRef__c.fields.systemCalling__c.label}</label>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-select_container">
+                                                        <apex:selectList size="1" value="{!newSystemCalling}" id="systemCalling" styleClass="slds-select">
+                                                            <apex:selectOptions value="{!systemCallingOptionsList}" />
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- WCH 27/03/2019 C-003137 - Issue With Button Creation of User. Added class userGeneratedPwd -->
+                                            <div class="userGeneratedPwd slds-form-element slds-size--1-of-2" style="display:{!IF(prefikarContactHasUser,'none','flex')};">
+                                                <label class="slds-form-element__label" for="userPassword">{!$Label.PasswordLabel}</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:outputText id="userPassword" styleClass="slds-input" value="{!newUserPassword}" /> 
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--2-of-2 slds-align_absolute-center">
+                                            <div class="slds-form-element__control">
+                                                <button class="slds-button slds-button_neutral slds-not-selected" type="button" onclick="validateForm();" >{!IF(prefikarContactHasUser,$Label.ProceedToUserActivation,$Label.CreateNewUser)}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col"></div>
+                    </div>
+
+
+                <div id="spinner"
+                     class="slds-spinner_container hide positionFixed">
+                    <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+
+                <div id="toastMessage" 
+                    class="slds-notify_container slds-hide">
+                    <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                        <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                title="{!$Label.Close}"
+                                type="button"
+                                onclick="hideError();">
+                        </button>
+                        <div class="slds-notify__content">
+                            <p class="slds-text-align_center customErrorMsg"></p>
+                            <apex:pagemessages id="toastErrorMessage" escape="false" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="errorModal"
+                    class="slds-modal slds-modal_prompt"
+                    aria-hidden="false"
+                    role="dialog">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                            <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <apex:outputText rendered="{!!redirectionInErrorModal}">
+                                <p class="slds-m-bottom_medium">
+                                    {!$Label.ErrorModalBody}
+                                </p>
+                            </apex:outputText>
+                            <p class="slds-text-align_center customErrorMsg"></p>
+                            <apex:pagemessages escape="false" />
+                        </div>
+                        <div class="slds-modal__footer slds-theme_default">
+                            <apex:outputText rendered="{!!redirectionInErrorModal}">
+                                <input type="button"
+                                    class="slds-button slds-button_destructive"
+                                    value="{!$Label.Close}"
+                                    onclick="hideError();" />
+                            </apex:outputText>
+                            <apex:outputText rendered="{!redirectionInErrorModal}">
+                                <apex:commandButton action="{!redirectPage}" 
+                                                    value="OK" 
+                                                    styleClass="slds-button slds-button_destructive"
+                                                    reRender="UserCreationForm" 
+                                                    status="statusSpinner"/>
+                            </apex:outputText>
+                        </div>
+                    </div>
+                </div>
+                <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                </div>
+
+                <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+                <script>
+
+                    if (typeof jQuery != 'undefined'){
+                        $j = jQuery.noConflict();
+                    }
+                    renderCloseSVG();
+                    var isUActive = {!prefikarContactHasUser} ? true : false;
+                    
+                    if($j("[id$=isUserActive]").is(":checked")){
+                        $j(".userActiveFields").show();
+                    }
+                    else{
+                        $j(".userActiveFields").hide();
+                    }
+                    //WCH 27/03/2019 C-003137 - Issue With Button Creation of User
+                    if($j("[id$=sendEmail]").is(":checked") && {!!prefikarContactHasUser}){
+                        $j(".userGeneratedPwd").show();
+                        $j(".userGeneratedPwd").css('display','inline');
+                    }
+                    else{
+                        $j(".userGeneratedPwd").hide();
+                    }
+
+                    $j("[id$=isUserActive]").click(function() {
+                        if($j(this).is(":checked")) {
+                            $j(".userActiveFields").show();
+                            isUActive = true;
+                            //$j('[id$="userPassword"]').addClass("requiredField");
+                        } else {
+                            $j(".userActiveFields").hide();
+                            isUActive = false;
+                            //$j('[id$="userPassword"]').removeClass("requiredField");
+                        }
+                    });
+                    //WCH 27/03/2019 C-003137 - Issue With Button Creation of User
+                    $j("[id$=sendEmail]").click(function() {
+                        if($j(this).is(":checked") && {!!prefikarContactHasUser}) {
+                            $j(".userGeneratedPwd").show();
+                            $j(".userGeneratedPwd").css('display','inline');
+                        } else {
+                            $j(".userGeneratedPwd").hide();
+                        }
+                    });
+
+                    function validateForm()
+                    {
+                        //console.log('validateForm');
+
+                        $j('#spinner').show();
+                        //console.log('{!newUserPassword}');
+                        // Ensuring that there is no error appearing when triggering the function validateForm
+                        hideError();
+                        $j('.customErrorMsg').text('');
+                        $j('[id$="toastErrorMessage"]').text('');
+
+                        //  boolean to know if the form is valid or not 
+                        var isValid = true;
+                       // console.log('isValid : '+isValid);
+                        if({!prefikarContactHasUser}){
+                            //loop in the required field to add/remove error
+                            $j('.requiredForPrefikar').each(function(index, el)
+                            {
+                                if(!$j(el).val())
+                                {
+                                    isValid = false;
+                                    addError(el);
+                                }
+                                else
+                                {
+                                    clearError(el);
+                                }
+                            });
+                        }else{
+                            //loop in the required field to add/remove error
+                            $j('.requiredField').each(function(index, el)
+                            {
+                                if(!$j(el).val())
+                                {
+                                    isValid = false;
+                                    addError(el);
+                                }
+                                else
+                                {
+                                    clearError(el);
+                                }
+                            });
+                        }
+                       // console.log('isValid : '+isValid);
+                        
+                        // If there are any requiredField empty stops validation
+                        if(!isValid)
+                        {
+                            $j('.customErrorMsg').text('{!JSENCODE($Label.FillEmptyFields)}');
+                            showError(true, true);
+
+                            $j('#spinner').hide();
+                            return;
+                        }
+
+                        
+                        /*if($j('[id$="externalReference"]').val().startsWith('FR') && $j('[id$="systemCalling"]').val()=='FR_DIVA'){
+                            $j('[id$="externalReference"]').val(trimFR($j('[id$="externalReference"]').val()));
+                        }*/
+
+                        if(isValid){
+                            if({!prefikarContactHasUser}){
+                                VFC24_CreateNewCommunityUser.updateUserRelated('{!JSENCODE(accJSON)}','{!newRelatedUser.Id}',$j("[id$=sendEmail]").is(":checked"),insertAccRefUpdateAccContact);
+                            }else{
+                                //createUser();
+                                VFC24_CreateNewCommunityUser.createNewUserRelated('{!JSENCODE(accJSON)}', '{!JSENCODE(conJSON)}',$j('[id$="username"]').val(),$j('[id$="email"]').val(),$j('[id$="firstName"]').val(),$j('[id$="lastName"]').val(),isUActive,'{!newUserPassword}',$j("[id$=userLanguage] option:selected").val(),$j("[id$=sendEmail]").is(":checked"),{!contactIsPrefikar},insertAccRefUpdateAccContact);
+                            }
+                        }
+                    }
+
+                    function trimFR(text){
+                        return text.replace('FR','');
+                    }
+
+                    function insertAccRefUpdateAccContact(result,event){
+                        console.log(event.status);
+                        console.log('result>>',result);
+                        if(event.status){
+                            VFC24_CreateNewCommunityUser.createAccRefUpdateAcc($j('[id$="systemCalling"]').val(),$j('[id$="externalReference"]').val(),'{!currentAccount.Id}',isUActive,$j("[id$=displayPrivacyNotice]").is(":checked"),result,displaySuccessError);
+                        }
+                        else{
+                           console.log('WCH>>'+event.message);
+                            $j('.customErrorMsg').html(event.message);
+                            showError(true, false);
+                            $j('#spinner').hide();
+                        }
+                    }
+
+                    function displaySuccessError(result,event){
+                        //console.log(event.status);
+                        if(event.status){
+                            window.open('/'+result,"_self");
+                        }
+                        else{
+                           // console.log(event.message);
+                            $j('.customErrorMsg').html(event.message);
+                            showError(true, false);
+                        }
+                        $j('#spinner').hide();
+                    }
+
+                    function addError(el)
+                    {
+                        $j(el).parent().addClass("slds-has-error");
+                    }
+
+                    function clearError(el)
+                    {
+                        $j(el).parent().removeClass("slds-has-error");
+
+                        hideError();
+                    }
+
+                    showError({!hasErrors}, {!isToastError});
+                    checkPageMessage({!hasErrors});
+
+                    function showError(hasErrors, isToastMessage) {
+                        if (hasErrors) {
+                            $j('.errorMsg').hide();
+                            if (!isToastMessage) {
+                                $j("#errorModal").addClass("slds-fade-in-open");
+                                $j("#errorModalBackdrop").addClass("slds-backdrop_open");
+                            } else {
+                                $j("#toastMessage").show();
+                            }
+                        }
+                    }
+
+                    function hideError() {
+                        $j("#errorModal").removeClass("slds-fade-in-open");
+                        $j("#errorModalBackdrop").removeClass("slds-backdrop_open");
+
+                        $j("#toastMessage").hide();
+                    }
+
+                    function checkPageMessage(hasErrors) {
+                        if (!hasErrors) {
+                            if ($j('[id$="toastErrorMessage"]').html() !== "") {
+                                showError(true, true);
+                            }
+                        }
+                    }
+                    function renderCloseSVG() {
+                        if ($j(".slds-notify__close").length > 0) {
+                            var version = detectIE();
+
+                            if (version === false || version > 11) {
+                                var svgTag = $j("<svg/>", {
+                                    "aria-hidden": "true",
+                                    "class": "slds-button__icon slds-button__icon_large"
+                                });
+
+                                var useTag = $j("<use/>", {
+                                    "xlink:href": window.params.closeSVGUrl
+                                });
+
+                                $j(".slds-notify__close").html(svgTag.append(useTag));
+                            } else {
+                                var imgTag = $j("<img/>", {
+                                    "src": window.params.closePNGUrl,
+                                    "class": "slds-button__icon slds-button__icon_large",
+                                    "width": "24",
+                                    "height": "24"
+                                });
+
+                                $j(".slds-notify__close").html(imgTag);
+                            }
+
+                            $j(".slds-notify__close").html($j(".slds-notify__close").html());
+                        }
+                    }
+
+                    function detectIE() {
+                        var ua = window.navigator.userAgent;
+
+                        // Test values; Uncomment to check result …
+
+                        // IE 10
+                        // ua = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)';
+
+                        // IE 11
+                        // ua = 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko';
+
+                        // Edge 12 (Spartan)
+                        // ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0';
+
+                        // Edge 13
+                        // ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586';
+
+                        var msie = ua.indexOf('MSIE ');
+                        if (msie > 0) {
+                            // IE 10 or older => return version number
+                            return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+                        }
+
+                        var trident = ua.indexOf('Trident/');
+                        if (trident > 0) {
+                            // IE 11 => return version number
+                            var rv = ua.indexOf('rv:');
+                            return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+                        }
+
+                        var edge = ua.indexOf('Edge/');
+                        if (edge > 0) {
+                            // Edge (IE 12+) => return version number
+                            return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+                        }
+
+                        // other browser
+                        return false;
+                    }
+                </script>
+            </apex:form>
+        </body>
+    </html>
+</apex:page>

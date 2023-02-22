@@ -1,0 +1,19 @@
+<apex:page standardController="user" extensions="VFC28LoginHistory"  >
+
+    <apex:pageBlock title="Login History">
+    
+        <apex:pageBlockTable var="loginItem" value="{!historyList}">
+        
+            <apex:column headerValue="{!loginTime}" value="{!loginItem.LoginTime}"/>
+            <apex:column headerValue="{!sourceIp}" value="{!loginItem.SourceIp}"/>
+            <apex:column headerValue="{!loginType}" value="{!loginItem.LoginType}"/>
+            <apex:column headerValue="{!status}" value="{!loginItem.Status}"/>
+            <apex:column headerValue="{!application}" value="{!loginItem.Application}"/>
+            <apex:column headerValue="{!loginurl}" value="{!loginItem.LoginUrl}"/>        
+        </apex:pageBlockTable>
+     
+    </apex:pageBlock>
+  
+  
+
+</apex:page>

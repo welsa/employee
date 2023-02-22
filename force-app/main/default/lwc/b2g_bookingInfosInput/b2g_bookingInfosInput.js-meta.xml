@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+
+            
+            <!--Input-->
+
+            <property 
+                name="isDebug" 
+                type="Boolean" 
+                label="isDebug?" 
+                default="false"
+                role="inputOnly"
+            />
+
+
+            <property 
+                name="firstNameLabel" 
+                type="String" 
+                label="firstNameLabel" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="lastNameLabel" 
+                type="String" 
+                label="lastNameLabel" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="emailLabel" 
+                type="String" 
+                label="emailLabel" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="phoneLabel" 
+                type="String" 
+                label="phoneLabel" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="additionalInfoLabel" 
+                type="String" 
+                label="additionalInfoLabel" 
+                role="inputOnly"
+            />
+            
+            <!-- Output -->
+            <property 
+                name="firstNameValue" 
+                type="String" 
+                label="firstNameValue" 
+            />
+
+            <property 
+                name="lastNameValue" 
+                type="String" 
+                label="lastNameValue" 
+            />
+
+            <property 
+                name="emailValue" 
+                type="String" 
+                label="emailValue" 
+            />
+
+            <property 
+                name="phoneValue" 
+                type="String" 
+                label="phoneValue" 
+            />
+
+            <property 
+                name="additionalInfoValue" 
+                type="String" 
+                label="additionalInfoValue" 
+            />
+        </targetConfig>
+    </targetConfigs>
+
+
+</LightningComponentBundle>

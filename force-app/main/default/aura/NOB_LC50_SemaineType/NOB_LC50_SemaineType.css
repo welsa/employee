@@ -1,0 +1,38 @@
+.THIS {
+}
+
+.THIS td{
+    text-align:center;
+}
+
+.THIS .cell div{
+    float:left;
+    padding:0.2rem;
+    margin:0 4%;
+    width:41%;
+    z-index:10;
+    position:relative;
+    top:13px;
+}
+
+.THIS .abss{
+    width:20px;
+    height:20px;
+    border-radius:3px;
+    background:#CFEBFE;
+}
+
+.THIS .abss_absence{
+    width:20px;
+    height:20px;
+    border-radius:3px;
+    background:#8bcf6a;
+}
+
+.THIS .legend{
+    margin-top:1rem;
+}
+
+.THIS .ll span{
+    float:left;
+}

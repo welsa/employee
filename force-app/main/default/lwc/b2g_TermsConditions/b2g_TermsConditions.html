@@ -1,0 +1,34 @@
+<template>
+    <div class="slds-var-p-around_medium lgc-bg">
+        
+    <!-- Accepted terms checkbox -->
+    <lightning-layout multiple-rows > 
+
+        <!-- checkbox -->
+        <lightning-layout-item size={getLayoutSize}  flexibility="grow" small-device-size={getLayoutSize} medium-device-size={getLayoutSize}>
+            <div class="">
+                <lightning-input 
+                    class="terms" 
+                    type="checkbox" 
+                    label={termsConditionsMsg} 
+                    name="TermsConditionCheckbox" 
+                    message-when-value-missing="‎"
+                    checked={areTermsAccepted}
+                    onchange={handleTermsSelection}>
+                </lightning-input>
+            </div>
+        </lightning-layout-item>
+
+        <!-- additional terms message -->
+        <lightning-layout-item size={getLayoutSize}  flexibility="grow" small-device-size={getLayoutSize} medium-device-size={getLayoutSize}>
+            <div class="slds-text-color_weak terms-font slds-float_left">
+                <lightning-formatted-rich-text value={additionalTermsConditionsMsg}>
+                </lightning-formatted-rich-text>
+            </div>
+        </lightning-layout-item>
+
+    </lightning-layout>
+
+
+    </div>
+</template>

@@ -1,0 +1,855 @@
+<apex:page controller="VFC14_PrintPartListForBodyshop" showHeader="false" applyBodyTag="false" applyHtmlTag="false" renderAs="{!renderAs}" cache="true" language="{!language}">
+    <html>
+
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <style>
+            @page {
+                size: A4;
+                /*margin: 75px;*/
+                margin-bottom: 100px;
+                @bottom-right {
+                    content: "{!$Label.Page} : " counter(page) " / " counter(pages);
+                    font-size: 9px !important;
+                    font-weight: 200 !important;
+                    /*color: #8181bb;*/
+                    margin-top: 0px;
+                }
+            }
+
+            .font-size-10 {
+                font-size: 10px;
+            }
+
+            .font-size-12 {
+                font-size: 12px;
+            }
+
+            .font-size-14 {
+                font-size: 14px;
+            }
+
+            .font-size-11 {
+                font-size: 11px;
+            }
+
+            .font-size-18 {
+                font-size: 18px;
+            }
+
+            .margin-top-medium {
+                margin-top: 16px;
+            }
+
+            .margin-bottom-medium {
+                margin-bottom: 16px;
+            }
+
+            .margin-top-large {
+                margin-top: 24px;
+            }
+
+            html {
+                line-height: 1.25;
+            }
+
+            .text-bold {
+                font-weight: bold;
+            }
+
+            .text-underline {
+                text-decoration: underline;
+            }
+
+            .table-bordered {
+                border: 1px solid #bfbfbf;
+            }
+
+            .table-bordered td,
+            .table-bordered th {
+                border-top: 1px solid #bfbfbf;
+                border-bottom: 1px solid #bfbfbf;
+                padding: 2px;
+            }
+
+            .table-bordered th {
+                border: 1px solid #bfbfbf;
+                background: #f1f4ff !important;
+                white-space: normal;
+                word-break: break-all;
+                font-weight: normal;
+            }
+
+            td {
+                vertical-align: top;
+            }
+
+            .table-bordered tfoot td {
+                border: 1px solid #bfbfbf;
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+
+            .table-bordered tfoot td.noBorderWidth {
+                border-left: 0px;
+                border-bottom: 0px;
+            }
+
+            .cell-header {
+                background: #f1f4ff !important;
+            }
+
+            .border-left {
+                border-left: 1px solid #bfbfbf;
+            }
+
+            .border-right {
+                border-right: 1px solid #bfbfbf;
+            }
+
+            .width-50 {
+                width: 50px;
+            }
+
+            .width-40 {
+                width: 40px;
+            }
+
+            .width-110 {
+                width: 110px;
+            }
+
+            .noWrap {
+                white-space: nowrap;
+            }
+
+            hr {
+                margin: 0px;
+                border-top: 1px dashed black;
+            }
+
+            .text-caps {
+                text-transform: uppercase;
+            }
+
+            .text-red
+            {
+                color: red !important;
+            }
+
+            .margin-top-small {
+                margin-top: 12px;
+            }
+
+        </style>
+    </head>
+
+    <body>
+       
+     <div style="{!IF((canSeeSo), 'display:block', 'display:none')}" >    <!--KPA 09/11/2020 C-004026 -->
+        <table>
+            <tr>
+                <td class="slds-size_1-of-2 slds-text-align_left">
+                    <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}" width="200" alt="Alpha Scale Logo" />
+                </td>
+                <td class="slds-size_1-of-2 slds-text-align_right font-size-10">
+                    <apex:outputText rendered="{!!isDeliveryNote}">
+                        <p class="text-bold font-size-18 text-caps">{!$Label.Delivery_note}</p>
+                    </apex:outputText>
+                    <apex:outputText rendered="{!isDeliveryNote && !isCDC}"><!-- WCH 23/12/2019 C-003531 -->
+                        <p class="text-bold font-size-18 text-caps">{!$Label.OrderDeliveryNote}</p>
+                    </apex:outputText>
+                    <!-- WCH 23/12/2019 C-003531 -->
+                    <apex:outputText rendered="{!isCDC}">
+                        <p class="text-bold font-size-18 text-caps">{!$Label.ConfirmationDeCommande}</p>
+                    </apex:outputText>
+                    <p>{!$Label.DocumentsDate} : {!currentDate}</p>
+                    <p>{!$Label.Currency} : {!currentSalesOrderWrapper.currencyIsoCode}</p>
+
+                    <!--<apex:outputText rendered="{!isDeliveryNote}">-->
+                    <p class="margin-top-medium text-bold font-size-14 text-caps text-red">{!$Label.BodyshopOrderNumber}</p>
+                    <p class="font-size-14 text-bold text-caps text-red">{!currentSalesOrderWrapper.bodyshopOrderNumber}</p>
+                    <!--</apex:outputText>-->
+                </td>
+            </tr>
+        </table>
+
+        <table class="margin-top-medium">
+            <tr>
+                <!--<apex:outputText rendered="{!!isDeliveryNote}">
+                    <td class="slds-size_1-of-2 slds-text-align_left font-size-12">
+                        <p class="text-bold">Alpha Scale France SAS</p>
+                        <p>21 avenue Matignon</p>
+                        <p>75008 Paris</p>
+                        <p>FRANCE (FR)</p>
+                        <p>TVA Intra : FR40812650166</p>
+                        <p>SAS au capital de 10 000€</p>
+                        <p>N° R.C.S. : Paris 812650166</p>
+                    </td>
+                </apex:outputText>-->
+                <!--<apex:outputText rendered="{!isDeliveryNote}">-->
+                    <td class="slds-size_1-of-2 slds-text-align_left font-size-12">
+                        <apex:outputText value="{!$Label.CountryDescriptionOnDeliveryNote}" escape="false"/>
+                    </td>
+                <!--</apex:outputText>-->
+
+                <td class="slds-size_1-of-2 slds-text-align_right font-size-12">
+                    <p class="text-bold">{!$ObjectType.Account.fields.ShippingAddress.label}</p>
+                    <apex:outputText value="{!currentSalesOrderWrapper.billingAddress}" escape="false" />
+                    <p>{!$ObjectType.Account.fields.VATNumber__c.label} : {!currentSalesOrderWrapper.vatNumber}</p>
+                </td>
+            </tr>
+        </table>
+
+        <div class="margin-top-large font-size-10">
+            <p class="text-bold">{!$Label.References} :</p>
+            <apex:outputText rendered="{!!isDeliveryNote}">
+                <p>{!$Label.DeliveryDate} : {!currentSalesOrderWrapper.deliveryDate}</p>
+            </apex:outputText>
+            <p>{!$Label.Order_number} : {!currentSalesOrderWrapper.name}</p>
+            <!--<p>{!$Label.InternalID} : {!currentSalesOrderWrapper.id}</p>
+            <p>{!$ObjectType.Assessment__c.fields.AssessmentNumber__c.label} : {!currentSalesOrderWrapper.assessmentNumber}</p>-->
+            <p>{!$ObjectType.Assessment__c.fields.ASReference__c.label} : {!currentSalesOrderWrapper.asReference}</p>
+            <p>{!$ObjectType.PrerequisiteOrder__c.fields.Manufacturer__c.label} : {!currentSalesOrderWrapper.manufacturer}</p>
+            <p>{!$ObjectType.PrerequisiteOrder__c.fields.Model__c.label} : {!currentSalesOrderWrapper.model}</p>
+            <p>{!$ObjectType.PrerequisiteOrder__c.fields.PlateNumber__c.label} : {!currentSalesOrderWrapper.plateNumber}</p>
+            <p>
+                <!--DUN 16/03/2018 Added MissionNumber for BE-->
+                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c != 'BE'}">
+                    {!$ObjectType.Assessment__c.fields.ClaimReference__c.label} : {!currentSalesOrderWrapper.claimReference}
+                </apex:outputText>
+                <apex:outputText rendered="{!currentSalesOrder.TECH_BodyshopCountryCode__c == 'BE'}">
+                    {!$ObjectType.Assessment__c.fields.MissionNumber__c.label} : {!currentSalesOrder.Assessment__r.MissionNumber__c}
+                </apex:outputText>
+            </p>
+        </div>
+
+
+
+        <apex:variable var="numberOfWrapperInSelectedByBodyShop" value="{!0}" />
+        <apex:variable var="numberOfWrapperInSelectedByBodyShopAgency" value="{!0}" /><!-- WCH 09/01/2020 C-003531 -->
+        <apex:variable var="numberOfWrapperInSelectedByBodyShopNonAgency" value="{!0}" /><!-- WCH 09/01/2020 C-003531 -->
+        <apex:variable var="numberOfWrapperInNotSelectedByBodyShop" value="{!0}" />
+        <apex:variable var="numberOfWrapperInCanceledByDistributor" value="{!0}" />
+        <apex:variable var="numberOfWrapperInNotSelectedByDistributor" value="{!0}" />
+        <apex:variable var="numberOfWrapperInCanceledOrReturned" value="{!0}" />
+        <apex:variable var="numberOfInvoicesCharged" value="{!0}" />
+        <apex:variable var="numberOfInvoicesCredited" value="{!0}" />
+
+        <apex:repeat var="parentOfferId" value="{!mapOfferWrapper}">
+            <apex:variable var="numberOfWrapperInSelectedByBodyShop" value="{!IF(mapOfferWrapper[parentOfferId].isSelectedByBodyShop, numberOfWrapperInSelectedByBodyShop + 1, numberOfWrapperInSelectedByBodyShop)}" />
+
+            <!-- WCH 09/01/2020 C-003531 -->
+            <apex:variable var="numberOfWrapperInSelectedByBodyShopAgency" value="{!IF(AND(mapOfferWrapper[parentOfferId].isSelectedByBodyShop,mapOfferWrapper[parentOfferId].isAgencyMode), numberOfWrapperInSelectedByBodyShopAgency + 1, numberOfWrapperInSelectedByBodyShopAgency)}" />
+
+            <apex:variable var="numberOfWrapperInSelectedByBodyShopNonAgency" value="{!IF(AND(currentSalesOrderWrapper.TECH_BodyshopCountryCode=='FR',mapOfferWrapper[parentOfferId].isSelectedByBodyShop,NOT(mapOfferWrapper[parentOfferId].isAgencyMode)),numberOfWrapperInSelectedByBodyShopNonAgency + 1, numberOfWrapperInSelectedByBodyShopNonAgency)}" />
+
+            <apex:variable var="numberOfWrapperInNotSelectedByBodyShop" value="{!IF(mapOfferWrapper[parentOfferId].isNotSelectedByBodyShop, numberOfWrapperInNotSelectedByBodyShop + 1, numberOfWrapperInNotSelectedByBodyShop)}" />
+
+            <apex:variable var="numberOfWrapperInCanceledByDistributor" value="{!IF(mapOfferWrapper[parentOfferId].isCanceledByDistributor, numberOfWrapperInCanceledByDistributor + 1, numberOfWrapperInCanceledByDistributor)}" />
+
+            <apex:variable var="numberOfWrapperInNotSelectedByDistributor" value="{!IF(mapOfferWrapper[parentOfferId].isNotSelectedByDistributor, numberOfWrapperInNotSelectedByDistributor + 1, numberOfWrapperInNotSelectedByDistributor)}" />
+
+            <apex:variable var="numberOfWrapperInCanceledOrReturned" value="{!IF(mapOfferWrapper[parentOfferId].isCanceledOrReturned, numberOfWrapperInCanceledOrReturned + 1, numberOfWrapperInCanceledOrReturned)}" />
+
+            <apex:variable var="numberOfInvoicesCharged" value="{!IF(mapOfferWrapper[parentOfferId].hasInvoicesCharged, numberOfInvoicesCharged + 1, numberOfInvoicesCharged)}" />
+
+            <apex:variable var="numberOfInvoicesCredited" value="{!IF(mapOfferWrapper[parentOfferId].hasInvoicesCredited, numberOfInvoicesCredited + 1, numberOfInvoicesCredited)}" />
+        </apex:repeat>
+
+        <!-- WCH 23/12/2019 C-003531 -->
+        <div class="margin-top-medium margin-bottom-medium">
+            <apex:outputText rendered="{!isDeliveryNote  || currentSalesOrderWrapper.TECH_BodyshopCountryCode=='BE'}"><!-- WCH 22/02/2019 C-003176 -->
+                <p class="slds-text-align_center margin-top-small font-size-10 text-red">{!$Label.PricingConditions}</p>
+            </apex:outputText>
+        </div>
+
+        <!-- Supplied By AS -->
+        <apex:outputText rendered="{!IF(currentSalesOrderWrapper.TECH_BodyshopCountryCode=='FR',AND(numberOfWrapperInSelectedByBodyShop > 0,numberOfWrapperInSelectedByBodyShopNonAgency > 0),numberOfWrapperInSelectedByBodyShop > 0)}"><!-- WCH 09/01/2020 C-003531 modified cond for FR-->
+            <div class="margin-top-medium margin-bottom-medium">
+
+                <apex:outputText rendered="{! !(isCDC || isBDL_FR)}"><!-- WCH 23/12/2019 C-003531 -->
+                    <p class="text-bold font-size-11 text-caps">{!$Label.SuppliedBy}</p>
+                </apex:outputText>
+                
+                <!-- WCH 23/12/2019 C-003531 -->
+                <apex:outputText rendered="{! (isCDC || isBDL_FR)}">
+                    <p class="text-bold font-size-11 text-caps">{!$Label.ChargedByAlphascale}</p>
+                </apex:outputText>
+            </div>
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.PartNumber}</th>
+                        <th class="slds-text-align_center">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$ObjectType.Offer__c.fields.ExpectedDeliveryDate__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$Label.Qty}</th>
+                        <apex:outputText rendered="{!isNONAXA}">
+                            <th class="slds-text-align_center width-40">{!$Label.GrossUnitPriceNonAXA}</th>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!!isNONAXA}">
+                        <th class="slds-text-align_center width-40">{!$Label.GrossUnitPrice}</th>
+                        </apex:outputText>
+                        <th class="slds-text-align_center width-40">{!$Label.PretaxUnitPrice}</th>
+                        <th class="slds-text-align_center width-40">{!$ObjectType.Offer__c.fields.VAT__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$Label.TotalPriceNet}</th>                    
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    <apex:variable var="totalPrice" value="{!0}" />
+                    <apex:variable var="totalVat" value="{!0}" />
+                    <apex:repeat value="{!mapOfferWrapper}" var="parentOfferId">
+                        <apex:outputText rendered="{!IF(currentSalesOrderWrapper.TECH_BodyshopCountryCode=='FR',AND(NOT(mapOfferWrapper[parentOfferId].isAgencyMode),mapOfferWrapper[parentOfferId].isSelectedByBodyShop),(mapOfferWrapper[parentOfferId].isSelectedByBodyShop))}"><!-- WCH 23/12/2019 C-003531 modify cond for FR only, display only non agency offers-->
+                            <apex:outputText rendered="{!!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <tr>
+                                    <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                    <td class="slds-text-align_center">{!mapOfferWrapper[parentOfferId].partNumber}</td>
+                                    <td class="slds-text-align_left">
+                                        {!mapOfferWrapper[parentOfferId].description}
+                                        <!--<br/> {!$ObjectType.OrderLine__c.fields.Type__c.label} : {!mapOfferWrapper[parentOfferId].finalType}-->
+                                        <!--<br/> {!$Label.Distributor_Reference} : {!mapOfferWrapper[parentOfferId].id}-->
+                                        <!--<br/> {!$ObjectType.Offer__c.fields.DeliveryStatus__c.label} : {!IF(mapOfferWrapper[parentOfferId].deliveryStatus == 'INPROCESS',$Label.InProcess_Status,IF(mapOfferWrapper[parentOfferId].deliveryStatus == 'INDELIVERY',$Label.Indelivery_Status,IF(mapOfferWrapper[parentOfferId].deliveryStatus == 'DELIVERED',$Label.Delivered_Status,IF(mapOfferWrapper[parentOfferId].deliveryStatus == 'RETURNED',$Label.Returned_Status,IF(mapOfferWrapper[parentOfferId].deliveryStatus == 'CANCELED',$Label.Canceled_Status,IF(mapOfferWrapper[parentOfferId].deliveryStatus == 'ERROR',$Label.Error_Status,IF(mapOfferWrapper[parentOfferId].deliveryStatus == 'DELAYED',$Label.Delayed_Status,'')))))))}-->
+                                        <br/>
+                                        <!-- WCH 02/10/2018 - C-002714 : Delivery Note on Agency Mode-->
+                                        <hr/> {!$Label.DiscountRebate} : {!IF(mapOfferWrapper[parentOfferId].discount > 0,IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,TEXT(mapOfferWrapper[parentOfferId].discount)+' %'), $Label.N_A)} 
+                                        <hr/> {!$Label.DistributorName} : {!IF(mapOfferWrapper[parentOfferId].distributorName != null , mapOfferWrapper[parentOfferId].distributorName, '')}
+                                    </td>
+                                    <td class="slds-text-align_center">
+                                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                            <apex:param value="{!mapOfferWrapper[parentOfferId].expectedDeliveryDate}" />
+                                        </apex:outputText>
+                                    </td>
+                                    <td class="slds-text-align_center noWrap">{!mapOfferWrapper[parentOfferId].quantity}</td>
+                                    <td class="slds-text-align_center noWrap">{!IF(mapOfferWrapper[parentOfferId].cataloguePrice > 0, IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,mapOfferWrapper[parentOfferId].cataloguePrice), $Label.N_A)}</td>
+                                    <td class="slds-text-align_center noWrap">{!IF(mapOfferWrapper[parentOfferId].price > 0, IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,mapOfferWrapper[parentOfferId].price), $Label.N_A)}</td>
+                                    <td class="slds-text-align_center noWrap">{!IF(vat > 0, IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,vat), $Label.N_A)}</td>
+                                    <td class="slds-text-align_center noWrap border-right">{!IF(mapOfferWrapper[parentOfferId].bsTotalPrice > 0, IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,mapOfferWrapper[parentOfferId].bsTotalPrice), $Label.N_A)}</td>
+                                </tr>
+                                <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                                <apex:variable var="totalPrice" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalPrice + mapOfferWrapper[parentOfferId].bsTotalPrice,totalPrice)}" />
+                                <apex:variable var="totalVat" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalVat + ((vat / 100) * mapOfferWrapper[parentOfferId].bsTotalPrice),totalVat)}" />
+                            </apex:outputText>
+                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <apex:repeat value="{!mapOfferWrapper[parentOfferId].childOfferList}" var="bundleItemOffer">
+                                    <tr>
+                                        <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                        <td class="slds-text-align_center">{!bundleItemOffer.partNumber}</td>
+                                        <td class="slds-text-align_left">
+                                            {!bundleItemOffer.description}
+                                            <!--<br/> {!$ObjectType.OrderLine__c.fields.Type__c.label} : {!bundleItemOffer.finalType}-->
+                                            <!--<br/> {!$Label.Distributor_Reference} : {!bundleItemOffer.id}-->
+                                            <!--<br/> {!$ObjectType.Offer__c.fields.DeliveryStatus__c.label} : {!IF(bundleItemOffer.deliveryStatus == 'INPROCESS',$Label.InProcess_Status,IF(bundleItemOffer.deliveryStatus == 'INDELIVERY',$Label.Indelivery_Status,IF(bundleItemOffer.deliveryStatus == 'DELIVERED',$Label.Delivered_Status,IF(bundleItemOffer.deliveryStatus == 'RETURNED',$Label.Returned_Status,IF(bundleItemOffer.deliveryStatus == 'CANCELED',$Label.Canceled_Status,IF(bundleItemOffer.deliveryStatus == 'ERROR',$Label.Error_Status,IF(bundleItemOffer.deliveryStatus == 'DELAYED',$Label.Delayed_Status,'')))))))}-->
+                                            <br/>
+                                            <hr/> {!$Label.DiscountRebate} : {!IF(bundleItemOffer.discount  > 0, IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,bundleItemOffer.discount), $Label.N_A)} <!-- {!IF(bundleItemOffer.discount  > 0,' %','')} -->
+                                        </td>
+                                        <td class="slds-text-align_center">
+                                            <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                                <apex:param value="{!bundleItemOffer.expectedDeliveryDate}" />
+                                            </apex:outputText>
+                                        </td>
+                                        <td class="slds-text-align_center noWrap">{!bundleItemOffer.quantity}</td>
+                                        <td class="slds-text-align_center noWrap">{!IF(bundleItemOffer.cataloguePrice > 0, IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,bundleItemOffer.cataloguePrice), $Label.N_A)}</td>
+                                        <td class="slds-text-align_center noWrap">{!IF(bundleItemOffer.price > 0, IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,bundleItemOffer.price), $Label.N_A)}</td>
+                                        <td class="slds-text-align_center noWrap">{!IF(vat > 0, vat, $Label.N_A)}</td>
+                                        <td class="slds-text-align_center noWrap border-right">{!IF(bundleItemOffer.bsTotalPrice > 0, IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,bundleItemOffer.bsTotalPrice), $Label.N_A)}</td>
+                                    </tr>
+                                    <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                                    <apex:variable var="totalPrice" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),(totalPrice + bundleItemOffer.bsTotalPrice),totalPrice)}" />
+                                    <apex:variable var="totalVat" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalVat + ((vat / 100) * bundleItemOffer.bsTotalPrice),totalVat)}" />
+                                </apex:repeat>
+                            </apex:outputText>
+
+                        </apex:outputText>
+                    </apex:repeat>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td rowspan="3" colspan="4" class="noBorderWidth"></td>
+                        <td colspan="3" class="slds-text-align_right cell-header">{!$Label.TotalPriceNet}</td>
+                        <td colspan="2" class="slds-text-align_right noWrap">{!IF(totalPrice > 0, totalPrice, $Label.N_A)}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="slds-text-align_right cell-header">{!$Label.TotalVAT}</td>
+                        <td colspan="2" class="slds-text-align_right noWrap">{!IF(totalVat > 0, ROUND(totalVat, 2), $Label.N_A)}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="slds-text-align_right cell-header text-bold">{!$Label.GrossAmount}</td>
+                        <td colspan="2" class="slds-text-align_right text-bold noWrap">{!IF(totalPrice + totalVat > 0, currentSalesOrderWrapper.currencyIsoCode, '')} {!IF(totalPrice + totalVat > 0, ROUND(totalPrice + totalVat, 2), $Label.N_A)}</td>
+                    </tr>
+                    <!--<tr>
+                        <td colspan="3" class="slds-text-align_right cell-header text-bold">Net A Payer (T.T.C)</td>
+                        <td colspan="2" class="slds-text-align_right text-bold noWrap">{!currentSalesOrderWrapper.currencyIsoCode} {!ROUND(totalPrice + totalVat, 2)}</td>
+                    </tr>-->
+                </tfoot>
+            </table>
+        </apex:outputText>
+
+        <!-- Supplied By Distributor section visible only for FR WCH 09/01/2020  C-003531-->
+        <apex:outputText rendered="{! AND(numberOfWrapperInSelectedByBodyShopAgency > 0,currentSalesOrderWrapper.TECH_BodyshopCountryCode=='FR') }">
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">{!$Label.ChargedByDistributor}</p>
+            </div>
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.PartNumber}</th>
+                        <th class="slds-text-align_center">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$ObjectType.Offer__c.fields.ExpectedDeliveryDate__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$Label.Qty}</th>
+                        <apex:outputText rendered="{!isNONAXA}">
+                            <th class="slds-text-align_center width-40">{!$Label.GrossUnitPriceNonAXA}</th>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!!isNONAXA}">
+                        <th class="slds-text-align_center width-40">{!$Label.GrossUnitPrice}</th>
+                        </apex:outputText>
+                        <th class="slds-text-align_center width-40">{!$Label.PretaxUnitPrice}</th>
+                        <th class="slds-text-align_center width-40">{!$ObjectType.Offer__c.fields.VAT__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$Label.TotalPriceNet}</th>                    
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    <apex:variable var="totalPrice" value="{!0}" />
+                    <apex:variable var="totalVat" value="{!0}" />
+                    <apex:repeat value="{!mapOfferWrapper}" var="parentOfferId">
+                        <apex:outputText rendered="{!AND(mapOfferWrapper[parentOfferId].isSelectedByBodyShop,mapOfferWrapper[parentOfferId].isAgencyMode)}">
+                            <apex:outputText rendered="{!!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <tr>
+                                    <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                    <td class="slds-text-align_center">{!mapOfferWrapper[parentOfferId].partNumber}</td>
+                                    <td class="slds-text-align_left">
+                                        {!mapOfferWrapper[parentOfferId].description}
+                                        <br/>
+                                        <hr/> {!$Label.DiscountRebate} : {! $Label.N_A} 
+                                        <hr/> {!$Label.DistributorName} : {!IF(mapOfferWrapper[parentOfferId].distributorName != null , mapOfferWrapper[parentOfferId].distributorName, '')}
+                                    </td>
+                                    <td class="slds-text-align_center">
+                                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                            <apex:param value="{!mapOfferWrapper[parentOfferId].expectedDeliveryDate}" />
+                                        </apex:outputText>
+                                    </td>
+                                    <td class="slds-text-align_center noWrap">{!mapOfferWrapper[parentOfferId].quantity}</td>
+                                    <td class="slds-text-align_center noWrap">{! $Label.N_A}</td>
+                                    <td class="slds-text-align_center noWrap">{! $Label.N_A}</td>
+                                    <td class="slds-text-align_center noWrap">{! $Label.N_A}</td>
+                                    <td class="slds-text-align_center noWrap border-right">{! $Label.N_A}</td>
+                                </tr>
+                                <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                            </apex:outputText>
+                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <apex:repeat value="{!mapOfferWrapper[parentOfferId].childOfferList}" var="bundleItemOffer">
+                                    <tr>
+                                        <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                        <td class="slds-text-align_center">{!bundleItemOffer.partNumber}</td>
+                                        <td class="slds-text-align_left">
+                                            {!bundleItemOffer.description}
+                                            <br/>
+                                            <hr/> {!$Label.DiscountRebate} : {! $Label.N_A}
+                                        </td>
+                                        <td class="slds-text-align_center">
+                                            <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                                <apex:param value="{!bundleItemOffer.expectedDeliveryDate}" />
+                                            </apex:outputText>
+                                        </td>
+                                        <td class="slds-text-align_center noWrap">{!bundleItemOffer.quantity}</td>
+                                        <td class="slds-text-align_center noWrap">{! $Label.N_A}</td>
+                                        <td class="slds-text-align_center noWrap">{! $Label.N_A}</td>
+                                        <td class="slds-text-align_center noWrap">{{! $Label.N_A}</td>
+                                        <td class="slds-text-align_center noWrap border-right">{! $Label.N_A}</td>
+                                    </tr>
+                                    <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                                </apex:repeat>
+                            </apex:outputText>
+                        </apex:outputText>
+                    </apex:repeat>
+                </tbody>
+                <!-- <tfoot>
+                    <apex:outputText rendered="true">
+                        <tr>
+                            <td rowspan="3" colspan="4" class="noBorderWidth absoluteNoBorder"></td>
+                            <td rowspan="3" colspan="5" class="noBorderWidth absoluteNoBorder note"><br/>{!$Label.PricedByDistributor}</td>
+                        </tr>
+                    </apex:outputText>
+                </tfoot> -->
+            </table>
+        </apex:outputText>
+
+
+
+        <!-- Not Selected -->
+
+        <apex:outputText rendered="{!numberOfWrapperInNotSelectedByBodyShop > 0 && !isNONAXA}">
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">{!$Label.NotSelected}</p>
+            </div>
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.PartNumber}</th>
+                        <th class="slds-text-align_center">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$Label.Qty}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    <apex:repeat value="{!setParentOfferIds}" var="parentOfferId"><!--WCH 19/12/2018 C-002958 - MultiSourcing Belgium - Large choice of distributors for Bodyshops -->
+                        <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isNotSelectedByBodyShop}">
+                            <apex:outputText rendered="{!!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <tr>
+                                    <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                    <td class="slds-text-align_center">{!mapOfferWrapper[parentOfferId].partNumber}</td>
+                                    <td class="slds-text-align_left">
+                                        {!mapOfferWrapper[parentOfferId].description}
+                                        <!--<br/> {!$ObjectType.OrderLine__c.fields.Type__c.label} : {!mapOfferWrapper[parentOfferId].finalType}-->
+                                        <!--<br/> {!$Label.Distributor_Reference} : {!mapOfferWrapper[parentOfferId].id}-->
+                                    </td>
+                                    <td class="slds-text-align_center noWrap border-right">{!mapOfferWrapper[parentOfferId].quantity}</td>
+                                </tr>
+                                <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                            </apex:outputText>
+                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <apex:repeat value="{!mapOfferWrapper[parentOfferId].childOfferList}" var="bundleItemOffer">
+                                    <tr>
+                                        <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                        <td class="slds-text-align_center">{!bundleItemOffer.partNumber}</td>
+                                        <td class="slds-text-align_left">
+                                            {!bundleItemOffer.description}
+                                            <!--<br/> {!$ObjectType.OrderLine__c.fields.Type__c.label} : {!bundleItemOffer.finalType}-->
+                                            <!--<br/> {!$Label.Distributor_Reference} : {!bundleItemOffer.id}-->
+                                        </td>
+                                        <td class="slds-text-align_center noWrap border-right">{!bundleItemOffer.quantity}</td>
+                                    </tr>
+                                    <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                                </apex:repeat>
+                            </apex:outputText>
+                        </apex:outputText>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </apex:outputText>
+
+        <!-- Canceled By Distributor -->
+
+        <apex:outputText rendered="{!numberOfWrapperInCanceledByDistributor > 0}">
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">{!$Label.CanceledByDistributor}</p>
+            </div>
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.PartNumber}</th>
+                        <th class="slds-text-align_center">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$Label.Qty}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    <apex:repeat value="{!mapOfferWrapper}" var="parentOfferId">
+                        <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isCanceledByDistributor}">
+                            <apex:outputText rendered="{!!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <tr>
+                                    <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                    <td class="slds-text-align_center">{!mapOfferWrapper[parentOfferId].partNumber}</td>
+                                    <td class="slds-text-align_left">
+                                        {!mapOfferWrapper[parentOfferId].description}
+                                        <!--<br/> {!$ObjectType.OrderLine__c.fields.Type__c.label} : {!mapOfferWrapper[parentOfferId].finalType}-->
+                                        <!--<br/> {!$Label.Distributor_Reference} : {!mapOfferWrapper[parentOfferId].id}-->
+                                    </td>
+                                    <td class="slds-text-align_center noWrap border-right">{!mapOfferWrapper[parentOfferId].quantity}</td>
+                                </tr>
+                                <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                            </apex:outputText>
+                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <apex:repeat value="{!mapOfferWrapper[parentOfferId].childOfferList}" var="bundleItemOffer">
+                                    <tr>
+                                        <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                        <td class="slds-text-align_center">{!bundleItemOffer.partNumber}</td>
+                                        <td class="slds-text-align_left">
+                                            {!bundleItemOffer.description}
+                                            <!--<br/> {!$ObjectType.OrderLine__c.fields.Type__c.label} : {!bundleItemOffer.finalType}-->
+                                            <!--<br/> {!$Label.Distributor_Reference} : {!bundleItemOffer.id}-->
+                                        </td>
+                                        <td class="slds-text-align_center noWrap border-right">{!bundleItemOffer.quantity}</td>
+                                    </tr>
+                                    <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                                </apex:repeat>
+                            </apex:outputText>
+                        </apex:outputText>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </apex:outputText>
+
+        <!-- Not Available -->
+
+        <apex:outputText rendered="{!numberOfWrapperInNotSelectedByDistributor > 0}">
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">{!$Label.NotSupplied}</p>
+            </div>
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.PartNumber}</th>
+                        <th class="slds-text-align_center">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                        <th class="slds-text-align_center width-40">{!$Label.Qty}</th>
+                        <th class="slds-text-align_center width-120">{!$ObjectType.OrderLine__c.fields.CancelReason__c.label}</th><!-- WCH 14/08/2019 C-003348 -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    <apex:repeat value="{!mapOfferWrapper}" var="parentOfferId">
+                        <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isNotSelectedByDistributor}">
+                            <apex:outputText rendered="{!!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <tr>
+                                    <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                    <td class="slds-text-align_center">{!mapOfferWrapper[parentOfferId].partNumber}</td>
+                                    <td class="slds-text-align_left">
+                                        {!mapOfferWrapper[parentOfferId].description}
+                                        <!--<br/> {!$ObjectType.OrderLine__c.fields.Type__c.label} : {!mapOfferWrapper[parentOfferId].finalType}-->
+                                        <!--<br/> {!$Label.Distributor_Reference} : {!mapOfferWrapper[parentOfferId].id}-->
+                                    </td>
+                                    <td class="slds-text-align_center noWrap">{!mapOfferWrapper[parentOfferId].quantity}</td>
+                                    <td class="slds-text-align_left border-right">{!mapOfferWrapper[parentOfferId].olCancelReason}</td><!-- WCH 14/08/2019 C-003348 -->
+                                </tr>
+                                <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                            </apex:outputText>
+                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <apex:repeat value="{!mapOfferWrapper[parentOfferId].childOfferList}" var="bundleItemOffer">
+                                    <tr>
+                                        <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                        <td class="slds-text-align_center">{!bundleItemOffer.partNumber}</td>
+                                        <td class="slds-text-align_left">
+                                            {!bundleItemOffer.description}
+                                            <!--<br/> {!$ObjectType.OrderLine__c.fields.Type__c.label} : {!bundleItemOffer.finalType}-->
+                                            <!--<br/> {!$Label.Distributor_Reference} : {!bundleItemOffer.id}-->
+                                        </td>
+                                        <td class="slds-text-align_center noWrap">{!bundleItemOffer.quantity}</td>
+                                        <td class="slds-text-align_left border-right">{!bundleItemOffer.olCancelReason}</td><!-- WCH 14/08/2019 C-003348 -->
+                                    </tr>
+                                    <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                                </apex:repeat>
+                            </apex:outputText>
+                        </apex:outputText>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </apex:outputText>
+
+        <!--vsu 06/03/18 -->
+        <!-- Canceled or returned -->
+        <apex:outputText rendered="{!IF(numberOfWrapperInCanceledOrReturned > 0 && printDeliveryNote,true,false)}">
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">{!$Label.CanceledOrReturned}</p>
+            </div>
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.PartNumber}</th>
+                        <th class="slds-text-align_center">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                        <th class="slds-text-align_center" width="85px">{!$Label.Qty}</th>
+                        <th class="slds-text-align_center width-40">{!$Label.Deliverystatus}</th>
+                        <th class="slds-text-align_center width-100">{!$Label.TotalPriceNet}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    <apex:variable var="totalPrice" value="{!0}" />
+                    <apex:variable var="totalVat" value="{!0}" />
+                    <apex:repeat value="{!mapOfferWrapper}" var="parentOfferId">
+                        <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isCanceledOrReturned}">
+                            <apex:outputText rendered="{!!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <tr>
+                                    <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                    <td class="slds-text-align_center">{!mapOfferWrapper[parentOfferId].partNumber}</td>
+                                    <td class="slds-text-align_left">{!mapOfferWrapper[parentOfferId].description}</td>
+                                    <td class="slds-text-align_center noWrap">{!mapOfferWrapper[parentOfferId].quantity}</td>
+                                    <td class="slds-text-align_center noWrap">{!mapOfferWrapper[parentOfferId].translatedDeliveryStatus}</td><!-- WCH 20/08/2019 C-002781 translated value of delivery status -->
+                                    <td class="slds-text-align_right noWrap border-right">{!IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,-(mapOfferWrapper[parentOfferId].bsTotalPrice))}</td>
+                                </tr>
+                                <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                                <apex:variable var="totalPrice" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalPrice + mapOfferWrapper[parentOfferId].bsTotalPrice,totalPrice)}" />
+                                <apex:variable var="totalVat" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalVat + ((vat / 100) * mapOfferWrapper[parentOfferId].bsTotalPrice),totalVat)}" />
+                            </apex:outputText>
+                            <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].isOfferAlternative}">
+                                <apex:repeat value="{!mapOfferWrapper[parentOfferId].childOfferList}" var="bundleItemOffer">
+                                    <tr>
+                                        <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                        <td class="slds-text-align_center">{!bundleItemOffer.partNumber}</td>
+                                        <td class="slds-text-align_left">
+                                            {!bundleItemOffer.description}
+                                            
+                                        </td>
+                                        <td class="slds-text-align_center noWrap">{!bundleItemOffer.quantity}</td>
+                                        <td class="slds-text-align_center noWrap">{!bundleItemOffer.deliveryStatus}</td>
+                                        <td class="slds-text-align_center noWrap">{!IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,-(bundleItemOffer.bsTotalPrice))}</td>
+                                    </tr>
+                                    <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                                    <apex:variable var="totalPrice" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalPrice + bundleItemOffer.bsTotalPrice,totalPrice)}" />
+                                    <apex:variable var="totalVat" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalVat + ((vat / 100) * bundleItemOffer.bsTotalPrice),totalVat)}" />
+                                </apex:repeat>
+                            </apex:outputText>
+                        </apex:outputText>
+                    </apex:repeat>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td rowspan="3" colspan="3" class="noBorderWidth"></td>
+                        <td colspan="2" class="slds-text-align_right cell-header">{!$Label.TotalPriceNet}</td>
+                        <td colspan="2" class="slds-text-align_right noWrap">{!IF(totalPrice > 0, -totalPrice, $Label.N_A)}</td>                       
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="slds-text-align_right cell-header text-bold">{!$Label.GrossAmount}</td>
+                        <td colspan="2" class="slds-text-align_right noWrap text-bold">{!IF(totalPrice + totalVat > 0, currentSalesOrderWrapper.currencyIsoCode, '')} {!IF(totalPrice + totalVat > 0, ROUND(-(totalPrice + totalVat), 2), $Label.N_A)}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </apex:outputText>
+        <!--vsu 13/03/18 -->
+        <!-- Invoice Adjustment -->
+        <apex:outputText rendered="{!IF(numberOfInvoicesCharged > 0 && printDeliveryNote,true,false)}">
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">{!$Label.AdditionalCharge}</p>
+            </div>
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center" colspan="2">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.TotalPriceNet}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    <apex:variable var="totalPrice" value="{!0}" />
+                    <apex:variable var="totalVat" value="{!0}" />
+                    
+                    <apex:repeat value="{!mapOfferWrapper}" var="parentOfferId">
+                        <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].hasInvoicesCharged}">
+                            <tr>
+                                <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                <td class="slds-text-align_left">{!mapOfferWrapper[parentOfferId].adjustmentDesc}</td>
+                                <td class="slds-text-align_right"></td>
+                                <td class="slds-text-align_right border-right">{!IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,mapOfferWrapper[parentOfferId].adjustmentAmount)}</td>
+                            </tr>
+                            <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                            <apex:variable var="totalPrice" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalPrice + mapOfferWrapper[parentOfferId].adjustmentAmount,totalPrice)}" />
+                            <apex:variable var="totalVat" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalVat + ((vat / 100) * mapOfferWrapper[parentOfferId].adjustmentAmount),totalVat)}" />              
+                        </apex:outputText>
+                    </apex:repeat>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td rowspan="3" colspan="2" class="noBorderWidth"></td>
+                        <td colspan="1" class="slds-text-align_right cell-header" width="110px">{!$Label.TotalPriceNet}</td>
+                        <td colspan="1" class="slds-text-align_right noWrap">{!IF(totalPrice > 0, totalPrice, $Label.N_A)}</td>                       
+                    </tr>
+                    <tr>
+                        <td colspan="1" class="slds-text-align_right cell-header text-bold">{!$Label.GrossAmount}</td>
+                        <td colspan="1" class="slds-text-align_right noWrap text-bold">{!IF(totalPrice + totalVat > 0, currentSalesOrderWrapper.currencyIsoCode, '')} {!IF(totalPrice + totalVat > 0, ROUND(totalPrice + totalVat, 2), $Label.N_A)}</td>
+                    </tr>
+                </tfoot>
+                </table>
+        </apex:outputText>
+
+        <apex:outputText rendered="{!IF(numberOfInvoicesCredited > 0 && printDeliveryNote,true,false)}">
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">{!$Label.AdditionalCredit}</p>
+            </div>
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center" colspan="2">{!$ObjectType.Offer__c.fields.Description__c.label}</th>
+                        <!-- <th class="slds-text-align_center width-110"></th> -->
+                        <th class="slds-text-align_center width-110">{!$Label.TotalPriceNet}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    <apex:variable var="totalPrice" value="{!0}" />
+                    <apex:variable var="totalVat" value="{!0}" />
+                    
+                    <apex:repeat value="{!mapOfferWrapper}" var="parentOfferId">
+                        <apex:outputText rendered="{!mapOfferWrapper[parentOfferId].hasInvoicesCredited}">
+                            <tr>
+                                <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                <td class="slds-text-align_left">{!mapOfferWrapper[parentOfferId].adjustmentDesc}</td>
+                                <td class="slds-text-align_right"></td>
+                                <td class="slds-text-align_right border-right">{!IF(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode,$Label.N_A,-(mapOfferWrapper[parentOfferId].adjustmentAmount))}</td>
+                            </tr>
+                            <apex:variable var="lineNo" value="{!lineNo + 1}" />
+                            <apex:variable var="totalPrice" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalPrice + mapOfferWrapper[parentOfferId].adjustmentAmount,totalPrice)}" />
+                            <apex:variable var="totalVat" value="{!IF(NOT(CONTAINS($Label.DeliveryNoteOnAgencyModeAmountsVisibilityCountries,currentSalesOrderWrapper.TECH_BodyshopCountryCode) && mapOfferWrapper[parentOfferId].AgencyMode),totalVat + ((vat / 100) * mapOfferWrapper[parentOfferId].adjustmentAmount),totalVat)}" />                      
+                        </apex:outputText>
+                    </apex:repeat>
+                </tbody>                   
+                <tfoot>
+                    <tr>
+                        <td rowspan="3" colspan="2" class="noBorderWidth"></td>
+                        <td colspan="1" class="slds-text-align_right cell-header " width="110px">{!$Label.TotalPriceNet}</td>
+                        <td colspan="1" class="slds-text-align_right noWrap">{!IF(totalPrice > 0, -totalPrice, $Label.N_A)}</td>                       
+                    </tr>
+                    <tr>
+                        <td colspan="1" class="slds-text-align_right cell-header text-bold">{!$Label.GrossAmount}</td>
+                        <td colspan="1" class="slds-text-align_right noWrap text-bold">{!IF(totalPrice + totalVat > 0, currentSalesOrderWrapper.currencyIsoCode, '')} {!IF(totalPrice + totalVat > 0, ROUND(-(totalPrice + totalVat), 2), $Label.N_A)}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </apex:outputText>
+
+         <!--vsu 18/04/18 -->
+        <!-- Distributor details -->
+        <apex:outputText rendered="{!numberOfWrapperInSelectedByBodyShop > 0}">
+            <div class="margin-top-medium margin-bottom-medium">
+                <p class="text-bold font-size-11 text-caps">{!$Label.DistributorDetails}</p>
+            </div>
+            <table class="table-bordered font-size-11">
+                <thead>
+                    <tr>
+                        <th class="slds-text-align_center width-50">{!$Label.LineNo}</th>
+                        <th class="slds-text-align_center">{!$Label.DistributorName}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.DistributorEmail}</th>
+                        <th class="slds-text-align_center width-110">{!$Label.DistributorPhone}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:variable var="lineNo" value="{!1}" />
+                    
+                    <apex:repeat value="{!mapDistributorWrapper}" var="accountId">                           
+                            <tr>
+                                <td class="slds-text-align_center border-left">{!lineNo}</td>
+                                <td class="slds-text-align_left">{!mapDistributorWrapper[accountId].distName}</td>
+                                <td class="slds-text-align_right">{!mapDistributorWrapper[accountId].distEmail}</td>
+                                <td class="slds-text-align_right border-right">{!mapDistributorWrapper[accountId].distPhone}</td>
+                            </tr>
+                            <apex:variable var="lineNo" value="{!lineNo + 1}" />             
+                    </apex:repeat>
+                </tbody>
+                </table>
+        </apex:outputText>
+
+        <!-- 10/05/2018 DUN C-001982 Impression champs commentaire dans récapitulatif -->
+        <apex:outputText rendered="{!(currentSalesOrder.Assessment__r.Comment__c != null)}">
+            <div class="margin-top-medium slds-text-align_left">
+                <div>
+                    <p class="font-size-11" >{!$Label.Comment} : {!currentSalesOrder.Assessment__r.Comment__c}</p>
+                </div>
+            </div>
+        </apex:outputText>
+        
+        </div>
+         <!--KPA 09/11/2020 C-004026 -->
+        <div style="{!IF(!(canSeeSo), 'display:block', 'display:none')}" > 
+             <apex:outputText value="{!$Label.VFPrintDeliveryNoteErrorMessage}" />
+        </div>  
+    </body>
+
+    </html>
+</apex:page>

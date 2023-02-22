@@ -1,0 +1,830 @@
+<apex:page controller="OrderChooseAssessment" showHeader="false" sidebar="true" action="{!selectToOrder}" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+    <html>
+    <head>
+        <title>{!$Label.OrderChooseAssessmentTitle}</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+        <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+        <style>
+            body {
+                min-width: 860px;
+            }
+
+            .slds-icon-text-default {
+                fill: #ffb700;
+                width: 250px;
+            }
+
+            .popOverParent{
+                position: relative;
+                display: inline-block;
+            }
+
+            .popOverDiv{
+                position: absolute;
+                //top: -9px;
+                left: calc(16px + 1rem);
+                display:none;
+            }
+            
+            .poptdtitleDelivery{
+                font-size: small;
+                font-weight: 600!important;
+                background-color: #c23934;
+                color: white;
+                padding: 5px;
+                white-space: normal;
+                width: 130px;
+            }
+            .numberField {
+                width: 200px;
+            }
+            .searchDateButton {
+                background: #103184;
+                color: #fff;
+                font-size: 14px;
+                height: 32px;
+            }
+            .fixedHeader{
+                position: fixed;
+                width:100%;
+                background: #fdfdfd;
+                z-index:1;
+            }
+
+            .iframe-container {
+                overflow: hidden;
+                padding-top: 56.25%;
+                position: relative;
+            }
+
+            .iframe-container iframe {
+                border: 0;
+                height: 100%;
+                left: 0;
+                position: absolute;
+                top: 0;
+                width: 100%;
+            }
+
+            .iconColor{
+                height: 1.5rem;
+                width: 1.5rem;
+                fill: #fff;
+            }
+        </style>
+        <script>
+
+            $j = jQuery.noConflict();
+
+            function openAssessmentSourced(assId){
+                //update assessment status to ready for eligibilty and sourcing process
+                window.location = 'apex/OrderRunSourcing?AssessmentId='+btoa(assId);
+            }
+
+            function openOrderMakeSelection(assId,childId){
+                //update assessment status to ready for eligibilty and sourcing process
+                //WCH 07/04/2020 C-003677
+                window.location = '/apex/OrderMakeSelection?id='+btoa(assId)+'&ChildId='+btoa(childId)+'&SourceAssessmentId={!encryptedText}'+({!isES}?'&socb=true':'');
+            }
+
+            function openSalesOrder(soId){
+                //update assessment status to ready for eligibilty and sourcing process
+                window.location = '/'+soId,'_self';
+            }
+
+            function detectIE() {
+                var ua = window.navigator.userAgent;
+
+                // Test values; Uncomment to check result …
+
+                // IE 10
+                // ua = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)';
+
+                // IE 11
+                // ua = 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko';
+
+                // Edge 12 (Spartan)
+                // ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0';
+
+                // Edge 13
+                // ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586';
+
+                var msie = ua.indexOf('MSIE ');
+                if (msie > 0) {
+                    // IE 10 or older => return version number
+                    return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+                }
+
+                var trident = ua.indexOf('Trident/');
+                if (trident > 0) {
+                    // IE 11 => return version number
+                    var rv = ua.indexOf('rv:');
+                    return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+                }
+
+                var edge = ua.indexOf('Edge/');
+                if (edge > 0) {
+                    // Edge (IE 12+) => return version number
+                    return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+                }
+
+                // other browser
+                return false;
+            }
+            function renderWarningSVG()
+            {
+                var version = detectIE();
+
+                if(version === false || version > 11){
+                    var warningIconURL = "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#warning')}";
+
+                    var svgTag = $j("<svg/>",  {
+                                                "aria-hidden" : "true",
+                                                class : "slds-icon slds-icon-text-default"
+                                 });
+
+                    var useTag = $j("<use/>",  {
+                                                "xlink:href"    : warningIconURL
+                                  });
+
+                    $j(".svgAttention").html(svgTag.append(useTag));
+                    $j(".svgAttention").html($j(".svgAttention").html());
+                }
+                else{
+                    var languageIconUrl = "{!URLFOR($Resource.PagedeCommandeResources, '/PagedeCommandeResources/warningOrdered.png')}";
+
+                    var imgTag          = $j("<img/>",  {
+                                                            src : languageIconUrl,
+                                                            class : "slds-icon slds-icon_medium",
+                                                            style : "height:22px; width:25px;"
+                                                        });
+
+                    $j(".svgAttention").html(imgTag);
+                    // $j(".svgAttention").html($j(".svgAttention").html());
+                }
+            }
+
+            function showPopOver(el){
+                $j(el).next().show();
+            }
+
+            function hidePopOver(el){
+                $j(el).next().hide();
+            }
+
+
+
+            function renderSearchSVG() {
+                var version = detectIE();
+
+                if (version === false || version > 11) {
+                    var svgTag = $j("<svg/>", {
+                        "aria-hidden": "true",
+                        "class": "slds-button__icon slds-button__icon_left"
+                    });
+
+                    var useTag = $j("<use/>", {
+                        "xlink:href": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#search')}"
+                    });
+
+                    $j(".searchSVG").prepend(svgTag.append(useTag));
+                } else {
+                    var imgTag = $j("<img/>", {
+                        "src": "{!URLFOR($Resource.slds, '/assets/icons/utility/search_60.png')}",
+                        "class": "slds-button__icon slds-button__icon_left"
+                    });
+
+                    $j(".searchSVG").prepend(imgTag);
+                }
+
+                $j(".searchSVG").html($j(".searchSVG").html());
+            }
+
+            function showError(hasErrors, isToastMessage) {
+                if (hasErrors) {
+                    if (!isToastMessage) {
+                        $j("#errorModal").addClass("slds-fade-in-open");
+                        $j("#errorModalBackdrop").addClass("slds-backdrop_open");
+                    } else {
+                        $j("#toastMessage").show();
+                    }
+                }
+            }
+
+            function hideError() {
+                $j("#errorModal").removeClass("slds-fade-in-open");
+                $j("#errorModalBackdrop").removeClass("slds-backdrop_open");
+
+                $j("#toastMessage").hide();
+            }
+
+            function checkPageMessage(hasErrors) {
+                if (!hasErrors) {
+                    if ($j('[id$="toastErrorMessage"]').html() !== "") {
+                        showError(true, true);
+                    }
+                }
+            }
+
+            function renderCloseSVG() {
+                if ($j(".slds-notify__close").length > 0) {
+                    var version = detectIE();
+
+                    if (version === false || version > 11) {
+                        var svgTag = $j("<svg/>", {
+                            "aria-hidden": "true",
+                            "class": "slds-button__icon slds-button__icon_large"
+                        });
+
+                        var useTag = $j("<use/>", {
+                            "xlink:href": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"
+                        });
+
+                        $j(".slds-notify__close").html(svgTag.append(useTag));
+                    } else {
+                        var imgTag = $j("<img/>", {
+                            "src": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}",
+                            "class": "slds-button__icon slds-button__icon_large",
+                            "width": "24",
+                            "height": "24"
+                        });
+
+                        $j(".slds-notify__close").html(imgTag);
+                    }
+
+                    $j(".slds-notify__close").html($j(".slds-notify__close").html());
+                }
+            }
+
+            /*function openSearch(){
+                console.log('##click search');
+                window.location.href="/apex/Search";
+            }*/
+        </script>
+    </head>
+    <body>
+        <apex:form id="chooseAssessmentFrm">
+            <div class="slds" style="min-width: 1300px">
+            <!--VSU -->
+                <c:ASPISHeader />
+                <div class="slds-form-element">              
+                    <!--<div class="slds-image slds-text-align_center slds-m-vertical_medium">             -->
+                        <!--<object data="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale.svg')}" type="image/svg+xml" width="250" />-->
+                    <!--</div>-->
+                    <apex:outputPanel rendered="{!hasAssessment && receivedAssessmentWrapper.hasReadPermission}">
+                        <div class="slds-card" id="topCard">
+                            <div class="slds-card__header slds-grid">
+                                <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                                    <!-- AMI 24/12/18 C-002781 : Migrate Spain to R4
+                                                               : Chatter Feed Button 
+                                                               : Added New Style -->
+                                    <h2 class="slds-text-heading_small" style="padding-right: 5px;">
+                                        {!$Label.AssessmentDetails}
+                                    </h2>
+
+                                    <!-- AMI 24/12/18 C-002781 : Migrate Spain to R4
+                                                               : Chatter Feed Button -->
+                                    <apex:outputPanel rendered="{!IF(showFeed,true,false)}">
+                                        <button class="searchDateButton slds-button slds-button_brand slds-col--padded" style="font-weight: 400;margin-left: 35px;margin-bottom: 5px;" type="button" id="btn-showChatter">
+                                            <svg aria-hidden="true" class="slds-icon1 iconColor">
+                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#feed"></use>
+                                            </svg>
+                                            {!$Label.ChatterFeedMsg2}
+                                        </button>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+                            <table class="slds-table slds-table_bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="slds-text-heading_label slds-text-align_center" width="33%">
+                                            {!$ObjectType.Assessment__c.fields.PlateNumber2__c.label}
+                                        </th>
+                                        <th class="slds-text-heading_label slds-text-align_center" width="33%">
+                                            {!$ObjectType.Assessment__c.fields.VINNumber__c.label}
+                                        </th>
+                                        <th class="slds-text-heading_label slds-text-align_center" width="33%">
+                                            {!$Label.Brand}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="slds-text-body_regular slds-text-align_center">
+                                            <apex:outputText rendered="{!(receivedAssessmentWrapper.plateNumber != null)}">
+                                                {!receivedAssessmentWrapper.plateNumber}
+                                            </apex:outputText>
+                                            <!-- Dourga 16/03/2018  C-002391-->
+                                            <apex:outputText rendered="{!(receivedAssessmentWrapper.plateNumber == null && receivedAssessmentWrapper.currentAssessment.TECH_EntityCountryCode__c != 'BE')}">
+                                                <apex:inputText styleclass="slds-input  numberField" id="plateNum" value="{!receivedAssessmentWrapper.plateNumber}"/>
+                                            </apex:outputText>
+                                        </td>
+                                        <td class="slds-text-body_regular slds-text-align_center">
+                                            <apex:outputText rendered="{!(receivedAssessmentWrapper.vinNumber != null)}">
+                                                {!receivedAssessmentWrapper.vinNumber}
+                                            </apex:outputText>
+                                            <!-- Dourga 16/03/2018  C-002391 -->
+                                            <apex:outputText rendered="{!(receivedAssessmentWrapper.vinNumber == null && receivedAssessmentWrapper.currentAssessment.TECH_EntityCountryCode__c != 'BE')}">
+                                                <apex:inputText styleclass="slds-input  numberField" id="vinNum" value="{!receivedAssessmentWrapper.vinNumber}"/>
+                                            </apex:outputText>
+                                        </td>
+                                        <td class="slds-text-body_regular slds-text-align_center">
+                                            {!receivedAssessmentWrapper.brand} 
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="slds-p-around_medium">
+                            <div class="slds-card">
+                                <div class="slds-card__header">
+                                    <h2 class="slds-text-heading_small slds-truncate">
+                                        {!$Label.ListOfAssessments}
+                                    </h2>
+                                </div>
+                                <table class="slds-table slds-table_bordered">
+                                    <apex:repeat value="{!mapTypeAssessment}" var="bodyShopType">
+                                        <!--<apex:repeat value="{!mapTypeAssessment[bodyShopType]}" var="assessment">-->
+                                            <!--<apex:outputText rendered="{!(key == 'Standard' || key == 'Expert')}">-->
+                                        <!--<apex:outputText rendered="{!(receivedAssessmentWrapper.isExpertAssessment && bodyShopType == 'Expert') || !receivedAssessmentWrapper.isExpertAssessment}">-->
+                                            <apex:outputText rendered="{!mapTypeAssessment[bodyShopType].hasReadPermission}">
+                                                <tr>
+                                                    <td class="slds-text-body_regular" style="padding:10px">
+                                                        <apex:outputText rendered="{!(bodyShopType == 'Standard')}">
+                                                            {!$Label.MyAssessment}
+                                                        </apex:outputText>
+                                                        <apex:outputText rendered="{!(bodyShopType == 'Expert')}">
+                                                            {!$Label.AssessmentInProgress}
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="slds-text-body_regular slds-text-align_center" style="padding:10px">
+                                                        <apex:outputField value="{!mapTypeAssessment[bodyShopType].currentAssessment.ASReference__c}"/>
+                                                    </td>
+                                                    <td class="slds-text-body_regular slds-text-align_center" style="padding:10px">
+                                                        <apex:outputField value="{!mapTypeAssessment[bodyShopType].currentAssessment.LastModifiedDate}"/>
+                                                    </td>
+                                                    <td class="slds-text-body_regular slds-text-align_center" style="padding:10px">
+                                                         <!-- Start RLA 16/08/2018 C-002690 Spain audatex assessments in r4 -->
+                                                        <apex:outputPanel rendered="{!mapTypeAssessment[bodyShopType].isNotAuthorisedOrder}">
+                                                            <apex:outputPanel >
+                                                                <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                    {!$Label.Quote}
+                                                                </button>&nbsp;&nbsp;
+                                                                <div class="popOverParent">
+                                                                    <span class="svgAttention"/>
+                                                                    <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                        <apex:outputText value="{!$Label.OrderNotAuthorised}" />                                                                        
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputPanel>
+                                                        </apex:outputPanel>
+                                                        <!-- END RLA 16/08/2018 C-002690 Spain audatex assessments in r4 -->
+                                                        <apex:outputPanel rendered="{!mapTypeAssessment[bodyShopType].isEligibleQuotation}">
+                                                            <apex:outputPanel rendered="{!(mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c == null && mapTypeAssessment[bodyShopType].currentAssessment.Status__c != 'CANCELED')}">
+                                                                <button type="button" id='quoteBtn' class="searchDateButton slds-button slds-button_brand btn-preOrder" onclick="callQuote('{!mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.Type}');"  >
+                                                                    {!$Label.Quote}
+                                                                </button>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!(mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c != null || mapTypeAssessment[bodyShopType].currentAssessment.Status__c == 'CANCELED')}">
+                                                                <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                    {!$Label.Quote}
+                                                                </button>&nbsp;&nbsp;
+                                                                <div class="popOverParent">
+                                                                    <span class="svgAttention"/>
+                                                                    <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                        <apex:outputField value="{!mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c}" rendered="{!mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c != null}"/>
+                                                                        <apex:outputText rendered="{!mapTypeAssessment[bodyShopType].currentAssessment.Status__c == 'CANCELED'}">
+                                                                            {!$ObjectType.Assessment__c.fields.Status__c.label} : {!mapTypeAssessment[bodyShopType].currentAssessment.Status__c}
+                                                                        </apex:outputText>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputPanel>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    <td class="slds-text-body_regular slds-text-align_center" style="padding:10px">
+                                                        <!-- DUN case C-002191 16/01/2018 Remove condition ' && !(bodyShopType == 'Expert' && mapTypeAssessment[bodyShopType].currentAssessment.TECH_EntityCountryCode__c == 'FR') ' for expert for testing-->
+                                                        <apex:outputPanel rendered="{!(mapTypeAssessment[bodyShopType].isEligibleOrder)}">
+                                                            <!-- AMI 29/01/19  C-002781 : SEPA VALID should not be taken into account for ES 
+                                                                                        : Adding country code check -->
+                                                            <apex:outputPanel rendered="{!((IF((bodyShopType == 'Expert' && bodyShopConnected != null), (bodyShopConnected.SepaValid__c || isES || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c), (mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.SepaValid__c || isES || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c)))  && (mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c == null || onlyEparts) && mapTypeAssessment[bodyShopType].currentAssessment.Status__c != 'CANCELED' && IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.AXA_Partner__c))}"><!-- WCH 06/12/2019 C-003512,19/11/2021 C-004511 -->                                                               
+                                                                <button type="button" class="searchDateButton slds-button slds-button_brand btn-preOrder" onclick="callOrder('{!mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.Type}');">
+                                                                    {!$Label.SelectToOrder}
+                                                                </button>  
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!((IF((bodyShopType == 'Expert' && bodyShopConnected != null), (bodyShopConnected.SepaValid__c || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c), (mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.SepaValid__c || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c)))  && (renderEparts) && IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.AXA_Partner__c))}"><!-- WCH 06/12/2019 C-003512,19/11/2021 C-004511 -->                                                               
+                                                                <button type="button" class="searchDateButton slds-button slds-button_brand btn-preOrder" style="color: #FFFFFF; background: #b0ca33; border-color: #b0ca33 " onclick="callOrderE('{!mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.Type}');">
+                                                                    {!$Label.OrderPartE}
+                                                                </button>  
+                                                            </apex:outputPanel>
+                                                            <!-- AMI 29/01/19  C-002781 : SEPA VALID should not be taken into account for ES 
+                                                                                        : Adding country code check -->
+                                                            <apex:outputPanel rendered="{!(!(IF((bodyShopType == 'Expert' && bodyShopConnected != null), (bodyShopConnected.SepaValid__c || isES || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c), (mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.SepaValid__c || isES || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c)))  && (mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c == null && !onlyEparts) && IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.AXA_Partner__c))}"><!-- WCH 06/12/2019 C-003512,19/11/2021 C-004511-->
+                                                                <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                    {!$Label.SelectToOrder}
+                                                                </button>&nbsp;&nbsp;
+                                                                <div class="popOverParent">
+                                                                    <span class="svgAttention"/>
+                                                                    <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                        {!$Label.PaymentDetailOutdated}
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputPanel>
+                                                            <!-- WCH 06/12/19 C-003512 -->
+                                                            <apex:outputPanel rendered="{!(!IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.AXA_Partner__c))}">
+                                                                <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                    {!$Label.SelectToOrder}
+                                                                </button>&nbsp;&nbsp;
+                                                                <div class="popOverParent">
+                                                                    <span class="svgAttention"/>
+                                                                    <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                        {!$Label.BodyShopNotEligibleForOrder}
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputPanel>
+                                                            <!-- AMI 29/01/19  C-002781 : SEPA VALID should not be taken into account for ES 
+                                                                                        : Adding country code check -->
+                                                            <apex:outputPanel rendered="{!((IF((bodyShopType == 'Expert' && bodyShopConnected != null), (bodyShopConnected.SepaValid__c || isES || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c), (mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.SepaValid__c || isES || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c)))  && ( (mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c != null && !onlyEparts) || mapTypeAssessment[bodyShopType].currentAssessment.Status__c == 'CANCELED') && IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.AXA_Partner__c))}"><!-- WCH 06/12/2019 C-003512,19/11/2021 C-004511-->
+                                                                <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                    {!$Label.SelectToOrder}
+                                                                </button>&nbsp;&nbsp;
+                                                                <div class="popOverParent">
+                                                                    <span class="svgAttention"/>
+                                                                    <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                        <apex:outputField value="{!mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c}" rendered="{!mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c != null}"/>
+                                                                        <apex:outputText rendered="{!mapTypeAssessment[bodyShopType].currentAssessment.Status__c == 'CANCELED'}">
+                                                                            {!$ObjectType.Assessment__c.fields.Status__c.label} : {!mapTypeAssessment[bodyShopType].currentAssessment.Status__c}
+                                                                        </apex:outputText>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputPanel>
+                                                            <!-- AMI 29/01/19  C-002781 : SEPA VALID should not be taken into account for ES 
+                                                                                        : Adding country code check -->
+                                                            <apex:outputPanel rendered="{!(!(IF((bodyShopType == 'Expert' && bodyShopConnected != null), (bodyShopConnected.SepaValid__c || isES || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c), (mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.SepaValid__c || isES || mapTypeAssessment[bodyShopType].currentAssessment.Compensated__c)))  && ( (mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c != null &&!onlyEparts) || mapTypeAssessment[bodyShopType].currentAssessment.Status__c == 'CANCELED') && IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , mapTypeAssessment[bodyShopType].currentAssessment.BodyShop__r.AXA_Partner__c))}"><!-- WCH 06/12/2019 C-003512,19/11/2021 C-004511-->
+                                                                <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                    {!$Label.SelectToOrder}
+                                                                </button>&nbsp;&nbsp;
+                                                                <div class="popOverParent">
+                                                                    <span class="svgAttention"/>
+                                                                    <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                        <!-- RLA 27/08/2021 C-004115-->
+                                                                        <apex:outputText rendered="{!mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c != null && !onlyEparts}">
+                                                                            {!$Label.PaymentDetailOutdated} and &nbsp; <apex:outputField value="{!mapTypeAssessment[bodyShopType].currentAssessment.ReasonFailure__c}"/>
+                                                                        </apex:outputText>
+                                                                        <apex:outputText rendered="{!mapTypeAssessment[bodyShopType].currentAssessment.Status__c == 'CANCELED'}">
+                                                                            {!$Label.PaymentDetailOutdated} and &nbsp;  {!$ObjectType.Assessment__c.fields.Status__c.label} : {!mapTypeAssessment[bodyShopType].currentAssessment.Status__c}
+                                                                        </apex:outputText>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputPanel>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                </tr>
+                                            </apex:outputText>
+                                        <!--</apex:outputText>-->
+                                            <!--</apex:outputText>-->
+                                        <!--</apex:repeat>-->
+                                    </apex:repeat>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- <div style="padding: 25px"> -->
+                        <div class="slds-p-around_medium">
+                            <div class="slds-card">
+                                <div class="slds-card__header">
+                                    <apex:outputText rendered="{!hasOngoingAssessment}">
+                                        <h2 class="slds-text-heading_small">
+                                            {!$Label.ListOfOngoingQuotes}
+                                        </h2>
+                                    </apex:outputText>
+                                    <apex:outputText rendered="{!!hasOngoingAssessment}">
+                                        <h2 class="slds-text-heading_small">
+                                            {!$Label.NoOngoingQuotes}
+                                        </h2>
+                                    </apex:outputText>
+                                </div>
+                                <apex:outputText rendered="{!hasOngoingAssessment}">
+                                    <table class="slds-table slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="slds-text-heading_label">{!$Label.Date}</th>
+                                                <th class="slds-text-heading_label slds-text-align_center">{!$Label.AlphaScaleReference}</th>
+                                                <th class="slds-text-heading_label slds-text-align_center">{!$Label.BodyshopReferenceHeader}</th>
+                                                <th class="slds-text-heading_label slds-text-align_center">{!$ObjectType.PrerequisiteOrder__c.fields.Status__c.label}</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <apex:repeat value="{!onGoingAssessmentList}" var="wrapper">
+                                                <apex:outputText rendered="{!wrapper.hasReadPermission}">
+                                                    <tr>
+                                                        <td class="slds-text-body_regular">
+                                                            <apex:outputField value="{!wrapper.currentAssessment.CreatedDate}"/>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputField value="{!wrapper.currentAssessment.OrderOrigin__c}" rendered="{!(wrapper.currentAssessment.TECH_EntityCountryCode__c!='IT')}"/>
+                                                            <apex:outputText rendered="{!wrapper.currentSalesOrder != null}">
+                                                                    {!wrapper.currentSalesOrder.Name}
+                                                            </apex:outputText>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            {!wrapper.bodyShopOrderNumber}
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputField value="{!wrapper.currentAssessment.OrderStatus__c}"/>
+                                                        </td>
+                                                        <td class="slds-text-body_regular slds-text-align_center">
+                                                            <apex:outputText rendered="{!wrapper.currentSalesOrder != null}">
+                                                                <apex:outputPanel rendered="{!(wrapper.currentSalesOrder.Status__c == 'INACCEPTANCE' && wrapper.currentAssessment.IsCareOrder__c && wrapper.currentAssessment.OrderStatus__c != 'PENDING DISTRIBUTOR (CARE)'&& wrapper.currentAssessment.OrderStatus__c != 'PENDING DISTRIBUTOR')}">
+                                                                    <!--<button type="button" class="slds-button slds-button_neutral slds-not-selected btn-preOrder" onclick="openSalesOrder('{!wrapper.currentSalesOrder.Id}')">
+                                                                        {!$Label.ViewSalesOrder}
+                                                                    </button>-->
+                                                                    <a href="{!$Page.ASPISSalesOrder & '?Id=' & wrapper.salesOrderEncodedId}"
+                                                                        class="searchDateButton slds-button slds-button_brand">
+                                                                        {!$Label.ViewSalesOrder}
+                                                                    </a>
+                                                                </apex:outputPanel>
+                                                                
+                                                                <apex:outputPanel rendered="{!(wrapper.currentSalesOrder.Status__c == 'INACCEPTANCE' && !wrapper.currentAssessment.IsCareOrder__c && wrapper.currentAssessment.OrderStatus__c != 'PENDING DISTRIBUTOR (CARE)'&& wrapper.currentAssessment.OrderStatus__c != 'PENDING DISTRIBUTOR')}">
+                                                                    <!-- AMI 29/01/19  C-002781 : SEPA VALID should not be taken into account for ES 
+                                                                                            : Adding country code check -->
+                                                                    <apex:outputPanel rendered="{!((IF((wrapper.currentAssessment.BodyShop__r.Type == 'Expert' && bodyShopConnected != null), (bodyShopConnected.SepaValid__c || isES || wrapper.currentAssessment.Compensated__c), (wrapper.currentAssessment.BodyShop__r.SepaValid__c || isES || wrapper.currentAssessment.Compensated__c)))  && wrapper.currentAssessment.ParentAssessment__r.ReasonFailure__c == null && IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , wrapper.currentAssessment.BodyShop__r.AXA_Partner__c))}"><!-- WCH 06/12/2019 C-003512, 02/04/2020 C-003685,19/11/2021 C-004511-->
+                                                                        <button type="button" class="searchDateButton slds-button slds-button_brand btn-preOrder" onclick="openOrderMakeSelection('{!wrapper.currentAssessment.ParentAssessment__c}','{!wrapper.currentAssessment.Id}')">
+                                                                            {!$Label.OrderMakeSelection}
+                                                                        </button>
+                                                                    </apex:outputPanel>
+                                                                    <!-- AMI 29/01/19  C-002781 : SEPA VALID should not be taken into account for ES 
+                                                                                                : Adding country code check -->
+                                                                    <apex:outputPanel rendered="{!(!(IF((wrapper.currentAssessment.BodyShop__r.Type == 'Expert' && bodyShopConnected != null), (bodyShopConnected.SepaValid__c || isES || wrapper.currentAssessment.Compensated__c), (wrapper.currentAssessment.BodyShop__r.SepaValid__c || isES || wrapper.currentAssessment.Compensated__c)))  && wrapper.currentAssessment.ParentAssessment__r.ReasonFailure__c == null && IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , wrapper.currentAssessment.BodyShop__r.AXA_Partner__c))}"><!-- WCH 06/12/2019 C-003512, 02/04/2020 C-003685,19/11/2021 C-004511-->
+                                                                        <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                            {!$Label.OrderMakeSelection}
+                                                                        </button>&nbsp;&nbsp;
+                                                                        <div class="popOverParent">   
+                                                                            <span class="svgAttention"/>
+                                                                            <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                                {!$Label.PaymentDetailOutdated}
+                                                                            </div>
+                                                                        </div>
+                                                                    </apex:outputPanel>
+                                                                    <!-- WCH 06/12/19  C-003512, 02/04/2020 C-003685-->
+                                                                    <apex:outputPanel rendered="{!(!IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , wrapper.currentAssessment.BodyShop__r.AXA_Partner__c))}">
+                                                                        <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                            {!$Label.OrderMakeSelection}
+                                                                        </button>&nbsp;&nbsp;
+                                                                        <div class="popOverParent">   
+                                                                            <span class="svgAttention"/>
+                                                                            <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                                {!$Label.BodyShopNotEligibleForOrder}
+                                                                            </div>
+                                                                        </div>
+                                                                    </apex:outputPanel>
+                                                                    <!-- AMI 29/01/19  C-002781 : SEPA VALID should not be taken into account for ES 
+                                                                                                : Adding country code check -->
+                                                                    <apex:outputPanel rendered="{!((IF((wrapper.currentAssessment.BodyShop__r.Type == 'Expert' && bodyShopConnected != null), (bodyShopConnected.SepaValid__c || isES || wrapper.currentAssessment.Compensated__c), (wrapper.currentAssessment.BodyShop__r.SepaValid__c || isES || wrapper.currentAssessment.Compensated__c)))  && wrapper.currentAssessment.ParentAssessment__r.ReasonFailure__c != null && IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , wrapper.currentAssessment.BodyShop__r.AXA_Partner__c))}"><!-- WCH 06/12/2019 C-003512, 02/04/2020 C-003685,19/11/2021 C-004511-->
+                                                                        <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                            {!$Label.OrderMakeSelection}
+                                                                        </button>&nbsp;&nbsp;
+                                                                        <div class="popOverParent">
+                                                                            <span class="svgAttention"/>
+                                                                            <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                                <apex:outputField value="{!wrapper.currentAssessment.ParentAssessment__r.ReasonFailure__c}"/>
+                                                                            </div>
+                                                                        </div>
+                                                                    </apex:outputPanel>
+                                                                    <!-- AMI 29/01/19  C-002781 : SEPA VALID should not be taken into account for ES 
+                                                                                                : Adding country code check -->
+                                                                    <apex:outputPanel rendered="{!(!(IF((wrapper.currentAssessment.BodyShop__r.Type == 'Expert' && bodyShopConnected != null),(bodyShopConnected.SepaValid__c || isES || wrapper.currentAssessment.Compensated__c), (wrapper.currentAssessment.BodyShop__r.SepaValid__c || isES || wrapper.currentAssessment.Compensated__c)))  && wrapper.currentAssessment.ParentAssessment__r.ReasonFailure__c != null && IF(bodyShopConnected != null , bodyShopConnected.AXA_Partner__c , wrapper.currentAssessment.BodyShop__r.AXA_Partner__c))}"><!-- WCH 06/12/2019 C-003512, 02/04/2020 C-003685,19/11/2021 C-004511 -->
+                                                                        <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand btn-preOrder">
+                                                                            {!$Label.OrderMakeSelection}
+                                                                        </button>&nbsp;&nbsp;
+                                                                        <div class="popOverParent">
+                                                                            <span class="svgAttention"/>
+                                                                            <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                                {!$Label.PaymentDetailOutdated} and &nbsp; <apex:outputField value="{!wrapper.currentAssessment.ParentAssessment__r.ReasonFailure__c}"/>
+                                                                            </div>
+                                                                        </div>
+                                                                    </apex:outputPanel>
+                                                                </apex:outputPanel>
+                                                                <apex:outputPanel rendered="{!(wrapper.currentSalesOrder.Status__c != 'INACCEPTANCE' && wrapper.currentSalesOrder.Status__c != 'PREACCEPTANCE')}">
+                                                                    <apex:outputPanel rendered="{!wrapper.currentAssessment.ParentAssessment__r.ReasonFailure__c == null}">
+                                                                        <!--<button type="button" class="slds-button slds-button_neutral slds-not-selected btn-preOrder" onclick="openSalesOrder('{!wrapper.currentSalesOrder.Id}')">
+                                                                            {!$Label.ViewSalesOrder}
+                                                                        </button>-->
+                                                                        <a href="{!$Page.ASPISSalesOrder & '?Id=' & wrapper.salesOrderEncodedId}"
+                                                                            class="searchDateButton slds-button slds-button_brand">
+                                                                            {!$Label.ViewSalesOrder}
+                                                                        </a>
+                                                                    </apex:outputPanel>
+                                                                    <apex:outputPanel rendered="{!wrapper.currentAssessment.ParentAssessment__r.ReasonFailure__c != null}">
+                                                                        <button type="button" disabled="disabled" class="searchDateButton slds-button slds-button_brand">
+                                                                            {!$Label.ViewSalesOrder}
+                                                                        </button>&nbsp;&nbsp;
+                                                                        <div class="popOverParent">
+                                                                            <span class="svgAttention"/>
+                                                                            <div class="slds-popover slds-popover_tooltip popOverDiv poptdtitleDelivery">
+                                                                                <apex:outputField value="{!wrapper.currentAssessment.ParentAssessment__r.ReasonFailure__c}"/>
+                                                                            </div>
+                                                                        </div>
+                                                                    </apex:outputPanel>
+                                                                </apex:outputPanel>
+                                                            </apex:outputText>
+                                                        </td>
+                                                    </tr>
+                                                </apex:outputText>
+                                            </apex:repeat>
+                                        </tbody>
+                                    </table>
+                                </apex:outputText>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+
+                <div id="spinner"
+                     class="slds-spinner_container hide positionFixed">
+                    <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+
+                <div id="toastMessage" 
+                    class="slds-notify_container slds-hide">
+                    <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                        <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                title="{!$Label.Close}"
+                                type="button"
+                                onclick="hideError();">
+                        </button>
+                        <div class="slds-notify__content">
+                            <p class="slds-text-align_center customErrorMsg"></p>
+                            <apex:pagemessages id="toastErrorMessage" escape="false" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="errorModal"
+                    class="slds-modal slds-modal_prompt"
+                    aria-hidden="false"
+                    role="dialog">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                            <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <apex:outputText rendered="{!!redirectionInErrorModal}">
+                                <p class="slds-m-bottom_medium">
+                                    {!$Label.ErrorModalBody}
+                                    <br/><br/>{!$Label.AspisServiceEmailAddress} <!-- WCH 10/09/2019 C-003397 added email address custom label --><!-- HRM 18/11/2021  C-004489 Remove ref to axa -->
+                                </p>
+                            </apex:outputText>
+                            <apex:pagemessages escape="false" />
+                        </div>
+                        <div class="slds-modal__footer slds-theme_default">
+                            <apex:outputText rendered="{!!redirectionInErrorModal}">
+                                <input type="button"
+                                    class="slds-button slds-button_destructive"
+                                    value="{!$Label.Close}"
+                                    onclick="hideError();" />
+                            </apex:outputText>
+                            <apex:outputText rendered="{!redirectionInErrorModal}">
+                                <apex:commandButton action="{!redirectPage}" 
+                                                    value="{!$Label.ModalOK}" 
+                                                    styleClass="slds-button slds-button_destructive"
+                                                    reRender="chooseAssessmentFrm" 
+                                                    status="statusSpinner"/>
+                            </apex:outputText>
+                        </div>
+                    </div>
+                </div>
+                <div id="errorModalBackdrop" class="slds-backdrop"></div>
+
+                <!-- AMI 24/12/18 C-002781 : Migrate Spain to R4
+                                           : Chatter Feed Modal -->
+                <div class="slds-hide" id="chatterfeed">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="max-width: 51rem;width:70%;">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close" />
+                                </svg>
+                                <span class="slds-assistive-text">{!$Label.Close}</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.ChatterFeedMsg1}</h2>
+                            </header>
+                            
+                            <div class="slds-modal__content slds-p-around_medium iframe-container" id="modal-content-id-1">
+                                <apex:iframe id="chatter-iframe" src="/apex/ASPISChatterPage?id={!encryptedText}" scrolling="true"/>
+                            </div>
+                            
+                            <footer class="slds-modal__footer">
+                                <button class="searchDateButton slds-button slds-button_brand slds-col--padded" style="font-weight: 400;" type="button" id="closeChatter">
+                                    {!$Label.Close}
+                                </button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </div>
+
+            <apex:actionFunction action="{!createClaimOrderAssessment}" 
+                                 name="callOrder" 
+                                 reRender="chooseAssessmentFrm" 
+                                 status="statusSpinner">
+                <apex:param name="bsType" value="" assignto="{!bsType}"/>
+            </apex:actionFunction>
+
+            <apex:actionFunction action="{!orderPartsE}" 
+                        name="callOrderE" 
+                        reRender="chooseAssessmentFrm" 
+                        status="statusSpinner">
+            <apex:param name="bsType" value="" assignto="{!bsType}"/>
+            </apex:actionFunction>
+
+            <apex:actionFunction action="{!assessmentCanQuote}" 
+                                 name="callQuote" 
+                                 reRender="chooseAssessmentFrm" 
+                                 status="statusSpinner">
+                <apex:param name="bsType" value="" assignto="{!bsType}"/>
+            </apex:actionFunction>
+
+            <script>
+                var headerHeight = $j('.fixedHeader').height();
+                $j('#topCard').css('padding-top',headerHeight+5);
+                
+                 $j(document).ready(function(){
+                    if($j('#quoteBtn').prop('disabled') == false){
+                        if({!receivedAssessmentWrapper.currentAssessment.AlreadyQuoted__c}){
+                            $j('#quoteBtn').prop('disabled',true);
+                        }
+                    }
+                     //console.log('##Quoted '+{!receivedAssessmentWrapper.currentAssessment.AlreadyQuoted__c});
+
+                    //AMI 24/12/18 C-002781 : Migrate Spain to R4
+                    //                      : Show Chatter Plublisher -->
+                    $j('#btn-showChatter').on('click',function(){
+                        $j('#chatterfeed').removeClass('slds-hide');
+                    });
+
+                    //AMI 24/12/18 C-002781 : Migrate Spain to R4
+                    //                      : Hide Chatter Plublisher -->
+                    $j('#closeChatter').on('click',function(){
+                        $j('#chatterfeed').addClass('slds-hide');
+                    });
+                });
+                
+                renderWarningSVG();
+                renderSearchSVG();
+                renderCloseSVG();
+                $j(".svgAttention").hover
+                (
+                    function(){
+                        showPopOver(this);
+                    },
+                    function(){
+                        hidePopOver(this);
+                    }
+                );
+
+                showError({!hasErrors}, {!isToastError});
+                checkPageMessage({!hasErrors});
+
+                if({!isToastError}){
+                    verifySelected();
+                }
+
+                // function checkVinPlate() {
+                //     //clearError();
+                //     //if('{!receivedAssessmentWrapper.currentAssessment.Bodyshop_is_Eligible_Non_AXA__c}'){
+                //         //console.log('verifySelected');
+                //         if({!isToastError}){
+                //             verifySelected();
+                //         }
+                //     //}
+                    
+                // }
+
+                function verifySelected() {
+                    if(!$j("[id$='plateNum']").val() || $j("[id$='plateNum']").val().length > 15){
+                        $j("[id$='plateNum']").parent().addClass("slds-has-error");
+                    }
+                    if(!$j("[id$='vinNum']").val() || $j("[id$='vinNum']").val().length > 35){
+                        $j("[id$='vinNum']").parent().addClass("slds-has-error");
+                    }
+                }
+
+                function clearError() {
+
+                    $j("[id$='plateNum']").parent().removeClass("slds-has-error");
+                    $j("[id$='vinNum']").parent().removeClass("slds-has-error");
+                }
+            </script>
+        </apex:form>
+    </body>
+    </html>
+</apex:page>

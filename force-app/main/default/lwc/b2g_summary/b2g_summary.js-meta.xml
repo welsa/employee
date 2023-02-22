@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>52.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property 
+                name="homeInterventionLabel" 
+                type="String" 
+                label="HomeIntervention Label" 
+                default="Intervention à domicile"
+                role="inputOnly"
+            />
+
+            <property 
+                name="timezone" 
+                type="String" 
+                label="timezone" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="dateRVLabel" 
+                type="String" 
+                label="DateRV Label" 
+                default="Date de rendez-vous"
+                role="inputOnly"
+            />
+
+            <property 
+                name="interventionLabel" 
+                type="String" 
+                label="Intervention Label" 
+                default="Intervention"
+                role="inputOnly"
+            />
+
+            <property 
+                name="reparationDurationLabel" 
+                type="String" 
+                label="reparationDuration Label" 
+                default="Durée de la réparation"
+                role="inputOnly"
+            />
+
+            <property 
+                name="immatriculationLabel" 
+                type="String" 
+                label="immatriculation Label" 
+                default="Immatriculation"
+                role="inputOnly"
+            />
+
+            <property 
+                name="immatriculation" 
+                type="String" 
+                label="immatriculation" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="appointmentDate" 
+                type="String" 
+                label="Appointment date" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="isSAD" 
+                type="Boolean" 
+                label="isSAD" 
+                default="false"
+                role="inputOnly"
+            />
+
+            <property 
+                name="isDebug" 
+                type="Boolean" 
+                label="Debug logs ?" 
+                default="false"
+                role="inputOnly"
+            />
+
+            <property 
+                name="repairCenterName" 
+                type="String" 
+                label="RepairCenter Name" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="repairCenterAddress" 
+                type="String" 
+                label="RepairCenter Address" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="repairCenterPhone" 
+                type="String" 
+                label="RepairCenter Phone" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="reparationDuration" 
+                type="String" 
+                label="Reparation Duration" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="reparationDescription" 
+                type="String" 
+                label="Reparation Description" 
+                role="inputOnly"
+            />
+
+            <property 
+                name="homeInterventionAddress" 
+                type="String" 
+                label="HomeIntervention Address" 
+                role="inputOnly"
+            />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

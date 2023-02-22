@@ -1,0 +1,238 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" standardController="Assessment__c" extensions="VFC12_GenerateAssessmentPDF" renderAs="pdf" language="de">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>Alpha Scale - {!currentAssessment.AssessmentNumber__c} - {!currentAssessment.PlateNumber2__c}</title>
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.css')}" />
+        <style>
+            @page {
+                size: A4;
+                margin: 75px;
+                @bottom-center {
+                    content: "Seite " counter(page) " von " counter(pages);
+                }
+            }
+            
+            h2 {
+                color: #1f497d !important;
+                font-size: 20px;
+            }
+            
+            tr {
+                padding: 5px;
+            }
+            
+            .tableDetails {
+                border-collapse: unset !important;
+                border-spacing: 10px;
+            }
+            
+            .title {
+                width: 100%;
+                text-align: center;
+                vertical-align: bottom;
+                border-bottom: 2px solid #4f81bd;
+            }
+            
+            .text-center {
+                text-align: center;
+            }
+            
+            .align-top {
+                vertical-align: top;
+            }
+        </style>
+    </head>
+
+    <body>
+        <apex:outputfield value="{!Assessment__c.Name}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.AssessmentNumber__c}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.BodyShop__c}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.BodyShop__r.Name}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.BodyShop__r.ReferenceNumber__c}" rendered="false" />
+        <!--<apex:outputfield value="{!Assessment__c.BodyShop__r.VAT_Type__c}" rendered="false" />-->
+        <apex:outputfield value="{!Assessment__c.BodyShop__r.VATNumber__c}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.BodyShop__r.ShippingStreet}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.BodyShop__r.ShippingCity}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.BodyShop__r.ShippingState}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.BodyShop__r.ShippingPostalCode}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.BodyShop__r.ShippingCountry}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.BodyShop__r.Phone}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.Manufacturer__c}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.ModelV2__c}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.PlateNumber2__c}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.VINNumber__c}" rendered="false" />
+        <apex:outputfield value="{!Assessment__c.CreatedDate}" rendered="false" />
+
+        <div>
+            <table>
+                <thead></thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}" width="300" alt="Alpha Scale Logo" />
+                        </td>
+                        <td>
+                            <p>ALPHA SCALE Germany</p>
+                            <p>Niederlassung der ALPHA SCALE</p>
+                            <p>Société par actions Simplifée</p>
+                            <p>Colonia Allee 10 – 20</p>
+                            <p>51067 Köln</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br/>
+
+        <div>
+            <div class="title">
+                <h2>Kostenvoranschlag Details</h2>
+            </div>
+            <br/>
+
+            <table class="tableDetails">
+                <thead></thead>
+                <tbody>
+                    <tr>
+                        <th>{!$ObjectType.Assessment__c.fields.Name.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.Name}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{!$ObjectType.Assessment__c.fields.Manufacturer__c.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.Manufacturer__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{!$ObjectType.Assessment__c.fields.ModelV2__c.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.ModelV2__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{!$ObjectType.Assessment__c.fields.PlateNumber2__c.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.PlateNumber2__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{!$ObjectType.Assessment__c.fields.VINNumber__c.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.VINNumber__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{!$ObjectType.Assessment__c.fields.CreatedDate.label}</th>
+                        <td>
+                            <apex:outputText value="{!createdDateString}" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br/>
+
+        <div>
+            <div class="title">
+                <h2>Karosseriedetails</h2>
+            </div>
+            <br/>
+
+            <table class="tableDetails">
+                <thead></thead>
+                <tbody>
+                    <tr>
+                        <th>{!$ObjectType.Account.fields.Name.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.Name}" />
+                        </td>
+                        <th rowspan="3" class="align-top">Adresse</th>
+                        <td rowspan="3">
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.ShippingStreet}" />
+                            <br/>
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.ShippingCity}" />,&nbsp;
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.ShippingState}" /> &nbsp;
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.ShippingPostalCode}" />
+                            <br/>
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.ShippingCountry}" />
+                            <br/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{!$ObjectType.Account.fields.ReferenceNumber__c.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.ReferenceNumber__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{!$ObjectType.Account.fields.VATNumber__c.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.VATNumber__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <!--<th>{!$ObjectType.Account.fields.VAT_Type__c.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.VAT_Type__c}" />
+                        </td>-->
+                        <th></th>
+                        <td></td>
+                        <th>{!$ObjectType.Account.fields.Phone.label}</th>
+                        <td>
+                            <apex:outputField value="{!currentAssessment.BodyShop__r.Phone}" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br/>
+
+        <div>
+            <div class="title">
+                <h2>Teile</h2>
+            </div>
+            <br/>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>{!$ObjectType.PartList__c.fields.PartNumber__c.label}</th>
+                        <th class="text-center">{!$ObjectType.PartList__c.fields.Type__c.label}</th>
+                        <th>{!$ObjectType.PartList__c.fields.Description__c.label}</th>
+                        <th class="text-center">{!$ObjectType.PartList__c.fields.Quantity__c.label}</th>
+                        <th class="text-center">{!$ObjectType.PartList__c.fields.Price__c.label}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:repeat var="currentPartList" value="{!partList}">
+                        <tr>
+                            <td>
+                                <apex:outputField value="{!currentPartList.PartNumber__c}" />
+                            </td>
+                            <td class="text-center">
+                                <apex:outputField value="{!currentPartList.Type__c}" />
+                            </td>
+                            <td>
+                                <apex:outputField value="{!currentPartList.Description__c}" />
+                            </td>
+                            <td class="text-center">
+                                <apex:outputField value="{!currentPartList.Quantity__c}" />
+                            </td>
+                            <td class="text-center">
+                                <apex:outputField value="{!currentPartList.Price__c}" />
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </div>
+    </body>
+
+    </html>
+</apex:page>

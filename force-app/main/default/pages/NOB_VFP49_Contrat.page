@@ -1,0 +1,1753 @@
+<!--
+  @description       :
+  @author            : DUN
+  @group             :
+  @last modified on  : 06-25-2021
+  @last modified by  : DUN
+  Modifications Log
+  Ver   Date         Author   Modification
+  1.0   08-12-2020   RRJ   Initial Version
+-->
+<apex:page applyHtmlTag="false"
+           showHeader="false"
+           renderAs="pdf"
+           standardStylesheets="false"
+           docType="html-5.0"
+           standardController="WorkOrder"
+           extensions="NOB_VFC49_Contrat">
+
+    <html>
+    <head>
+        <style>
+
+                @media print {
+                    /*html, body {
+                        page-break-after: avoid;
+                        page-break-before: avoid;
+                    }*/
+                }
+
+                @page {
+                    size: A4;
+                    margin-top: 0.5in;
+                    margin-bottom: 0.5in;
+                    margin-left: 0.5in;
+                    margin-right: 0.35in;
+                }
+
+                body{
+                    /*border: 1px solid red;*/
+                    font-family: sans-serif,Arial Unicode MS;
+                    font-size: 12px;
+                    font-weight: normal;
+                    font-style: normal;
+                    text-decoration: none;
+                }
+
+                div.header{
+                    /* position: absolute; */
+                    top:0;
+                    left: 0;
+                    width: 100%;
+                    height: 120px;
+                    /* border: 1px solid black; */
+                    text-align: center;
+                }
+
+                div.body{
+                    /* border: 1px solid black; */
+                }
+
+                table{
+                    width: 100%;
+                }
+
+                table thead{
+                    color: #ffffff;
+                    font-family: Arial Unicode MS,sans-serif;
+                    font-size: 13px;
+                }
+
+                .contrat-vr{
+                    color: #004099;
+                }
+                .contrat-sad{
+                    color: #426d66;
+                }
+
+                .contrat-vr table thead{
+                    background-color: #004297;
+                }
+
+                .contrat-sad table thead{
+                    background-color: #426d66;
+                }
+
+                .text-grey{
+                    color: #7f7f7f;
+                }
+
+                .text-blue{
+                    color: #004099;
+                }
+
+                .text-green{
+                    color: #426d66;
+                }
+
+                .text-small{
+                    font-size: 8px;
+                }
+                .border-blue{
+                    border: 1px solid #004297;
+                }
+                .border-green{
+                    border: 1px solid #406962;
+                }
+                .checkbox-blue{
+                    display: inline-block;
+                    width: 10px;
+                    height: 10px;
+                    border: 1px solid #004297;
+                }
+                .checkbox-green{
+                    display: inline-block;
+                    width: 10px;
+                    height: 10px;
+                    border: 1px solid #406962;
+                }
+                .checkbox-carburant-container{
+                    display: inline-block;
+                }
+                .checkbox-carburant{
+                    margin-right:10px;
+                }
+                .checkbox-oui-non-container{
+                    display: inline-block;
+                    padding: 1px 1px 1px 1px;
+                    width: 60%;
+                    overflow: overlay;
+                }
+                .checkbox-oui{
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-left: auto;
+                }
+                .checkbox-non{
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                .checkbox-valeur-carburant{
+                    display: inline-block;
+                    vertical-align: top;
+                }
+                .checkbox-label-container-left{
+                     display: inline-block;
+                     vertical-align: middle;
+                     width: 50%;
+                }
+                .checkbox-container-2-cols{
+                     display: inline-block;
+                     float: right;
+                }
+                .checkbox-row-container{
+                    margin-top:5px;
+                }
+                .checkbox-row-white-border{
+
+                }
+                .checkbox-comply{
+                    margin: 0 5px 5px 0;
+                }
+                .label-comply{
+                    display: inline-block;
+                    vertical-align: top;
+                    width: 85%;
+                }
+                .type-dommage-container{
+                    display: inline-block;
+                    width: 49%
+                }
+                .type-dommage-label{
+                    padding-left: 15px;
+                }
+                .signature-container{
+                    width: 50%;
+                    vertical-align:top;
+                }
+                .signature{
+                    font-weight: bold;
+                    font-size: 7px;
+                    /* changes here */
+                }
+                .signature-comply-container{
+                    display: inline-block;
+                    width: 50%;
+                    vertical-align: top;
+                    float: right;
+                    padding-left: 5px;
+                }
+                .comply{
+                    font-size: 10px;
+                }
+                .divers-container{
+                    display: inline-block;
+                    width: 42%;
+                    padding: 5px;
+                    min-height: 75px;
+                }
+                .observations-container{
+                    display: inline-block;
+                    width: 42%;
+                    padding: 5px;
+                    min-height: 75px;
+                    margin-left:8%;
+                    vertical-align:top;
+                }
+                .niveau-carburant{
+                    display: inline-block;
+                    text-align: right;
+                    vertical-align: top;
+                    width:35%;
+                }
+                .text-center{
+                    text-align: center;
+                }
+                .logo-container{
+                    width: auto;
+                    display: inline-block;
+                    float: left;
+                }
+                .logo{
+                    width: 115px;
+                    height: 95px;
+                }
+                .reparateur-container{
+                   color: #000000;
+                   border: 1px solid black;
+                }
+                .reparateur-title{
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+                .reparateur-details{
+                    font-size: 14px;
+                }
+                .contrat-container{
+                    padding-top: 20px;
+                }
+                .contrat-title{
+                    font-weight: bold;
+                    font-size: 14px;
+                }
+                .num-sinistre{
+                    display: inline-block;
+                    font-size: 13px;
+                }
+                .contrat-ref{
+                    display: inline-block;
+                    font-size: 14px;
+                    padding: 0 10px 0 10px;
+                }
+                .texte-attention{
+                    font-size:7px;
+                }
+                .text-align-right{
+                    text-align:right;
+                }
+                .total-a-regler{
+                    font-weight:bold;
+                    padding-left:15%;
+                }
+                .checkbox-niveau-container{
+                    display: inline-block;
+                    width: 80%;
+                    vertical-align:top;
+                }
+                .kilometrage{
+                    padding-left:30%;
+                }
+                .car-signature-table td{
+                    vertical-align:top;
+                }
+                .comply-sad{
+                    margin-top:5px;
+                    margin-bottom:5px;
+                }
+                .checkbox-valeur-satisfaction{
+                    display: table-cell;
+                    vertical-align: middle;
+                    font-weight:bold;
+                    padding-left:5px;
+                }
+                .td-satisfaction{
+                    width: 20%;
+                }
+                .satisfaction-checkbox-container{
+                    display: table-cell;
+                    vertical-align:middle;
+                }
+                .text-bold{
+                    font-weight: bold;
+                }
+                .autorisation-texte{
+                    font-weight: bold;
+                    margin-left:5px;
+                }
+                .autorisation-checkbox-container{
+                    margin-left: 10px;
+                }
+                .info{
+                    width:100%;
+                }
+                ul.dash {
+                    list-style: '-';
+                    padding-left: 1em;
+                }
+                ul.dash > li:before {
+                    content: '-';
+                    position: absolute;
+                    margin-left: -1em;
+                    display:inline-block;
+                }
+            </style>
+    </head>
+    <body>
+    <!-- Contrat location VR -->
+    <div class="header contrat-vr">
+        <div class="logo-container">
+            <apex:image url="{!URLFOR($Resource.VFP49,'VFP49/Prefikar.png')}" style="width: 200px"/>
+        </div>
+        <div style="width: 60%; display:inline-block; float: right;">
+            <div class="reparateur-container">
+                <div class="reparateur-title">{!wo.NOB_TECH_ReparateurName__c}</div>
+                <div class="reparateur-details">{!wo.NOB_TECH_ReparateurBillingStreet__c}&nbsp;{!wo.NOB_TECH_ReparateurBillingPostalCode__c}&nbsp;{!wo.NOB_TECH_ReparateurBillingCity__c}</div>
+                <div class="reparateur-details">Tel : {!wo.NOB_TECH_ReparateurPhone__c} - Fax : {!wo.NOB_TECH_ReparateurFax__c}</div>
+            </div>
+            <div class="contrat-container">
+                <div class="contrat-title">CONTRAT DE LOCATION VEHICULE DE REMPLACEMENT</div>
+                <div>
+                    <div class="num-sinistre">N° de sinistre : {!wo.NOB_TECH_InsurerClaimNumber__c}</div>
+                    <div class="border-blue contrat-ref">{!wo.NOB_TECH_ContractRefVR__c}</div>
+                </div>
+                <!--HMO-->
+                <div>
+                    <div class="num-sinistre">Votre référence contrat VR : {!wo.NOB_RefContratVR__c}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="body contrat-vr">
+        <table>
+            <thead>
+            <tr>
+                <th colspan="3"> COORDONNEES DU CONDUCTEUR PRINCIPAL</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td width="50%"><span class="text-grey">Nom du conducteur : </span>{!wo.NOB_TECH_ContactPickupLastName__c}</td>
+                <td colspan="2"><span class="text-grey">Prénom : </span>{!wo.NOB_TECH_ContactPickupFirstName__c}</td>
+            </tr>
+            <tr>
+                <td><span class="text-grey">Date de naissance : </span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3"><span class="text-grey">Adresse principale : </span>{!wo.NOB_InsuredStreet__c}</td>
+            </tr>
+            <tr>
+                <td><span class="text-grey">Code postal : </span>{!wo.NOB_InsuredZipCode__c}</td>
+                <td colspan="2"><span class="text-grey">Ville : </span>{!wo.NOB_InsuredCity__c}</td>
+            </tr>
+            <tr>
+                <td><span class="text-grey">Tél. personnel : </span>{!wo.NOB_TECH_ContactPickupPhone__c}</td>
+                <td><span class="text-grey">Tél. bureau : </span>{!wo.NOB_TECH_ContactPickup_OtherPhone__c}</td>
+                <td><span class="text-grey">Tél. mobile : </span>{!wo.NOB_TECH_ContactPickupMobilePhone__c}</td>
+            </tr>
+            <tr>
+                <td><span class="text-grey">Permis N° :</span>{!wo.NOB_EuropeanPassport__c}</td>
+                <td colspan="2"><span class="text-grey">Délivré le :</span></td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="2"> COORDONNEES DU DEUXIEME CONDUCTEUR</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td width="50%"><span class="text-grey">Nom du conducteur : </span></td>
+                <td><span class="text-grey">Prénom : </span></td>
+            </tr>
+            <tr>
+                <td><span class="text-grey">Date de naissance : </span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><span class="text-grey">Permis N° : </span></td>
+                <td><span class="text-grey">Délivré le : </span></td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="2"> INFORMATIONS SUR LE VEHICULE EN REPARATION</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td width="50%"><span class="text-grey">Marque : </span>{!wo.NOB_VehicleBrand__c}</td>
+                <td><span class="text-grey">Modèle : </span>{!wo.NOB_VehicleModel__c}</td>
+            </tr>
+            <tr>
+                <td><span class="text-grey">Immat. : </span>{!wo.NOB_TECH_VehicleRegistrationNumber__c}</td>
+                <td><span class="text-grey">Catégorie : </span></td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="4"> INFORMATIONS SUR LE VEHICULE DE LOCATION</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td colspan="2" width="50%"><span class="text-grey">Marque : </span>{!rent.NOB_ReplacementVehicule__r.NOB_Make__c}</td>
+                <td colspan="2"><span class="text-grey">Modèle : </span>{!rent.NOB_ReplacementVehicule__r.NOB_Model__c}</td>
+            </tr>
+            <tr>
+                <td colspan="4"><span class="text-grey">Immat. : </span>{!rent.NOB_ReplacementVehicule__r.NOB_PlateNumber__c}</td>
+            </tr>
+            <tr class="text-small">
+                <td width="25%"><span class="text-grey">Franchise RC / dommages : </span>{!wo.NOB_TECH_BusinessProviderFrancDommage__c}</td>
+                <td width="25%"><span class="text-grey">Franchise Vol : </span>{!wo.NOB_TECH_BusinessProviderFranchiseCasVol__c}</td>
+                <td width="25%"><span class="text-grey">Franchise Bris de glace : </span>{!wo.NOB_TECH_BusinessProviderFranchiseBriseG__c}</td>
+                <td width="25%"><span class="text-grey">Dépot degarantie : </span>{!wo.NOB_TECH_BusinessProviderMontantCaution__c}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><span class="text-grey">Energie : </span>{!rent.NOB_ReplacementVehicule__r.NOB_Carburant__c}</td>
+                <td colspan="2"><span class="text-grey">Date de 1ère m. en circulation : </span>
+                     <apex:outputPanel layout="inline" rendered="{!rent != null && rent.NOB_ReplacementVehicule__r.NOB_CirculationDate__c != null}">
+                        {!IF(DAY(rent.NOB_ReplacementVehicule__r.NOB_CirculationDate__c) > 9, DAY(rent.NOB_ReplacementVehicule__r.NOB_CirculationDate__c), '0'+TEXT(DAY(rent.NOB_ReplacementVehicule__r.NOB_CirculationDate__c)))}/{!IF(MONTH(rent.NOB_ReplacementVehicule__r.NOB_CirculationDate__c) > 9, MONTH(rent.NOB_ReplacementVehicule__r.NOB_CirculationDate__c), '0'+TEXT(MONTH(rent.NOB_ReplacementVehicule__r.NOB_CirculationDate__c)))}/{!YEAR(rent.NOB_ReplacementVehicule__r.NOB_CirculationDate__c)}
+                    </apex:outputPanel>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="4"> ETAT DU VR AU DEPART DU CONTRAT</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td colspan="2" width="50%"><span class="text-grey">Date de départ : &nbsp;{!dateRentalVR} {!timeRentalVR}</span></td>
+                <td colspan="2"><span class="kilometrage text-grey">Km au compteur départ : </span></td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div style="width: 100%;">
+                        <div style="display: inline-block; width: 45%;">
+                            <div>
+                                <div class="checkbox-niveau-container">
+                                    <div>
+                                        <div class="border-blue text-small checkbox-oui-non-container">
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Roue de secours</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-blue"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-blue"></div>
+                                                </div>
+                                            </div>
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Autoradio</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-blue"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-blue"></div>
+                                                </div>
+                                            </div>
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Triangle + Gilet de sécurité</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-blue"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-blue"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-grey niveau-carburant" >
+                                            Niv: du carburant:
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:15px;">
+                                        <div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/enfoncement.jpg'}"/>
+                                                <span class="type-dommage-label">Enfoncement</span>
+                                            </div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/impact.jpg'}"/>
+                                                <span class="type-dommage-label">Impact</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/rayeureLegere.jpg'}"/>
+                                                <span class="type-dommage-label">Rayure légère</span>
+                                            </div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/rayeureProfonde.jpg'}"/>
+                                                <span class="type-dommage-label">Rayure profonde</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-small checkbox-carburant-container">
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">Vide</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">1/4</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">1/2</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">3/4</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">Plein</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: inline-block; width: 54%; vertical-align: top;">
+                            <div>
+                                <div class="border-blue divers-container">
+                                    <div class="text-grey">Divers: </div>
+                                    <div class="text-grey text-small">(dont état des lieux intérieur + état pare brise)</div>
+                                    <div></div>
+                                </div>
+                                <div class="signature-comply-container">
+                                    <div class="comply text-center">
+                                        Je déclare avoir pris connaissance des conditions générales au verso du présent contrat et de l’état descriptif du véhicule loué mentionné ci-contre.
+                                    </div>
+                                    <br/>
+                                    <table width="100%">
+                                        <tr>
+                                            <td class="signature-container signature">
+                                                Signature de l'entreprise :
+                                            </td>
+                                            <td class="signature-container signature">
+                                                Signature du client :
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div><img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/cars.jpg'}"/></div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="4"> ETAT DU VR A LA FIN DU CONTRAT</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td colspan="2" width="50%"><span class="text-grey">Date de retour : </span></td>
+                <td colspan="2"><span class="text-grey kilometrage">Km au compteur retour* : </span></td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div style="width: 100%;">
+                        <div style="display: inline-block; width: 45%;">
+                            <div>
+                                <div class="checkbox-niveau-container">
+                                    <div>
+                                        <div class="border-blue text-small checkbox-oui-non-container">
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Roue de secours</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-blue"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-blue"></div>
+                                                </div>
+                                            </div>
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Autoradio</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-blue"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-blue"></div>
+                                                </div>
+                                            </div>
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Triangle + Gilet de sécurité</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-blue"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-blue"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-grey niveau-carburant" >
+                                            Niv: du carburant:
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:15px;">
+                                        <div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/enfoncement.jpg'}"/>
+                                                <span class="type-dommage-label">Enfoncement</span>
+                                            </div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/impact.jpg'}"/>
+                                                <span class="type-dommage-label">Impact</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/rayeureLegere.jpg'}"/>
+                                                <span class="type-dommage-label">Rayure légère</span>
+                                            </div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/rayeureProfonde.jpg'}"/>
+                                                <span class="type-dommage-label">Rayure profonde</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-small checkbox-carburant-container">
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">Vide</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">1/4</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">1/2</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">3/4</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-blue checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">Plein</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: inline-block; width: 54%; vertical-align: top;">
+                            <div>
+                                <div class="border-blue divers-container">
+                                    <div class="text-grey">Divers: </div>
+                                    <div class="text-grey text-small">(dont état des lieux intérieur + état pare brise)</div>
+                                    <div></div>
+                                </div>
+                                <div class="signature-comply-container">
+                                    <div>
+                                        <div class="checkbox-blue checkbox-comply"></div>
+                                        <div class="label-comply comply">
+                                            Je déclare avoir eu un sinistre durant la période de ce contrat.
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="checkbox-blue checkbox-comply"></div>
+                                        <div class="label-comply comply">
+                                            Je déclare n'avoir eu aucun sinistre durant la période de ce contrat.
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="checkbox-blue checkbox-comply"></div>
+                                        <div class="label-comply comply">
+                                            Je m'engage à régler les éventuels frais à ma charge (carburant, ...).
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <table width="100%">
+                                        <tr>
+                                            <td class="signature-container signature">
+                                                Signature de l'entreprise :
+                                            </td>
+                                            <td class="signature-container signature">
+                                                Signature du client :
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div><img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratVR/cars.jpg'}"/></div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="4"> INFORMATIONS DIVERSES</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td width="25%"><span class="text-grey">Nb de jours de prêt : </span></td>
+                <td width="25%"><span class="text-grey">Nb de jours inclus : </span></td>
+                <td colspan="2"><span class="text-grey">En cas de VEI, nb de jours pris en charge par l'assurance: </span></td>
+            </tr>
+            <tr>
+                <td colspan="2"><span class="text-grey">Participation forfaitaire journalière de : </span></td>
+                <td colspan="2" class="border-blue total-a-regler">TOTAL T.T.C A REGLER :</td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table>
+                        <tr>
+                            <td colspan="2" width="40%"><div class="border-blue text-center">Cachet du réparateur<br/><br/><br/><br/></div></td>
+                            <td colspan="2" width="60%" class="texte-attention">
+                                <div class="text-blue">Attention : Le conducteur du vehicule loué doit conserver ce contrat pendant toute la durée du prêt afin d'être en mesure de le présenter à toute réquisition des services de police ou de gendarmerie.</div>
+                                <div class="text-blue">Nous vous rappelons que les frais de carburant sont à la charge du client.</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="page-break-before: always"/>
+    <!-- Contrat SAD -->
+    <br/><br/><br/><br/><br/>
+    <div class="header contrat-sad">
+        <div class="logo-container">
+            <apex:image url="{!URLFOR($Resource.VFP49,'VFP49/Prefikar.png')}" style="width: 200px"/>
+        </div>
+        <div style="width: 60%; display:inline-block; float: right;">
+            <div class="reparateur-container">
+                <div class="garage-title">{!wo.NOB_TECH_ReparateurName__c}</div>
+                <div class="garage-details">{!wo.NOB_TECH_ReparateurBillingStreet__c}&nbsp;{!wo.NOB_TECH_ReparateurBillingPostalCode__c}&nbsp;{!wo.NOB_TECH_ReparateurBillingCity__c}</div>
+                <div class="garage-details">Tel : {!wo.NOB_TECH_ReparateurPhone__c} - Fax : {!wo.NOB_TECH_ReparateurFax__c}</div>
+            </div>
+            <div class="contrat-container">
+                <div class="contrat-title">CONTRAT SERVICE PRIVILEGE (S.A.D)* </div>
+                <div>
+                    <div class="num-sinistre">N° de sinistre : {!wo.NOB_TECH_InsurerClaimNumber__c}</div>
+                    <div class="border-green contrat-ref">{!wo.NOB_TECH_ContractRefSAD__c}</div>
+                </div>
+                <!--HMO-->
+                <div>
+                    <div class="num-sinistre">Votre référence contrat SAD : {!wo.NOB_RefcontratSAD__c}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="body contrat-sad" style="margin-top:-55px;">
+        <table>
+            <thead>
+            <tr>
+                <th colspan="2"> COORDONNEES DU CONDUCTEUR PRINCIPAL</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td width="50%"><span class="text-grey">Nom du conducteur : </span>{!wo.NOB_TECH_ContactPickupLastName__c}</td>
+                <td><span class="text-grey">Prénom : </span>{!wo.NOB_TECH_ContactPickupFirstName__c}</td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <tbody>
+            <tr>
+                <td width="33%"><span class="text-grey">Tél. personnel : </span>{!wo.NOB_TECH_ContactPickupPhone__c}</td>
+                <td width="33%"><span class="text-grey">Tél. bureau : </span>{!wo.NOB_TECH_ContactPickup_OtherPhone__c}</td>
+                <td width="33%"><span class="text-grey">Tél. mobile : </span>{!wo.NOB_TECH_ContactPickupMobilePhone__c}</td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <tbody>
+            <tr>
+                <td><span class="text-grey">Franchise : </span>{!wo.NOB_Franchise__c}</td>
+                <td><span class="text-grey">Fixe : </span></td>
+                <td><span class="text-grey">Variable : </span>{!wo.NOB_Variable__c}</td>
+                <td><span class="text-grey">% avec un min. de : </span>{!wo.NOB_VariableMin__c}</td>
+                <td><span class="text-grey">et un max. de : </span>{!wo.NOB_VariableMax__c}</td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="2">INFORMATIONS SUR LE VEHICULE ACCIDENTE</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td width="50%"><span class="text-grey">Marque : </span>{!wo.NOB_VehicleBrand__c}</td>
+                <td><span class="text-grey">Modèle : </span>{!wo.NOB_VehicleModel__c}</td>
+            </tr>
+            <tr>
+                <td><span class="text-grey">Immat. : </span>{!wo.NOB_TECH_VehicleRegistrationNumber__c}</td>
+                <td><span class="text-grey">Couleur : </span>{!wo.NOB_Color__c}</td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="2"> INFORMATIONS SUR LE LIEU DE RENDEZ-VOUS</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td width="50%"><span class="text-grey">Date du Rdv : {!dateRendezVous} {!timeRendezVous}</span></td>
+                <td><span class="text-grey">Nom de la personne présente : {!wo.NOB_TECH_ContactPickupFirstName__c} {!wo.NOB_TECH_ContactPickupLastName__c}</span></td>
+            </tr>
+            <tr>
+                <td colspan="2"><span class="text-grey">Lieu du rendez-vous : </span>{! wo.NOB_TECH_AssureMailingAddress__c}</td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="4"> ETAT DU VEHICLE AU DEPART DU CONTRAT</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td colspan="2" width="50%"><span class="text-grey">Date de départ : </span></td>
+                <td colspan="2"><span class="kilometrage text-grey">Km au compteur départ : </span></td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div style="width: 100%;">
+                        <div style="display: inline-block; width: 45%;">
+                            <div>
+                                <div class="checkbox-niveau-container">
+                                    <div>
+                                        <div class="border-green text-small checkbox-oui-non-container">
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Roue de secours</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-green"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-green"></div>
+                                                </div>
+                                            </div>
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Autoradio</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-green"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-green"></div>
+                                                </div>
+                                            </div>
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Triangle + Gilet de sécurité</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-green"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-green"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-grey niveau-carburant" >
+                                            Niv: du carburant:
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:35px;">
+                                        <div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/enfoncement.jpg'}"/>
+                                                <span class="type-dommage-label">Enfoncement</span>
+                                            </div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/impact.jpg'}"/>
+                                                <span class="type-dommage-label">Impact</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/rayeureLegere.jpg'}"/>
+                                                <span class="type-dommage-label">Rayure légère</span>
+                                            </div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/rayeureProfonde.jpg'}"/>
+                                                <span class="type-dommage-label">Rayure profonde</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-small checkbox-carburant-container">
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">Vide</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">1/4</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">1/2</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">3/4</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">Plein</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: inline-block; width: 54%; vertical-align: top;">
+                            <div>
+                                <div class="border-green divers-container">
+                                    <div class="text-grey">Divers: </div>
+                                    <div class="text-grey text-small">(dont état des lieux intérieur + état pare brise)</div>
+                                </div>
+                                <div class="border-green observations-container">
+                                    <div class="text-grey">Observations: </div>
+                                </div>
+                                <div class="comply text-center comply-sad">Je déclare avoir pris connaissance des conditions générales au verso du présent contrat et de l’état descriptif du véhicule loué mentionné ci-contre.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div width="100%">
+                        <table class="car-signature-table">
+                            <tr>
+                                <td width="60%">
+                                    <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/cars.jpg'}"/>
+                                </td>
+                                <td>
+                                    <div class="signature">
+                                        Signature de l'entreprise :
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="signature">
+                                        Signature du client :
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="4"> ETAT DU VEHICLE AU RETOUR DU CONTRAT</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td colspan="2" width="50%"><span class="text-grey">Date de retour : </span></td>
+                <td colspan="2"><span class="text-grey kilometrage">Km au compteur retour* : </span></td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div style="width: 100%;">
+                        <div style="display: inline-block; width: 45%;">
+                            <div>
+                                <div class="checkbox-niveau-container">
+                                    <div>
+                                        <div class="border-green text-small checkbox-oui-non-container">
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Roue de secours</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-green"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-green"></div>
+                                                </div>
+                                            </div>
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Autoradio</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-green"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-green"></div>
+                                                </div>
+                                            </div>
+                                            <div class="checkbox-row-container checkbox-row-white-border">
+                                                <div class="checkbox-label-container-left">Triangle + Gilet de sécurité</div>
+                                                <div class="checkbox-container-2-cols">
+                                                    <div class="checkbox-oui">oui</div>
+                                                    <div class="checkbox-green"></div>
+                                                    <div class="checkbox-non">non</div>
+                                                    <div class="checkbox-green"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-grey niveau-carburant" >
+                                            Niv: du carburant:
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:35px;">
+                                        <div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/enfoncement.jpg'}"/>
+                                                <span class="type-dommage-label">Enfoncement</span>
+                                            </div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/impact.jpg'}"/>
+                                                <span class="type-dommage-label">Impact</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/rayeureLegere.jpg'}"/>
+                                                <span class="type-dommage-label">Rayure légère</span>
+                                            </div>
+                                            <div style="" class="text-small type-dommage-container">
+                                                <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/rayeureProfonde.jpg'}"/>
+                                                <span class="type-dommage-label">Rayure profonde</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-small checkbox-carburant-container">
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">Vide</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">1/4</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">1/2</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">3/4</div>
+                                    </div>
+                                    <div class="checkbox-row-container">
+                                        <div class="checkbox-green checkbox-carburant"></div>
+                                        <div class="checkbox-valeur-carburant">Plein</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: inline-block; width: 54%; vertical-align: top;">
+                            <div>
+                                <div class="border-green divers-container">
+                                    <div class="text-grey">Divers: </div>
+                                    <div class="text-grey text-small">(dont état des lieux intérieur + état pare brise)</div>
+                                </div>
+                                <div class="border-green observations-container">
+                                    <div class="text-grey">Observations: </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div width="100%">
+                        <table class="car-signature-table">
+                            <tr>
+                                <td width="60%">
+                                    <img src="{!$Resource.VFP49 + '/VFP49/VFP49_Contrat/ContratSAD/cars.jpg'}"/>
+                                </td>
+                                <td>
+                                    <div class="signature">
+                                        Signature de l'entreprise :
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="signature">
+                                        Signature du client :
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="2"> A REMPLIR LORS DE LA RECEPTION DU VEHICLE REPARE</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td width="60%">
+                        <div class="text-grey">Date et heure de livraison</div>
+                        <div>Je soussigné, Madame / Monsieur</div>
+                        <div>-prend procession ce jour de mon véhicule réparé</div>
+                        <div>-valide que l’état de mon véhicule est conforme à mes attentes</div>
+                        <div>-restitue le véhicule de remplacement</div>
+                        <div>-règle les sommes qui sont à ma charge, soit ...............€ T.T.C</div>
+                    </td>
+                    <td>
+                        <div class="text-grey">Concernant la prestation globale, je me déclare :</div>
+                        <table>
+                            <tr>
+                                <td class="td-satisfaction">
+                                    <div class="satisfaction-checkbox-container">
+                                        <div class="checkbox-green"></div>
+                                    </div>
+                                    <div class="checkbox-valeur-satisfaction">Très satisfait</div>
+                                </td>
+                                <td class="td-satisfaction">
+                                    <div class="satisfaction-checkbox-container">
+                                        <div class="checkbox-green"></div>
+                                    </div>
+                                    <div class="checkbox-valeur-satisfaction">Satisfait</div>
+                                </td>
+                                <td class="td-satisfaction">
+                                    <div class="satisfaction-checkbox-container">
+                                        <div class="checkbox-green"></div>
+                                    </div>
+                                    <div class="checkbox-valeur-satisfaction">Assez satisfait</div>
+                                </td>
+                                <td class="td-satisfaction">
+                                    <div class="satisfaction-checkbox-container">
+                                        <div class="checkbox-green "></div>
+                                    </div>
+                                    <div class="checkbox-valeur-satisfaction">Peu satisfait</div>
+                                </td>
+                                <td class="td-satisfaction">
+                                    <div class="satisfaction-checkbox-container">
+                                        <div class="checkbox-green"></div>
+                                    </div>
+                                    <div class="checkbox-valeur-satisfaction">Pas satisfait</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="10">
+                                    <div class="text-grey">Observations diverses :</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="10">
+                                    <div class="text-grey" style="margin-top:10px;">....................................................................................................</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="10">
+                                    <div class="text-grey">....................................................................................................</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="60%">
+                        <div class="border-green text-center">Cachet du réparateur<br/><br/><br/><br/>
+                        </div>
+                    </td>
+                    <td width="40%">
+                        <div>*Ce document fait office d'ordre de réparation</div>
+                        <div>
+                            <span>
+                                En application des dispositions des articles L224-67 du Code de consommation, autorisez-vous le réparateur à utiliser une pièce de réemploi si nécessaire ?
+                            </span>
+                            <span class="checkbox-green autorisation-checkbox-container"></span>
+                            <span class="text-small autorisation-texte">Oui</span>
+                            <span class="checkbox-green autorisation-checkbox-container"></span>
+                            <span class="text-small autorisation-texte">Non</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="page-break-before: always"/>
+    <!-- Page : CONDITIONS GÉNÉRALES DE LOCATION CGV RSIW ???? HMO-->
+    <!--page1 -->
+
+    <div class = "pageTitle" style = "width:70%; margin:auto;text-align:center">
+        <h2><span style = "display:inline-block"><u style = "font-weight:bold">CONDITIONS GÉNÉRALES DE LOCATION VEHICULE DE REMPLACEMENT</u></span></h2>
+        <h3><span style = "display:inline-block"><u style = "font-weight:bold">Droits et obligations du Locataire</u></span></h3>
+    </div>
+
+    <div class = "tableBorder" style = "border: 3px solid black;margin-top: 20px;">
+
+            <div class="info" style = "margin-left:15px;"> 
+                <table style = "margin-left:15px;"> 
+                    <tr>
+                        <td style = "text-align: justify;
+                        text-justify: inter-word;width:36%">
+
+                            <p style = "font-size:10px; font-weight:bold">
+                                <u>DEFINITIONS</u>
+                            </p>
+
+                            <p style = "font-size:9.5px">
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Accident</span>&nbsp;: tout dommage impliquant le Véhicule de remplacement et/ou son Conducteur.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Conducteur</span> &nbsp;: le Locataire et/ou toute personne autorisée et désignée dans le contrat de location véhicule de remplacement, et responsables dudit véhicule dans les conditions exposées aux présentes.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Contrat de location véhicule de remplacement</span>&nbsp;: règles applicables dans les relations entre le Locataire, le Conducteur et le Loueur. Il comprend le Contrat de location véhicule de remplacement, intégrant l’état du Véhicule de remplacement - départ et retour, le Contrat service privilège (S.A.D) si prestation délivrée, ainsi que les présentes conditions générales de location (ci-après les « CGL »).</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Dépôt(s) de garantie(s)</span> &nbsp;: Dépôt d’une empreinte bancaire ou chèque de caution au moment de la conclusion du Contrat de location véhicule de remplacement ou autorisation(s) irrévocable(s) de prélèvement/débit conférée(s) par le Locataire destiné(s) à garantir le paiement de toutes sommes dues, y compris les éventuels FPS tel que ce terme est mentionné ci-après.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Données personnelles</span> &nbsp;: toute information relative à une personne physique identifiée ou qui peut être identifiée, directement ou indirectement, par référence à un numéro d’identification ou à un ou plusieurs éléments qui lui sont propres.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Force majeure</span> &nbsp;: événement, au sens défini le plus généralement par les tribunaux et par l’article 1218 du Code civil, échappant au contrôle du Locataire, qui ne pouvait être raisonnablement prévu et dont les effets ne pouvaient être évités et qu’il appartient au Locataire de démontrer.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Frais de stationnement ou FPS&nbsp;</span>: toutes les sommes que le Locataire devra régler au titre du stationnement du Véhicule de remplacement pendant la durée du Contrat de location véhicule de remplacement (coûts et éventuels forfaits post stationnement).</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Franchise(s)</span>&nbsp;: montant(s) qui reste(nt) à la charge du Locataire en cas d’Accident ou de Vol. Les montants des Franchises sont mentionnés sur le Contrat de location véhicule de remplacement au paragraphe « Informations sur le véhicule de location ».</span>
+                            </p>
+                        </td>
+
+                        <td style = "width:5%;">
+
+                        </td>
+
+                        <td style = "width:36%;text-align: justify;
+                        text-justify: inter-word;">
+                            <p style = "font-size:9.5px">
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Locataire</span>&nbsp;: personne physique ou morale signataire du Contrat de location véhicule de remplacement, en qualité d’entreprise ou de client, qui est en charge de la garde du Véhicule de remplacement et qui en est solidairement responsable avec le Conducteur. Le signataire du Contrat de location véhicule de remplacement est réputé être le Locataire.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Loueur </span>&nbsp;: réparateur automobile qui met à disposition gratuitement du Locataire un Véhicule de remplacement, dont il est propriétaire ou locataire, pendant la durée des réparations de son propre véhicule. Le cas échéant, le Loueur reconnaît qu’il n’est pas propriétaire du Véhicule de remplacement et qu’il a la qualité de locataire autorisé à le sous-louer.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Moyens de paiement</span>&nbsp;: sont acceptés les espèces dans le respect de la législation applicable et/ou chèques bancaires émanant d’une banque française ou instruments de paiement électronique autorisés par le Loueur lié à une carte de crédit des réseaux Visa, MasterCard et CB rattachées à un compte bancaire - à l’exception des cartes de débit immédiat à autorisation systématique (telles que Maestro, Electron, Indigo, Kyriel, Cyrus, etc.). </span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Titres de circulation</span>&nbsp;: documents que le Conducteur doit pouvoir être en mesure de présenter en cas de contrôle à bord du véhicule de remplacement, à savoir photocopie du certificat d’immatriculation, attestation d’assurances et double du Contrat de location véhicule de remplacement.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Valeur du Véhicule</span>&nbsp;: valeur « argus » du Véhicule de remplacement pour les transactions entre particuliers à la date de l’Accident ou du Vol, y compris ses accessoires et équipements ou, le cas échéant, valeur déterminée à dire d’expert.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Véhicule de remplacement</span>&nbsp;: voiture particulière (VP) ou Véhicule utilitaire léger (VUL) comprenant l’ensemble de ses accessoires et équipements mis en location à titre gratuit au Locataire par le biais de son assurance automobile.</span>
+                                <span style = "display:inline-block"><span style = "font-weight:bold">Vol</span>&nbsp;: toute disparition, détournement ou non restitution du Véhicule de remplacement s’analysant comme une soustraction frauduleuse du Véhicule de remplacement, par quelque personne que ce soit, y compris le Locataire et/ou le Conducteur.</span>
+                            </p>
+                        </td>
+                        <td style = "width:6%">
+
+                        </td>
+                    </tr>
+                </table>
+        </div>
+
+    </div>
+
+
+        <div class="info" style = "margin-left:15px;"> 
+            <table style = "margin-left:15px;"> 
+                <tr>
+                    <td style = "text-align: justify;
+                    text-justify: inter-word;width:36%">
+
+                        <p style = "font-size:10px; font-weight:bold">
+                            <u>PREAMBULE :</u>
+                        </p>
+
+                        <p style = "font-size:9.5px">
+                            Par la signature du Contrat de location véhicule de remplacement, le Locataire et/ou le Conducteur reconnaissent accepter expressément et sans réserve les présentes CGL, qui expose les droits et obligations du Loueur et du Locataire et/ou du Conducteur dans le cadre de la location du Véhicule de remplacement identifié audit Contrat de location véhicule de remplacement. Le Locataire reconnait avoir reçu un exemplaire du Contrat de location véhicule de remplacement et s’engage à respecter les dispositions qui y sont incluses. Le Loueur déclare que le Véhicule de remplacement est en bon état de fonctionnement, toutefois, le Locataire peut s’assurer de l’état du Véhicule de remplacement en procédant à un essai qui ne peut être supérieur à 30 (trente) minutes. Au-delà de 30 (trente) minutes d’essai, le Locataire sera réputé avoir accepté le Véhicule de remplacement et le considérer en bon état. Si en cours d’essai le Locataire constate une problématique technique, à l’exclusion de toute problématique esthétique ou de confort, le Locataire pourra restituer le Véhicule au Loueur, qui mettra à disposition un autre Véhicule de remplacement. Le Véhicule de remplacement est réputé être loué sans dommage apparent, à l’exception de ceux éventuellement identifiés et précisés sur les illustrations figurant sur l’état descriptif du Contrat de location véhicule de remplacement.                             
+                        </p>
+
+                        
+                        <p style = "font-size:10px; font-weight:bold">
+                            <u>ARTICLE 1ER : CONDITIONS RELATIVES AU LOCATAIRE :</u>
+                        </p>
+
+                        <p style = "font-size:9.5px;">
+                            <span style = "display:inline-block">Pour bénéficier de la location d’un Véhicule de remplacement, le Locataire devra avoir confié son propre véhicule aux ateliers du Loueur pour entretien ou réparation, sous réserve qu’un ordre de réparation soit signé par le Locataire et le Loueur.</span>
+                            Peut également être Locataire le propriétaire d’un véhicule déclaré « économiquement irréparable » ou « volé » ayant obtenu de sa
+                        </p>
+                    </td>
+
+                    <td style = "width:5%;">
+
+                    </td>
+
+                    <td style = "width:36%;text-align: justify;
+                    text-justify: inter-word;">
+                        <p style = "font-size:9.5px">
+                            compagnie d’assurance un bon de prise en charge dans le cadre de sa garantie contractuelle avec ledit assureur.
+                            Chaque Conducteur autorisé sur le Contrat de location véhicule de remplacement devra présenter l’original de son permis de conduire (seul le titulaire d’un permis européen en cours de validité pourra conduire le Véhicule de remplacement) et devra en remettre une copie recto/verso au Loueur.
+                        
+                        </p>
+
+                        <p style = "font-size:10.5px;">
+                            <u style = "font-weight:bold; display:block;">ARTICLE 2 : CONDITIONS DE LA LOCATION</u>
+                        </p>
+
+                        <p style = "font-size:9.5px">
+                            <span style = "display:inline-block">location par le Loueur au Locataire, effectuée à titre gratuit, est strictement personnelle. Toute sous-location et/ou mise à disposi¬tion et/ou vente du Véhicule de remplacement par le Locataire et/ou le Conducteur et/ou toute personne désignée directement ou indirectement par le Locataire et/ou le Conducteur, à titre gracieux ou onéreux, sont interdites.
+                            Sauf cas de Force majeure ou autorisation expresse, préalable et écrite du Loueur, seul(s) le(s) Conducteur(s) expressément mentionné(s) sur le Contrat de location véhicule de remplacement est (sont) autorisé(s) à le conduire.</span> 
+                            Dans le cas où le Conducteur n’est pas le Locataire, ce dernier se porte fort du respect des stipulations du Contrat de location véhicule de remplacement et des présentes CGL par le Conducteur.
+                            En cas d’Accident lors de sa conduite par tout conducteur, mentionné ou non mentionné sur le Contrat de location véhicule de remplacement, le Locataire demeure responsable envers le Loueur des dommages subis par le Véhicule de remplacement.
+                        </p>
+
+                        <p style = "font-size:10px; font-weight:bold"><u>ARTICLE 3 : CONDITIONS RELATIVES AU VEHICULE DE REMPLACEMENT</u></p> 
+                    </td>
+                    <td style = "width:6%">
+
+                    </td>
+                </tr>
+            </table>
+    </div>
+
+
+
+
+
+
+
+
+
+
+    <div style="page-break-before: always"/>
+    <!--page 2-->
+    <!-- Page : CONDITIONS GÉNÉRALES DE LOCATION-->
+        <div class="info" style = "margin-left:15px;"> 
+            <table style = "margin-left:15px;"> 
+            <tr>
+                    <td style = "text-align: justify;
+                    text-justify: inter-word;width:36%">
+                        <p style = "font-size:9.5px">
+                            <span style = "display:inline-block"><u style = "font-weight:bold">3.1. Départ du Véhicule de remplacement :</u></span>
+                            Lors du départ du Véhicule de remplacement, qui s’entend du moment où il est confié à la garde du Locataire, le Loueur établira et signera avec le Locataire la fiche « Etat du véhicule au départ du contrat » qui signale ses éventuels dégâts, le kilométrage du Véhicule de remplacement et son niveau de carburant. En cas d’anomalie(s) technique(s) ou défauts non apparents, le Locataire devra en faire part au Loueur dans les 30 (trente) minutes suivant le départ. A défaut, il sera réputé avoir été remis le Véhicule de remplacement en bon état de fonctionnement. Le Locataire devra restituer le Véhicule de remplacement dans le même état et avec le même niveau de carburant que celui constaté au départ.
+                            En cas de refus de signature par le Locataire, le Loueur ne pourra pas lui mettre à disposition un Véhicule de remplacement.                             
+                        </p>
+                
+                        <p style = "font-size:9.5px;">
+                            <u style = "font-weight:bold;display: block;">3.2. Utilisation du Véhicule de remplacement :</u>
+                            Le Locataire devra veiller à la bonne conservation et à l’utilisation raisonnable du Véhicule de remplacement et le maintenir dans un état de propreté raisonnable. Le Locataire et/ ou le Conducteur s’engagent à respecter scrupuleusement le Code de la Route et devront utiliser le Véhicule de remplacement exclusivement en France sur les routes autorisées à la circulation. La circulation dans les pays limitrophes nécessite une validation écrite préalable du Loueur. En cas d’accord, le Locataire devra s’assurer que le Véhicule de remplacement dispose de l’équipement approprié conforme aux règles de circulation routière du pays dans lequel le Locataire conduira ou qu’il traversera.
+                        </p>
+
+                        <p style = "font-size:9.5px">
+                            <u style = "font-weight:bold; display:block">3.3. Dépassements kilométriques :</u>
+                            Le Locataire est autorisé à effectuer au maximum 200 (deux-cents) kilomètres par jour de location, sauf kilométrage supplémentaire expressément stipulé dans le contrat d’assurance du Locataire. Tout dépassement sera facturé 35 (trente-cinq) centimes par kilomètre supplémentaire, facturé par le Loueur au Locataire à la date de restitution du Véhicule de remplacement stipulée au Contrat de location véhicule de remplacement.  
+                        </p>
+
+                        <p style = "font-size:10px; font-weight:bold">
+                            <u>ARTICLE 4 : UTILISATIONS NON AUTORISEES</u>
+                        </p>
+
+                        <p style = "font-size:9.5px;">
+                            Les utilisations suivantes du Véhicule de remplacement ne sont pas autorisées et exposent le Locataire à des poursuites ainsi qu’au versement d’éventuels dommages et intérêts :
+                            <span style = "display:inline-block">•&nbsp;Utiliser en dehors des voies carrossables ou utilisation pour circuler dans des zones interdites au public (zones aéroportuaires, militaires, etc.) ;</span>
+                            <span style = "display:inline-block">•&nbsp;Utiliser sous l’emprise de l’alcool au-delà du taux légal admis ou de toute substance stupéfiante ou médicamenteuse prohibée ;</span>
+                            <span style = "display:inline-block">•&nbsp;Fournir, à titre onéreux ou en contrepartie d’une quelconque rémunération, un service de transport de personnes (Véhicules de Tourisme avec chauffeur (VTC) ou équivalent ou covoiturage) ;</span>
+                            <span style = "display:inline-block">•&nbsp;Louer ou prêter, à titre onéreux ou gratuit, le Véhicule de remplacement à tout tiers non autorisé ;</span>
+                            <span style = "display:inline-block">•&nbsp;Tracter (ou pousser) un autre Véhicule quelconque ou une remorque ;</span>
+                            <span style = "display:inline-block">•&nbsp;Toute utilisation à des fins illicites, dans le but de commettre intentionnellement une infraction, ou à des fins contraires aux présentes CGL, à des fins publicitaires ou de propagande de toute nature ;</span>
+                            <span style = "display:inline-block">•&nbsp;L’apprentissage de la conduite ou toute utilisation dans le cadre d’épreuves, courses ou compétitions sportives (ou leurs essais) ou toute forme de reconnaissances d’itinéraires ;</span>
+                            <span style = "display:inline-block">•&nbsp;Transporter des matières inflammables, explosives, corrosives, radioactive ou comburantes, en contravention avec les dispositions légales ;</span>
+                            <span style = "display:inline-block">•&nbsp;Transporter des animaux (à l’exception des animaux domestiques de compagnie).</span>
+                            Le Locataire devra veiller à ce que le Véhicule de remplacement soit, en dehors de ses périodes d’utilisation, fermé à clef. Les systèmes de fermeture et de démarrage, ainsi que les Titres de Circulation ne doivent pas être laissés même temporairement dans le Véhicule de remplacement lorsqu’il n’est pas en circulation.
+                        </p>
+
+                        <p style = "font-size:10.5px;">
+                            <u style = "font-weight:bold; display:block;">ARTICLE 5 : TEMOINS LUMINEUX / ENTRETIEN DU VEHICULE DE REMPLACEMENT / ACCESSOIRES MIS A DISPOSITION</u>
+                        </p>
+
+                        <p style = "font-size:9.5px;">
+                            <span style = "display:inline-block">5.1. Le Locataire et/ou le Conducteur devront rester vigilants à tout signal émis par un voyant d’alerte du Véhicule de remplacement et, le cas échéant, prendre toutes les mesures conservatoires nécessaires telles que, s’il y a lieu, l’arrêt d’urgence. </span>
+                            5.2. Toute modification, aménagement, réglage, ainsi que toute dégradation ou altération du Véhicule de remplacement, tant de l’habitacle, des accessoires, que de la carrosserie et de manière générale tout élément constitutif du Véhicule de remplacement, ainsi que toute intervention mécanique ou électronique effectuée sur le Véhicule de remplacement et/ou ses accessoires, est interdit sans l’autorisation préalable et écrite du Loueur. En cas de manquement à cette disposition, le Locataire devra supporter les coûts justifiés de                             
+                        </p>
+                    </td>
+
+                    <td style = "width:5%;">
+
+                    </td>
+
+                    <td style = "width:36%;text-align: justify;
+                    text-justify: inter-word;">
+                        <p style = "font-size:9.5px">
+                            restauration du Véhicule de remplacement afin de le remettre dans le même état que celui dans lequel le Véhicule de remplacement a été remis au Locataire au jour du départ.
+                            <span style = "display:inline-block">5.3. En cas de crevaison, le Locataire et/ou le Conducteur devront remplacer la roue par la roue de secours mise à disposition dans le Véhicule de remplacement et en informer le Loueur dans un délai de 24 heures. En l’absence de roue de secours, le Locataire et/ou le Conducteur devront avoir recours au kit anti-crevaison à disposition dans le Véhicule de remplacement et contacter l’assistance mentionnée sur l’attestation d’assurance du Véhicule de remplacement.</span>
+                            <span style = "display:inline-block">5.4. Un kit de sécurité (triangle + gilet) est mis à la disposition du Locataire pendant la location. 
+                            En cas de non-restitution de ce kit au retour du Véhicule de remplacement, des frais seront facturés au Locataire à hauteur de 30 € TTC.</span>                         
+                        </p>
+
+                        <p style = "font-size:10.5px;">
+                            <u style = "font-weight:bold; display:block;">ARTICLE 6 :  INFRACTIONS AU CODE DE LA ROUTE</u>
+                        </p>
+
+                        <p style = "font-size:9.5px">
+                            <span style = "display:inline-block">6.1.&nbsp;Le Locataire et/ou le Conducteur sont responsables personnellement des infractions au Code de la Route commises de leur propre fait pendant la période de location. Ils seront par conséquent tenus personnellement du paiement de toutes les amendes résultant de la conduite et/ou de l’utilisation qu’ils ont fait du Véhicule de remplacement, ainsi que de toutes les conséquences pénales, administratives et pécuniaires pouvant découler de manquements à la règlementation en vigueur pendant la durée de la location.</span>
+                            <span style = "display:inline-block">6.2.&nbsp;Le Locataire et/ou le Conducteur devront régler les sommes visées au paragraphe 6.1, sans préjudice de toute contestation que le Locataire et/ou le Conducteur pourront former auprès des autorités compétences à l’encontre des sanctions prononcées. Dans l’hypothèse où le Loueur serait contraint de s’acquitter des sommes dues par le Locataire et/ou le Conducteur, le Locataire reconnait expressément que lesdites sommes lui seront refacturées et qu’il devra s’en acquitter sans délai auprès du Loueur, outre des frais de gestion d’un montant de 15 € (quinze euros) TTC par amende refacturée.</span>
+                            <span style = "display:inline-block">6.3.&nbsp;Le Loueur communiquera les coordonnées du Locataire et/ou du Conducteur aux autorités de police, conformément aux dispositions des articles L. 121-2, L. 121-3 et L. 121-6 du Code de la route.</span>
+ 
+                        </p>
+
+                        <p style = "font-size:10px; font-weight:bold"><u>ARTICLE 7 : REDEVANCES DE PEAGES ET FRAIS DE STATIONNEMENT</u></p> 
+
+                        <p style = "font-size:9.5px">
+                            <span style = "display:inline-block">7.1.&nbsp;Le Locataire est tenu de régler personnellement toutes sommes, redevances et frais au titre des péages et des frais de stationnement. En cas d’amende ou de redevance due par le Locataire et/ou le Conducteur et acquitté par le Loueur, le Locataire reconnait expressément que lesdites sommes lui seront refacturées et qu’il devra s’en acquitter sans délai auprès du Loueur, outre des frais de gestion d’un montant de 15 € (quinze euros) TTC par amende refacturée.</span>
+                            <span style = "display:inline-block">7.2.&nbsp;Le Locataire reconnaît que les redevances de stationnement auxquelles il est tenu sont notifiées au titulaire du certificat d’immatriculation, sans préjudice de la possibilité pour lui de prouver le contraire par tous moyens.</span>
+                            <span style = "display:inline-block">Le Locataire reconnait expressément que, conformément à l’article L.2333-87 du code général des collectivités territoriales, les recours contre les redevances de stationnement appartiennent au titulaire du certificat d’immatriculation.</span>
+                            Par conséquent, le Locataire comprend et accepte que les éventuelles redevances de stationnement pour la période de location, qui auraient été notifiées au titulaire du certificat d’immatriculation, lui seront transmises par ce dernier afin que le Locataire puisse, le cas échéant, contester lesdites redevances. 
+                            <span style = "display:inline-block">7.3.&nbsp;En cas d’annulation ou de réduction de la redevance, le Locataire fera le nécessaire auprès du Loueur afin que ce dernier lui restitue tout ou partie de la redevance refacturée.</span>
+                        </p>
+
+                        <p style = "font-size:10px; font-weight:bold">
+                            <u>ARTICLE 8 : DUREE DE LA LOCATION</u>                        
+                        </p>
+
+                        <p style = "font-size:9.5px">
+                            <span style = "font-weight:bold">8.1.</span>La location est consentie pour une durée déterminée, dont le terme est stipulé au Contrat de location véhicule de remplacement, conformément aux garanties souscrites par le Locataire dans le cadre de son assurance. Le Locataire sera prévenu 24 (vingt-quatre) heures avant la fin des travaux de son propre véhicule par le Loueur afin de convenir d’un créneau horaire de rendez-vous pour restituer le Véhicule de remplacement. Dans l’hypothèse où le véhicule du Locataire ne serait pas réparable, le Loueur en informera le Locataire et ce dernier bénéficiera d’un délai de 24 (vingt-quatre) heures pour restituer le Véhicule de remplacement. 
+                            <span style = "display:inline-block">8.2. En cas de dépassement de 24 (vingt-quatre) heures par le Locataire et/ou en cas d’absence de réponse du Locataire, le Loueur pourra facturer une indemnité journalière supplémentaire de 15 € (quinze euros) TTC par jour de retard pour les 2 (deux) premiers jours et 30 € (trente euros) TTC pour les jours suivants.</span>                        
+                        </p>
+
+                    </td>
+                    <td style = "width:6%">
+
+                    </td>
+                </tr>
+            </table>
+</div>
+
+    <!--page-3-->
+       <!-- Page : CONDITIONS GÉNÉRALES DE LOCATION-->
+       <div class="info" style = "margin-left:15px;margin-top:0.5in;"> 
+        <table style = "margin-left:15px;"> 
+            <tr>
+                <td style = "text-align: justify;
+                text-justify: inter-word;width:36%;border:2 px solid green">
+                    <p style = "font-size:9.5px">
+                        Toute journée de retard expose également le Locataire à s’acquitter de tous les coûts de kilométrages, le kilométrage de 200 (deux-cents) kilomètres par jour n’étant accordé qu’au titre de la location et n’étant pas accordé lors d’une éventuelle période de retard. 
+                        8.3. En cas de dépassement, le Locataire devra s’acquitter en plus du montant de l’indemnité journalière visée au paragraphe 8.2, d’une majoration kilométrique à hauteur de 35 (trente-cinq) centimes par kilomètre supplémentaire.
+                    </p>
+                
+                    <p style = "font-size:10px; font-weight:bold">
+                        <u>ARTICLE 9 : FIN DU CONTRAT DE LOCATION VEHICULE DE REMPLACEMENT ET RESTITUTION DU VEHICULE DE REMPLACEMENT </u>
+                    </p>
+
+                    <p style = "font-size:9.5px;">
+                        <u style = "font-weight:bold;display: block;">9.1. Lieu et horaires de restitution :</u>
+                        <span style = "display:block">Les lieux et horaires de restitution du Véhicule de remplacement sont visées au Contrat de location véhicule de remplacement.
+                            Sauf cas de Force majeure, en cas d’abandon du Véhicule de remplacement, le Locataire aura à supporter les frais et conséquences inhérents audit abandon et au rapatriement du Véhicule de remplacement sur le site du Loueur, sans préjudice des frais et dédommagements auquel il s’expose en raison du retard de la restitution et des dépassements kilométriques constatés</span>
+                    </p>
+
+                    <p style = "font-size:9.5px">
+                        <u style = "font-weight:bold; display:block">9.2. État du Véhicule de remplacement au retour :</u>
+                        <span style = "display:block">Le Locataire devra restituer le Véhicule de remplacement dans le même état que celui constaté au départ et tel que cela résulte de la fiche « état du véhicule au départ » du Contrat de Location véhicule de remplacement.</span>
+                        <span style = "display:inline-block">Lors du retour du Véhicule de remplacement, le Loueur établira et signera avec le Locataire la fiche « Etat du véhicule à la fin du contrat » qui signale ses éventuels dégâts, le nombre de kilomètres parcourus et le niveau de carburant constaté au retour de la location.</span>
+                        <span style = "display:inline-block">Si le Locataire ne souhaite pas établir avec le Loueur ou signer la fiche « État du Véhicule à la fin du contrat », le Locataire confie au Loueur le soin de réaliser seul « l’État du Véhicule à la fin du contrat », accepte les constatations réalisées, ainsi que, le cas échéant, la facturation des dommages et/ou frais complémentaires calculés comme il est fait mention au paragraphe 10.3 ci-dessous, et par conséquent, renonce expressément à tout recours à ce titre. Le Loueur devra se ménager la preuve du refus de signer la fiche « Etat du Véhicule à la fin du contrat » par le Locataire, par exemple en conservant un message ou une décharge écrite du Locataire.</span>
+                    </p>
+
+                    <p style = "font-size:10px; font-weight:bold">
+                        <u>ARTICLE 10 : INCIDENTS POUVANT SURVENIR PENDANT LA LOCATION </u>
+                    </p>
+
+                    <p style = "font-size:9.5px;">
+                        En cas d’Accident, de panne immobilisant le Véhicule de remplacement, de Vol ou toute autre dégradation survenue sur le Véhicule de remplacement, le Locataire devra immédiatement prendre contact avec l’assistance du Loueur dont les coordonnées téléphoniques sont transmises au départ du Véhicule de remplacement.                                 
+                    </p>
+
+                    <p style = "font-size:9.5px;font-weight:bold">
+                        <u>10.1. Accident :</u>                          
+                    </p>
+
+                    <p style = "font-size:9.5px;">
+                        <u style = "font-weight:bold; display:block;">10.1.1. Obligations du Locataire en cas d’Accident :</u>
+                       
+                        <span style = "display:inline-block">En cas d’Accident, le Locataire devra immédiatement le signaler au Loueur. Un constat amiable d’Accident, que le Locataire et/ou le Conducteur soient responsables ou non, devra être dressé avec le tiers impliqué dans l’Accident et fourni au Loueur, sauf cas de Force majeure, le plus rapidement possible dans les 48 heures suivant l’Accident et, dans tous les cas, avant la fin du Contrat de location véhicule de remplacement. Le Locataire et/ou le Conducteur feront les diligences raisonnables pour remplir le constat amiable de façon lisible, exploitable et signé des deux Parties. En cas d’impossibilité, le Locataire devra fournir au Loueur le rapport de police ou de gendarmerie établi lors de l’Accident.</span>
+                        En cas de dommage au Véhicule de remplacement, le Locataire ne devra pas le faire réparer par un tiers, sauf accord préalable formel et écrit du Loueur. A défaut de respect de ces obligations, le Locataire restera redevable du montant du préjudice et ne pourra en demander le remboursement au Loueur. En tout état de cause, le Locataire bénéficiera de l’assistance de dépannage souscrite par le Loueur, qui se chargera de restituer le Véhicule de remplacement.                      
+                    </p>
+
+                    <p style = "font-size:9.5px; padding-bottom:20px;">
+                        <u style = "font-weight:bold; display:block;">10.1.2. Engagement financier du Locataire :</u>
+                        En cas d’Accident, l’engagement financier du Locataire est limité au montant de la Franchise mentionné sur le Contrat de location véhicule de remplacement « Informations sur le véhicule de location », sauf dans les cas visés au paragraphe 10.2 ci-après, si le Locataire est totalement ou partiellement responsable du sinistre ou lorsque le tiers n’est pas identifié et, ceci même lorsque l’Accident n’a pas entraîné de dommages 
+                    </p>
+                </td>
+
+                <td style = "width:5%;">
+
+                </td>
+
+                <td style = "width:36%;text-align: justify;
+                text-justify: inter-word;">
+                    <p style = "font-size:9.5px">
+                        au Véhicule de remplacement mais des dommages aux tiers, en raison du montant des frais et coûts qui seront supportés par le Loueur. De ce fait, le Locataire devra s’acquitter du montant total des réparations de remise en état du Véhicule de remplacement pour les cas visés à l’article 10.2 et sera redevable au maximum du montant de la franchise en cas de sinistre en responsabilité totale ou partielle et en cas de tiers non identifié. 
+                    </p>
+
+                    <p style = "font-size:9.5px;font-weight:bold">
+                        <u>10.2. Ce qui n’est pas assuré :</u>                          
+                    </p>
+
+                    <p style = "font-size:9.5px">
+                       
+                        <span style = "display:inline-block">Sauf Force majeure, les dommages restent intégralement à la charge du Locataire, sans qu’il puisse être fait application des dispositions applicables à la Franchise, dans la limite de la Valeur du Véhicule augmentée des frais et coûts liés à son immobilisation dans les cas suivants :</span>
+                        <span style = "display:inline-block">•&nbsp;Non-respect des stipulations figurant à l’article 4 des présentes CGL</span>
+                        <span style = "display:inline-block">•&nbsp;Mauvaise appréciation du gabarit (hauteur, largeur, etc.) du Véhicule de remplacement tant en ses parties hautes que basses (parties hautes du Véhicule de remplacement : celles situées au-dessus de la ligne de pare-brise et parties basses : celles situées en dessous du bas de portes/pare -chocs).</span>
+                        <span style = "display:inline-block">•&nbsp;Erreurs de carburant, altérations et détériorations des éléments mécaniques lorsqu’elles résultent d’une utilisation manifestement fautive ou inappropriée et/ou de la circulation en dépit des alertes apparaissant sur le tableau de bord ;</span>
+                        <span style = "display:inline-block">•&nbsp;Modification de toute nature qu’elle soit apportée au Véhicule de remplacement ;</span>
+                        <span style = "display:inline-block">•&nbsp;Dépassement non autorisé du fait du Locataire de la durée de la location</span> 
+                        <span style = "display:inline-block">•&nbsp;Conduite du Véhicule de remplacement, sauf les cas prévus ci-avant, par toute personne non autorisée par le Loueur ;</span>
+                        <span style = "display:inline-block">•&nbsp;Conduite sous l’influence de boissons alcooliques au-delà du taux légal, de narcotiques, drogues ou stupéfiants, de barbituriques ou de médicaments autres que ceux pris dans le cadre d’un traitement prescrit et contrôlé par un médecin et compatible avec la conduite d’un véhicule terrestre à moteur</span>
+                        <span style = "display:inline-block">•&nbsp;Refus du Locataire et/ou du Conducteur de se soumettre aux vérifications des taux d’alcoolémie et présence de médicaments ou stupéfiants dans le sang par les autorités de police ;</span> 
+                        <span style = "display:inline-block">•&nbsp;Abandon ou de la non-restitution du Véhicule de remplacement du fait du Locataire (sauf cas de Force majeure) ;</span>
+                        <span style = "display:inline-block">•&nbsp;Dégradation des sièges et équipements intérieurs (et notamment, brûlures, déchirures, tâches, …) et dommages causés par les biens ou les animaux transportés ;</span>
+                        <span style = "display:inline-block">•&nbsp;Non-déclaration d’un Accident même si le Véhicule de remplacement n’a pas subi de dommage ou non-transmission au Loueur du constat amiable d’Accident ou transmission d’un constat amiable inexploitable ou frauduleux (constat de complaisance) ;</span> 
+                        <span style = "display:inline-block">•&nbsp;Dégâts, Accidents et dégradations causés volontairement par le Locataire ou toute personne directement ou indirectement liée au Locataire ;</span>  
+                        <span style = "display:inline-block">•&nbsp;Négligence ou de la faute manifestement excessive(s) de la part du Locataire dans la conduite ou la garde du Véhicule de remplacement (y compris des systèmes de verrouillage et de démarrage/arrêt) et notamment l’absence de respect des règles et critères impératifs de conduite imposés par la loi ou la réglementation applicable lors de la circulation du Véhicule de remplacement ;</span> 
+                        <span style = "display:inline-block">•&nbsp;épassement du poids autorisé en charge dans le Véhicule de remplacement ;</span> 
+                        <span style = "display:inline-block">•&nbsp;Appropriation par le Locataire du Véhicule de remplacement au moyen d’une fausse déclaration susceptible de constituer un abus de confiance, un détournement, une utilisation illicite ou frauduleuse de son propre fait ou de toute personne liée directement ou indirectement à lui.</span>
+                    </p>
+
+                    <p style = "font-size:10px; font-weight:bold"><u>10.3. Evaluation des dommages :</u></p> 
+
+                    <p style = "font-size:9.5px">
+                        Le montant des dommages sera calculé, soit au moyen d’un logiciel de télé-expertise exploité par le Loueur, soit par un expert indépendant et sera notifié au Locataire dans un délai de 24 (vingt-quatre) heures ouvrées à compter de la restitution du Véhicule de remplacement. Le Loueur devra adresser un devis au Locataire afin de l’informer du montant des réparations. Si le montant des réparations du Véhicule de remplacement est inférieur à la franchise indiquée sur le Contrat de location véhicule de remplacement, le Locataire devra payer au maximum le montant réel des réparations. Inversement, si le montant des réparations est supérieur à la franchise indiquée sur le Contrat de location véhicule de remplacement, le Locataire devra payer au maximum le montant de la franchise. Le Locataire devra régler au surplus les frais d’immobilisation calculés sur la base du tarif de la journée supplémentaire soit 15 € (quinze euros) TTC pour les 2 (deux) premiers jours et 30 € (trente euros) TTC pour les jours suivants s’il apparait que les dommages sont intervenus dans un cas visé à l’article 10.2 des présentes CGL. 
+                    </p>
+                </td>
+                <td style = "width:6%">
+
+                </td>
+            </tr>
+        </table>
+</div>
+
+
+    <!--page 4-->
+    <div style="page-break-before: always"/>
+    <!-- Page : CONDITIONS GÉNÉRALES DE LOCATION-->
+     <div class="info" style = "margin-left:15px;"> 
+                <table style = "margin-left:15px;"> 
+                    <tr>
+                        <td style = "text-align: justify;
+                        text-justify: inter-word;width:36%">
+                            <p style = "font-size:9.5px">
+                                <span style = "display:inline-block">En cas de désaccord , le Locataire aura la possibilité, dans un délai de 8 jours ouvrés de la notification du montant des dommages fixé dans les conditions prévues au paragraphe 10.3 ci-dessus, de demander à ses frais une contre-expertise réalisée par un expert agréé ou, à défaut, un expert figurant sur la liste des experts judicaires du ressort de la Cour d’Appel du lieu de la location ou du lieu de son domicile compétent en matière automobile. Les conclusions de l’expert s’imposeront aux parties.</span> 
+                                Le Locataire autorise expressément le Loueur à appréhender tout ou partie du Dépôt de garantie versé lors de la mise à disposition du Véhicule de remplacement afin de régler tout ou partie des sommes calculées et arrêtées afin de réparer les dommages constatés. Le Locataire s’engage également à régler toute somme excédentaire encore due et non couverte par le Dépôt de garantie. 
+                                
+                            </p>
+                        
+                            <p style = "font-size:10px; font-weight:bold">
+                                <u>ARTICLE 11 : VOL OU TENTATIVE DE VOL DU VEHICULE DE REMPLACEMENT</u>
+                            </p>
+
+                            <p style = "font-size:9.5px;">
+                                <u style = "font-weight:bold;display: block;">11..1. Dispositions à prendre :</u>
+                                <span style = "display:block">Le Locataire devra déclarer le Vol ou la tentative de Vol aux autorités de police dès qu’il en aura pris connaissance ainsi qu’au Loueur et restituer les clés du Véhicule de remplacement et le récépissé de dépôt de la déclaration de Vol au Loueur. 
+                                Cette formalité doit être accomplie dans les deux jours ouvrés à compter du moment où le Locataire en aura eu connaissance (sauf cas de Force Majeure). La location prend fin au jour de l’accomplissement des formalités ci- dessus. </span>
+                                
+                            </p>
+                            <p style = "font-size:9.5px">
+                                <u style = "font-weight:bold; display:block">11..2. Conséquences du Vol ou de la tentative de Vol :</u>
+                                <span style = "display:block">Dans le cas où les dispositions qui précèdent ont été respectées, l’engagement financier du Locataire est limité au montant de la Franchise mentionnée dans le Contrat de location véhicule de remplacement « Informations sur le véhicule de location ». 
+                                En revanche, l’engagement financier du Locataire sera total si : </span>
+                                <span  style = "display:block">•&nbsp;Le Locataire n’a pas rempli les obligations susvisées, notamment de restitution des éléments visés au paragraphe 11.1 ci-dessus ;</span>
+                                <span  style = "display:block">•&nbsp;Si le Vol ou la tentative de Vol est du fait du Locataire et/ou du Conducteur et/ou de toute personne directement ou indirectement liée au Locataire et/ou au Conducteur, ou si le Vol a pu être réalisé avec la complicité du Locataire ;</span>
+                                <span  style = "display:block">•&nbsp;En cas de Vol du Véhicule de remplacement, du fait de l’imprudence ou de la négligence du Locataire dans la garde du Véhicule de remplacement et/ou du système de verrouillage (clés ou systèmes électroniques) du Véhicule de remplacement ;</span>
+
+                                Dans ces cas, le Locataire devra rembourser intégralement la Valeur du Véhicule.
+                
+                                Le Locataire autorise expressément le Loueur à percevoir le Dépôt de garantie afin de rembourser pour partie la Valeur du Véhicule et le Locataire s’engage à régler au Loueur l’ensemble des sommes dues.
+                            </p>
+
+                            <p style = "font-size:10px; font-weight:bold">
+                                <u>ARTICLE 12 : ASSURANCES ET COMPLÉMENTS DE PROTECTION :</u>
+                            </p>
+
+                            <p style = "font-size:9.5px;">
+                                <u style = "font-weight:bold;">12.1. Assurance « responsabilité civile » et « dommage aux tiers » </u>
+                                <span style = "display:inline-block">La responsabilité civile du Locataire et/ou du Conducteur vis-à-vis des tiers est couverte par la police d’assurance de « Responsabilité Civile » souscrite en application des dispositions légales et notamment l’article L211-1 du Code des assurances. Elle garantit les dommages causés aux tiers.</span>
+                                <u>Elle ne garantit pas les dommages quels qu’ils soient causés au Véhicule de remplacement, par le Locataire ou les tiers. Elle ne garantit pas le Vol du Véhicule de remplacement.</u>                                 
+                            </p>
+
+                            <p style = "font-size:9.5px;">
+                                <u style = "font-weight:bold; display:block;">12.2. Limitation de responsabilité du Loueur :</u>
+                               
+                                Le Loueur ne saura être tenu pour responsable de toute perte de chance et perte d’exploitation subi par le Locataire ou tout tiers dans le cadre de l’exécution du Contrat de location Véhicule de remplacement. 
+                                Le Loueur ne sera pas responsable - même après le retour du Véhicule de remplacement - des dommages ou disparitions causés aux vêtements, effets, valeurs, matériels informatiques, équipements nomades, téléphones portables et plus généralement de tous objets ou marchandises transportés dans le Véhicule de remplacement. 
+                                                                
+                            </p>
+                     
+                            <p style = "font-size:10px; font-weight:bold">
+                                <u>ARTICLE 13 : CONDITIONS FINANCIÈRES</u>
+                            </p>
+
+                            <p style = "font-size:9.5px">
+                                <u style = "font-weight:bold; display:block;">13.1. Délais – Dépôt de garantie</u>
+                                Pour pouvoir prendre possession du Véhicule de remplacement, le Locataire devra effectuer le Dépôt de garantie qui est indiqué au moment de la conclusion du Contrat de location véhicule de remplacement sur le paragraphe « Informations sur le véhicule de 
+                            </p>
+                        </td>
+
+                        <td style = "width:5%;">
+
+                        </td>
+
+                        <td style = "width:36%;text-align: justify;
+                        text-justify: inter-word;">
+                            <p style = "font-size:9.5px">
+                                location ». A défaut, le Locataire ne pourra pas prendre possession du Véhicule de remplacement. 
+                                <span style = "display:block;">A la fin du Contrat de location véhicule de remplacement, le Locataire devra payer les éventuelles sommes restant à sa charge en application des présentes. Il est entendu qu’avant tout encaissement du dépôt de garantie, le Loueur devra informer le Locataire et présenter un justificatif des montants dus.</span>
+                                <span style = "display:block;">Le Locataire est redevable des Frais de stationnement résultant de la garde du Véhicule de remplacement pendant la durée du Contrat de location véhicule de remplacement, tel que cela résulte de l’article 7 des présentes CGL. Il autorise expressément le Loueur à procéder au débit du Moyen de paiement autorisé et, en tant que de besoin, à appréhender le Dépôt de garantie lors de la réception par le Loueur du/ des FPS.</span>
+                                <span style = "display:inline-block">Sauf en cas d’Accident ou de Vol, le Dépôt de garantie est restitué à la fin du Contrat de location véhicule de remplacement, sous déduction des éventuelles sommes dues au Loueur dans les conditions ci-dessous, sauf le cas où le Loueur estime nécessaire de conserver le Dépôt de garantie afin de garantir le paiement des FPS restituable sur justification du paiement par le Locataire. Dans cette hypothèse, le Dépôt de garantie sera restitué, sous réserve de son utilisation pour payer des FPS, dans le délai d’un mois à compter de la fin du Contrat de location véhicule de remplacement.</span>
+                                Dans le cas où un solde existerait en faveur du Locataire, le Loueur remboursera ladite somme dans le même délai et conditions que ci-dessus. 
+                            </p>
+
+                            <p style = "font-size:9.5px">
+                                <u style = "font-weight:bold; display:block;">13.2. Carburants, autres frais</u>
+                               
+                                Le carburant reste à la charge du Locataire et il devra restituer le Véhicule de remplacement avec le même niveau de carburant que celui figurant dans la fiche « État du Véhicule au départ ». A défaut, le coût du carburant (soit 2,44 € le litre de diesel et 2,66 € le litre d’essence) majoré d’une somme forfaitaire de 10 € TTC correspondant aux frais et coûts de prestations sera facturé au Locataire. 
+                                Un Véhicule de remplacement restitué dans un état particulièrement plus sale que lors de sa mise à disposition (par exemples tâches sur les sièges ou les revêtements intérieurs, boues ou traces particulièrement visibles sur la carrosserie) peut faire l’objet d’une facturation forfaitaire de 20 € TTC, ce que le Locataire accepte expressément.  
+                                Le nombre de kilomètres parcourus est constitué par la différence constatée sur le compteur du Véhicule de remplacement entre le jour de son départ et le jour de son retour au Loueur. Sauf cas de défaillance mécanique, si le compteur n’a pu fonctionner correctement du fait du Locataire, le Locataire serait redevable d’une indemnité égale à 1.000 (mille) kilomètres par jour de location calculée sur la base du montant de 35 (trente-cinq) centimes par kilomètre soit une estimation de 350 € TTC par jour de location. 
+                            </p>
+
+                            <p style = "font-size:10px; font-weight:bold"><u>ARTICLE 14 : TRIBUNAL COMPETENT EN CAS DE LITIGE</u></p> 
+
+                            <p style = "font-size:9.5px">
+                                <u style = "font-weight:bold; display:block;">14.1. Locataire consommateur</u>
+                                
+                                Dans l’hypothèse où le Locataire est un Consommateur au sens de l’article liminaire du Code de la consommation, et en cas de litige relatif à la location d’un Véhicule de remplacement, le Locataire peut adresser une réclamation préalable à l’adresse postale suivante : {!wo.NOB_TECH_ReparateurBillingStreet__c}, {!wo.NOB_TECH_ReparateurBillingPostalCode__c}, {!wo.NOB_TECH_ReparateurBillingCity__c} ou par mail à : {!wo.NOB_TECH_ReparateurEmailAddress__c}.
+                                A défaut de solution amiable, le Locataire peut s’adresser au Médiateur du Conseil national des professions de l’automobile (CNPA) par courrier (Monsieur le médiateur du CNPA, 50 rue Rouget de Lisle – 92158 SURESNES Cedex) ou via le site <a href = 'www.mediateur-cnpa.fr'>www.mediateur-cnpa.fr</a>
+                                En cas d’échec de la procédure de règlement amiable du litige relatif à la location d’un Véhicule de remplacement, celui-ci devra être porté, devant le Tribunal du ressort soit d'une des juridictions territorialement compétentes en vertu du code de procédure civile, soit de la juridiction du lieu où il demeurait au moment de la conclusion du contrat ou de la survenance du fait dommageable.
+                            </p>
+
+                            <p style = "font-size:9.5px">
+                                <u style = "font-weight:bold; display:block;">14.2. Locataire commerçant</u>
+                              
+                                A défaut de solution amiable, si le Locataire a signé le Contrat de location véhicule de remplacement en qualité de commerçant, <u style = "font-weight:bold;">tout litige survenant à raison de ce contrat sera porté devant le Tribunal Commerce du siège social du Loueur</u>                              
+                            </p>
+
+                            <p style = "font-size:10px; font-weight:bold">
+                                <u>ARTICLE 15 : DONNEES PERSONNELLES</u>                        
+                            </p>
+
+                            <p style = "font-size:9.5px">
+                                En sa qualité de responsable de traitement, le Loueur collecte des Données personnelles concernant le Locataire et le Conducteur, telles que noms, prénoms, adresse, téléphone, permis de conduire, police d’assurance.
+                                Cette collecte de Données personnelles a notamment pour finalité la bonne exécution du Contrat de location véhicule de remplacement et le respect des obligations légales du Loueur.
+                            </p>
+
+                        </td>
+                        <td style = "width:6%">
+
+                        </td>
+            </tr>
+        </table>
+    </div>
+    
+
+    <!--end of page 4 -->
+
+
+    <div style="page-break-before: always"/>
+    <!-- Page : CONDITIONS GÉNÉRALES DE LOCATION-->
+     <div class="info" style = "margin-left:15px"> 
+                <table style = "margin-left:15px"> 
+                    <tr>
+                        <td style = "text-align: justify;
+                        text-justify: inter-word;width:44%">
+                            <p style = "font-size:9.5px">
+                            Conformément aux dispositions légales n°78-17 du 6 janvier 1978 relative à l’informatique, aux fichiers et aux libertés modifiées et le règlement UE 2016/679 sur la protection des données (ci-après le « RGPD »), le Locataire et/ou le Conducteur disposeront d’un droit d’accès à leurs Données personnelles, de demander qu’elles soient rectifiées, complétées ou mises à jour. Le Locataire et/le Conducteur peuvent également demander l’effacement de leurs Données personnelles ou s’opposer à leur traitement à condition de justifier d’un motif légitime. Le Locataire et/ou le Conducteur peuvent demander à exercer leur droit à la portabilité de leurs données, c’est-à-dire le droit de recevoir les données fournies dans un format structuré et le droit de fournir ces données à un tiers. Le Locataire et/ou le Conducteur peuvent formuler des directives relatives à la conservation à l’effacement et à la communication de leur données personnelles après leur mort.
+                            </p>
+                        
+                            <p style = "font-size:9.5px">
+                            Ces droits peuvent être exercés par le Locataire et/ou le Conducteur en adressant leur demande accompagnée d’un justificatif d’identité par courrier recommandé à l’adresse postale suivante : {!wo.NOB_TECH_ReparateurBillingStreet__c}, {!wo.NOB_TECH_ReparateurBillingPostalCode__c}, {!wo.NOB_TECH_ReparateurBillingCity__c} ou par mail à : {!wo.NOB_TECH_ReparateurEmailAddress__c}.
+                            </p>
+
+                            <p style = "font-size:9.5px">
+                            En signant le Contrat de location véhicule de remplacement, le Locataire autorise le Loueur à les conserver durant toute la durée de la relation contractuelle entre le Locataire et le Loueur et pendant 5 ans à compter de la fin de ladite relation contractuelle. Toutefois, les Données personnelles permettant d’établir la preuve d’un droit ou d’un contrat, ou conservées au titre du respect d’une obligation légale, peuvent faire l’objet d’un archivage sécurisé pour une durée n’excédant pas la durée nécessaire aux finalités légales pour lesquelles elles sont conservées (notamment mais non exclusivement celles prévues par le Code de commerce, le Code civil et le Code de la consommation mais également par les dispositions comptables et fiscales applicables).
+                            </p>
+                            <p style = "12.5px; font-style: italic">
+                                Je reconnais avoir pris connaissance des Conditions de Location : 
+                            </p>
+                            
+                            <td>
+                                <p>&nbsp;</p>
+                            </td>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style = "border : 1px solid">
+                            <p style = "font-weight: bold; font-style: underline; padding-left:10px;"><u>Date et signature du Locataire précédées de la mention « Bon pour location »</u></p>
+                            <p class = "signature_space" style = "margin-top:45px;">&nbsp;</p>
+                        </td>
+                        <td><p>&nbsp;</p></td>
+                    </tr>
+                </table>
+    </div>
+
+    
+    <table style = "width:100%;margin-top:45px;margin-left:-10px">
+        <tr>
+            <td style = "text-align: justify;
+            text-justify: inter-word;width:60%; border: 2px solid black; word-break: break-all">
+                <p style = "font-weight:bold; font-size:11px; padding-left:10px;">Récapitulatif des sommes potentiellement exigibles :</p>
+                    <ul class = "dash">
+                        <li>
+                            <p style = "padding-right:20px; font-size:9.5px">
+                            Dépôt de garantie encaissé en cas d’endommagement du véhicule (hors éléments prévus à l’article 10.2), d’infraction au code de la route, de redevances de péage et frais de stationnement ;</p>
+                        </li>
+                
+                        <li>
+                            <p style = "padding-right:20px; font-size:9.5px">200 (deux cents) kilomètres inclus par jour avec facturation de 0,35 € TTC / kilomètre supplémentaire ;</p>
+                        </li>
+                    
+                        <li>
+                            <p style = "padding-right:20px; font-size:9.5px">2Si kit sécurité absent lors de la restitution du véhicule, facturation à hauteur de 30 € TTC ;
+                            </p>
+                        </li>
+                
+                
+                    
+                        <li>
+                            <p style = "padding-right:20px; font-size:9.5px">Paiement des infractions de la route, redevances de péages et frais de stationnement au réel avec majoration de 15 € TTC par amende majorée ;
+                            </p>
+                        </li>
+                    
+                        <li>
+                            <p style = "padding-right:20px; font-size:9.5px">Dépassement de la durée de location, paiement d’une indemnité forfaitaire journalière de 15 € TTC / jour de retard pour les 2 (deux) premiers jours et 30 € (trente euros) TTC pour les jours suivants ;
+                            </p>
+                        </li>
+                
+                        <li>
+                            <p style = "padding-right:20px; font-size:9.5px">En cas de dégradation du véhicule visé à l’article 10.2, paiement de tous les frais associés à la remise en état du véhicule avec paiement d’une indemnité forfaitaire journalière de 15 € TTC / jour de retard pour les 2 (deux) premiers jours et 30 € (trente euros) TTC pour les jours suivants.;
+                            </p>
+                        </li>
+                
+                        <li>
+                            <p style = "padding-right:20px; font-size:9.5px">En cas d’absence de carburant facturation du litre manquant soit 2,44 € TTC le litre de diesel et 2,66 € TTC le litre d’essence avec majoration d’une indemnité de 10 € TTC ;
+                            </p>
+                        </li>
+                
+                        <li>
+                            <p style = "padding-right:20px; font-size:9.5px">Véhicule restitué anormalement sale, facturation forfaitaire de 20 € TTC ;
+                            </p>
+                        </li>
+                    
+                        <li>
+                            <p style = "padding-right:20px; font-size:9.5px">Dégradation du compteur, facturation de 1 000 kilomètres en plus par jour soit environ 350 € TTC / jour de prêt
+                            </p>
+                        </li>
+                    </ul>
+            </td>
+            <td>
+                <p>&nbsp;</p>
+            </td>
+        </tr>
+    </table>
+
+    </body>
+    </html>
+</apex:page>

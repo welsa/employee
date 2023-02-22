@@ -1,0 +1,538 @@
+<apex:page controller="ASPISMyQuotations" showHeader="false" sidebar="true" standardStylesheets="false" applyBodyTag="false" docType="html-5.0" applyHtmlTag="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <title>{!$label.ASPISMyQuotations}</title>
+
+            <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+
+            <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/site.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'css/bootstrap-iso.css')}" /> 
+            <apex:stylesheet value="{!URLFOR($Resource.BootstrapDatePicker, 'css/bootstrap-datepicker3.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.VFP06, 'css/VFP06.css')}" />
+
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" /> 
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.MomentJS)}" />
+            <apex:includescript value="{!URLFOR($Resource.Bootstrap, 'js/bootstrap.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'js/bootstrap-datepicker.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.en-GB.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.es.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.fr.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.it.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.de.min.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.BootstrapDatePicker, 'locales/bootstrap-datepicker.nl-BE.min.js')}" />
+            <apex:includeScript value="{!URLFOR($Resource.FixedHeader, 'floatThead-2.0.0/dist/jquery.floatThead.min.js')}" />
+            <apex:includeScript value="{!URLFOR($Resource.TableSorter, 'tablesorter-master/js/jquery.tablesorter.js')}" />
+
+            <script>
+                window.params = {
+                    "locale" : "{!locale}",
+                    "invoiceSVGUrl": "{!URLFOR($Resource.slds,'/assets/icons/standard-sprite/svg/symbols.svg#file')}",
+                    "eventSVGUrl":"{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#event')}",
+                    "eventPNGUrl":"{!URLFOR($Resource.slds, '/assets/icons/utility/event_60.png')}",
+                    "closeSVGUrl": "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                    "closePNGUrl": "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}"
+                };
+                var translationMap =  jQuery.parseJSON('{!JSENCODE(mapOriginalTranslatedJson)}');
+            </script>
+            <style>
+                .searchDateButton {
+                    background: #103184;
+                    color: #fff;
+                    font-size: 14px;
+                    height: 32px;
+                }
+                .slds-grid.slds-grid--align-end{
+                    margin-bottom: 10px;
+                }
+                .slds .slds-card {
+                    overflow-x: hidden;
+                }
+                .divWrapper{
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+                table.floatThead-table {
+                    border-bottom-width:1px!important;
+                }
+                .sortClass{
+                    cursor: pointer;
+                }
+                .classHeading{
+                    padding-bottom: 0px;
+                }
+            </style>
+        </head>
+        <body class="slds-scope">
+             <apex:form id="myOrderForm">
+                    <div class="slds" style="min-width: 1300px;">
+                       <c:ASPISHeader />    
+                    <div class="slds-card">
+                    <div class="slds-card__header">             
+                        <div class="slds-grid">
+                        <h2 class="classHeading slds-media slds-media_center slds-has-flexi-truncate slds-text-heading_small">
+                            {!$Label.MyQuotations}
+                        </h2>
+                            <div class="slds-form-element slds-col--padded"> 
+                                <div class="slds-float--right slds-form-element__control" style="width:200px;">
+                                    <div class="slds-input-has-icon slds-input-has-icon--right">
+                                        <span class="event">
+                                                
+                                        </span> 
+                                        <input id="date1" class="dateField slds-input" type="text" data-date-start-date="01/01/2015"/>                                                              
+                                    </div>                          
+                                </div>
+                            </div>                          
+                            <div class="slds-form-element"> 
+                                <div class="slds-float--right slds-form-element__control" style="width:200px;"> 
+                                    <div class="slds-input-has-icon slds-input-has-icon--right">
+                                        <span class="event">
+                                        
+                                        </span>
+                                        <input id="date2" class="dateField slds-input" type="text" data-date-start-date="01/01/2015"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="searchDateButton slds-button slds-button_brand" type="button" onclick='initialiseTable();' >{!$label.Search}</button>
+                        </div>
+                    </div>
+                    <div class="divWrapper">
+                    </div>
+                    <div id="calendar" class="bootstrap-iso calendar-div" style="position: absolute; z-index:1005!important">
+                    </div>
+                    <div class="demo-only" style="height: 6rem;" id="loadTable">
+                        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                            <span class="slds-assistive-text">{!$label.Loading}</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <apex:outputPanel id="errorMessage">
+                    <div id="toastMessage" 
+                        class="slds-notify_container slds-hide">
+                        <div class="slds-notify slds-notify_toast slds-theme_error slds-grid_align-center" role="alert">
+                            <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                    title="{!$Label.Close}"
+                                    type="button"
+                                    onclick="hideError();">
+                            </button>
+                            <div class="slds-notify__content">
+                                <p class="slds-text-align_center customErrorMsg"></p>
+                                <apex:pagemessages id="toastErrorMessage" escape="false" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="errorModal"
+                        class="slds-modal slds-modal_prompt"
+                        aria-hidden="false"
+                        role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <div id="errorModalBody">
+                                     <p class="slds-m-bottom_medium">
+                                        {!$Label.ErrorModalBody}
+                                    </p>
+                                </div>
+                                <apex:pagemessages escape="false" />
+                                <div id='privilege' class="message errorM3" role="alert">
+                                    <table class="messageTable">
+                                        <tbody>
+                                            <tr valign="top">
+                                                <td><img alt="ERROR" class="msgIcon" src="/s.gif" title="ERROR"/></td>                                           
+                                                <td class="messageCell">
+                                                    <div class="messageText">
+                                                        <span>
+                                                            <h4 style='color:#cc0000'>  {!$Label.Error_Status}:
+                                                            </h4>
+                                                        </span><apex:outputtext value="{!$Label.InsufficientPrivileges}" escape="false"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="slds-modal__footer slds-theme_default">
+                                <div id="closeButton">
+                                    <input type="button"
+                                        class="slds-button slds-button_destructive"
+                                        value="{!$Label.Close}"
+                                        onclick="hideError();" />
+                                 </div>
+                                 
+                                 <div id = "okButton">
+                                         <apex:commandButton action="{!redirectPage}" 
+                                                            value="{!$Label.ModalOK}" 
+                                                            styleClass="slds-button slds-button_destructive"
+                                                            reRender="InvoiceFrm" 
+                                                            status="statusSpinner"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="errorModalBackdrop" class="slds-backdrop"></div>
+                </apex:outputPanel>
+            </div>
+
+                <script>
+                    var $j = jQuery.noConflict();
+
+                     $j(function(){
+                        $j.tablesorter.addParser({
+                            // set a unique id
+                            id: "dateParser",
+                            is: function(s) {
+                                // return false so this parser is not auto detected
+                                return false;
+                            },
+                            format: function(s, table, cell, cellIndex) {
+                                if(cellIndex == 5){
+                                    var splitStr = s.split('/');
+                                    var mydate = new Date(splitStr[2],splitStr[1]-1,splitStr[0]); 
+                                    var d = new Date(mydate);
+                                    return d.getTime();
+                                }
+
+                                return s;
+                            },
+                            type: 'numeric'  
+                        });
+                    });
+            
+                    
+                    $j(document).ready(function() {
+                        //initialise moment
+                        moment.locale("{!locale}");
+
+                        $j(".dateField").each(function(index, el) {
+                            if ($j(el).val()) {
+                                $j(el).val(moment(new Date($j(el).val())).format('L'));
+                            }
+                        });
+
+                        $j(".dateField").datepicker({
+                            todayBtn: "linked",
+                            language: window.params.locale,
+                            container: "#calendar",
+                            autoclose: true,
+                        });
+
+                        $j("#date1").datepicker( "setDate" , moment(moment().subtract(30,'days')).format('L'));
+                        $j("#date2").datepicker( "setDate" , moment().format() );
+                        
+                        //hide spinner
+                        $j('#loadTable').hide();
+                        
+                        //initialise table
+                        initialiseTable();
+    
+                        //fixed header again for resize window
+                        $j(window).resize(function() {
+                            adjustHeight();                                                         
+                        });                      
+                    });
+
+                    function adjustHeight(){
+                        var divPosition;
+                        var tableHeight;
+                        if($j(".floatThead-wrapper").position() != undefined){
+                            divPosition = $j(".floatThead-wrapper").position().top;
+                            divPosition = divPosition + 3;
+                            tableHeight = $j(window).height() - divPosition;
+                            $j('.divWrapper').height(tableHeight);
+                        }
+                    }
+                
+                    function initialiseTable(){
+                        if($j("#date1").val() != 'undefined' && $j("#date2").val() != 'undefined' ){
+                            $j('.divWrapper').empty(); 
+                            $j('.floatThead-table').empty();
+                            $j('table.fixTHeader').floatThead('destroy');
+
+                            //show spinner
+                            $j('#loadTable').show();
+
+                            if("{!decryptedBSId}" != null && "{!decryptedBSId}" != ''){
+                                ASPISMyQuotations.assessmentDisplay($j("#date1").val(),$j("#date2").val(),"{!decryptedBSId}",function(result, event){
+                                    if (event.status){                                
+                                        populate(result);   
+                                    }else {
+                                        console.log(event.message);
+                                    }
+                                }, {escape:true});
+                            }
+                        }
+                    }
+                
+                    function returnCorrectIconClass(column,classToApplied){
+                        console.log('column',column);
+                        console.log('classToApplied',classToApplied);
+                        /*if(column == 'Order Reference'){
+                            return '.orderReference' + classToApplied;*/
+                        if(column == '{!JSENCODE($ObjectType.Assessment__c.fields.Status__c.label)}'){
+                            return '.status' + classToApplied;
+                        }
+                        //WCH 18/07/2019 C-003340 In R4, Add additional columns on 2 pages
+                        else if(column == '{!$label.OrderReferenceForAspisQuotation}'){
+                            return '.orderReference' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Assessment__c.fields.PlateNumber2__c.label)}'){
+                            return '.plateNumber' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Assessment__c.fields.ClaimReference__c.label)}'){
+                            return '.claimReference' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Assessment__c.fields.Manufacturer__c.label)}'){
+                            return '.manufacturer' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Assessment__c.fields.ModelV2__c.label)}'){
+                            return '.model' + classToApplied;
+                        }else if(column == '{!JSENCODE($ObjectType.Assessment__c.fields.Createddate.label)}'){
+                            return '.createdDate' + classToApplied;
+                        }
+                    }                                      
+                
+                    function populate(listWrapper){
+                        var content = '';
+                        
+                            content      =  '<table id="tableAssessment" class="tablesorter fixTHeader slds-table slds-table_bordered slds-table_cell-buffer">';
+                            content     += '<thead>';
+                            content     += '<tr>';
+
+                            content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" scope="col"><span>';
+                            content     += '{!JSENCODE($ObjectType.Assessment__c.fields.Status__c.label)}';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass statusUP"/>';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass statusDOWN"/>';
+                            content     += '</span></th>';
+
+                            //WCH 18/07/2019 C-003340 In R4, Add additional columns on 2 pages
+                            if((listWrapper.length > 0 && listWrapper[0].currentAssessment.TECH_EntityCountryCode__c=='ES') || '{!locale}'=='es_ES'){
+                                content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" data-sortdirection="" scope="col" ><span>';
+                                content     += '{!$label.OrderReferenceForAspisQuotation}';
+                                content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass orderReferenceUP"/>';
+                                content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass orderReferenceDOWN"/>';
+                                content     += '</span></th>';
+                            }
+                            
+                            content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" scope="col"><span>';
+                            content     += '{!JSENCODE($ObjectType.Assessment__c.fields.PlateNumber2__c.label)}';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass plateNumberUP"/>';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass plateNumberDOWN"/>';
+                            content     += '</span></th>';
+
+                            content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" scope="col"><span>';
+                            content     += '{!JSENCODE($ObjectType.Assessment__c.fields.ClaimReference__c.label)}';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass claimReferenceUP"/>';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass claimReferenceDOWN"/>';
+                            content     += '</span></th>';
+
+                            content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" scope="col"><span>';
+                            content     += '{!JSENCODE($ObjectType.Assessment__c.fields.Manufacturer__c.label)}';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass manufacturerUP"/>';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass manufacturerDOWN"/>';
+                            content     += '</span></th>';
+
+                            content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" scope="col"><span>';
+                            content     += '{!JSENCODE($ObjectType.Assessment__c.fields.ModelV2__c.label)}';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass modelUP"/>';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass modelDOWN"/>';
+                            content     += '</span></th>';                      
+
+                            content     += '<th class="slds-text-heading_label slds-text-align_center sortClass" slds-truncate scope="col"><span>';
+                            content     += '{!JSENCODE($ObjectType.Assessment__c.fields.Createddate.label)}';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowup_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass createdDateUP"/>';
+                            content     += '<img src="{!URLFOR($Resource.SLDS, "assets/icons/utility/arrowdown_60.png")}" alt="" class="slds-icon slds-icon--xx-small iconHideClass createdDateDOWN"/>';
+                            content     += '</span></th>';
+
+                            content += '</tr>';
+                            content += '</thead>';
+                               
+                            content += '<tbody>';
+
+                            var errorPermission = false;
+
+                            for (var i = 0; i < listWrapper.length; i++) {
+                                if (!listWrapper[i].hasReadPermission) {
+                                    errorPermission = true;
+                                    break;
+                                }
+                            }
+                            console.log('##errorPermission '+errorPermission);
+                            if(listWrapper.length > 0 && !errorPermission){
+
+                            //building table body
+                                for(var i = 0; i < listWrapper.length; i++) {
+                                if(listWrapper[i].hasReadPermission){                   
+                                    content += '<tr>';                        
+                                    if(listWrapper[i].currentAssessment.OrderStatus__c.valueOf().toLowerCase() == translationMap['INACCEPTANCE'].valueOf().toLowerCase()){
+                                        content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row" >';
+                                        content += '<a style="color : #f15249" href="/apex/OrderMakeSelection?id='+listWrapper[i].assClaimEncodedId+'&ChildId='+listWrapper[i].assClaimOrderEncodedId+'&socb=true">';//WCH 08/04/2020 C-003677
+                                        content += (listWrapper[i].currentAssessment.OrderStatus__c != undefined) ? listWrapper[i].currentAssessment.OrderStatus__c : '';
+                                        content += '</a>';
+                                        content += '</td>';
+                                    }
+                                    else if((listWrapper[i].currentAssessment.OrderStatus__c.valueOf().toLowerCase() == translationMap['QUOTATION SENT'].valueOf().toLowerCase())||(listWrapper[i].currentAssessment.OrderStatus__c.valueOf().toLowerCase() == translationMap['QUOTATION IN PROGRESS'].valueOf().toLowerCase())){
+                                        content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row" >';
+                                        content += '<a href="/apex/VFP17_PrintPartListForAssessment?id='+listWrapper[i].currentAssessment.Id+'&force_download=true" target="_blank" style="color : #858a94">';
+                                        content += (listWrapper[i].currentAssessment.OrderStatus__c != undefined) ? listWrapper[i].currentAssessment.OrderStatus__c : '';
+                                        content += '</a>';
+                                        content += '</td>';
+                                    }else if(listWrapper[i].currentAssessment.OrderStatus__c.valueOf().toLowerCase() == translationMap['PENDING DISTRIBUTOR (CARE)'].valueOf().toLowerCase()){
+                                        content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row" >';
+                                        // content += '<a href="/apex/VFP14_PrintPartListForBodyshop?force_download=true&id='+listWrapper[i].currentSalesOrder.Id+'&isDeliveryNote=true" target="_blank" style="color : #858a94">';
+                                        content += '<a href="/apex/VFP14_PrintPartListForBodyshop?force_download=true&id='+listWrapper[i].salesOrderEncodedId+'&isDeliveryNote=true" target="_blank" style="color : #858a94">';
+                                        content += (listWrapper[i].currentAssessment.OrderStatus__c != undefined) ? listWrapper[i].currentAssessment.OrderStatus__c : '';
+                                        content += '</a>';
+                                        content += '</td>';
+                                    }
+
+                                    /*content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                    if(listWrapper[i].currentAssessment.OrderStatus__c == 'INACCEPTANCE'){
+                                        content += '<a href="/apex/OrderMakeSelection?id='+listWrapper[i].assClaimEncodedId+'&ChildId='+listWrapper[i].assClaimOrderEncodedId+'">';
+                                        content += (listWrapper[i].bodyShopOrderNumber != undefined) ? listWrapper[i].bodyShopOrderNumber : '';
+                                        content += '</a>';
+                                    }
+                                    else if(listWrapper[i].currentAssessment.OrderStatus__c != 'INACCEPTANCE'){
+                                        content += '<a href="/apex/VFP14_PrintPartListForBodyshop?force_download=false&id='+listWrapper[i].currentSalesOrder.Id+'&isDeliveryNote=true" target="_blank">';
+                                        content += (listWrapper[i].bodyShopOrderNumber != undefined) ? listWrapper[i].bodyShopOrderNumber : '';
+                                        content += '</a>';
+                                    }
+                                    content += '</td>';*/
+
+                                    //WCH 18/07/2019 C-003340 In R4, Add additional columns on 2 pages
+                                    if(listWrapper[0].currentAssessment.TECH_EntityCountryCode__c=='ES'){
+                                        content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                        content += (listWrapper[i].soName != undefined) ? listWrapper[i].soName : '';
+                                        content += '</td>';
+                                    }
+
+                                    content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                    content += (listWrapper[i].currentAssessment.PlateNumber2__c != undefined) ? listWrapper[i].currentAssessment.PlateNumber2__c : '';
+                                    content += '</td>';
+
+                                    content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                    content += (listWrapper[i].currentAssessment.ClaimReference__c != undefined) ? listWrapper[i].currentAssessment.ClaimReference__c : '';
+                                    content += '</td>';
+
+                                    content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                    content += (listWrapper[i].currentAssessment.Manufacturer__c != undefined) ? listWrapper[i].currentAssessment.Manufacturer__c : '';
+                                    content += '</td>';
+
+                                    content += '<td  class="slds-text-body_regular slds-text-align_center slds-truncate" scope="row">';
+                                    content += (listWrapper[i].currentAssessment.ModelV2__c != undefined) ? listWrapper[i].currentAssessment.ModelV2__c : '';
+                                    content += '</td>';                             
+
+                                    content += '<td class="slds-text-body_regular slds-text-align_center" scope="row">';
+                                    content += (listWrapper[i].currentAssessment.CreatedDate != undefined) ? moment(listWrapper[i].currentAssessment.CreatedDate).format('DD/MM/YYYY') : '';
+                                    content += '</td>';
+
+                                    content += '</tr>'; 
+                                }//if hasReadPermission
+                            }//end for
+                            
+                            content += '</tbody>';
+                            content += '</table>';
+                        }
+                        else if (listWrapper.length <= 0){
+                            /*content =  '<table id="tableInvoice" class="tablesorter fixTHeader slds-table slds-table_bordered slds-table_cell-buffer">';
+                            
+                            content += '<tr><td class="slds-text-body_regular slds-text-align_center">';*/
+                            content += '<tr id="emptyTr"><td colspan="11" class="slds-text-body_regular slds-text-align_center">';
+
+                            content += '{!$label.NoDataFound}';
+
+                            content += '</td></tr>';
+
+                            content += '</tbody>';
+
+                            content += '</table>';
+                        }
+                        else if(errorPermission){
+                            $j('#errorModalBody').hide(); 
+                            $j('#closeButton').hide();
+                            $j('#okButton').show();
+                            $j('#privilege').show();
+                            showError(true,false);                       
+                        }
+
+                        
+                        $j('.divWrapper').append(content);
+                        
+
+                        //hide all arrows on initial loading
+                        $j('.iconHideClass').hide();
+                        
+                        //remove scroll bar if list is empty
+                        /*if(listWrapper.length > 0){
+                            $j('.divWrapper').css('overflow-y','scroll');
+                        }
+                        else{
+                            $j('.divWrapper').css('overflow-y','hidden');
+                        }*/
+
+                        //initialise table sorter
+                        $j("#tableAssessment").tablesorter({
+                            headers: {
+                                5: {
+                                    sorter: "dateParser"
+                                }
+                            }
+                        }).bind('sortEnd',function(event) {
+                            var table = event.target;
+                            var currentSort = table.config.sortList;
+                            
+                            // target the first sorted column
+                            var columnNum = currentSort[0][0];
+                            var columnName = $j(table.config.headerList[columnNum]).text();
+
+                            //hide active icon first
+                            $j('.iconHideClass').hide();
+
+                            $j('.sortClass').each(function(index,ele){
+                                if($j(ele).hasClass('tablesorter-headerDesc')){
+                                    var updatedClass = returnCorrectIconClass(columnName.trim(),'DOWN');
+
+                                    //show icon
+                                    $j(updatedClass).show();
+                                }else if($j(ele).hasClass('tablesorter-headerAsc')){
+                                    var updatedClass = returnCorrectIconClass(columnName.trim(),'UP');
+
+                                    //show icon
+                                    $j(updatedClass).show();
+                                }
+                            });
+                        }).floatThead({
+                            scrollContainer: function($table) {
+                                return $j('table.fixTHeader').closest('.divWrapper');
+                            },
+                            position: 'absolute'
+                        });
+
+
+                        if(listWrapper.length == 0){
+                            $j('#emptyTr').height($j(window).height()-($j('.floatThead-wrapper').position().top+50));
+                        }
+
+                        adjustHeight();
+                        $j('table.fixTHeader').floatThead('reflow');
+
+                        //hide spinner
+                        $j('#loadTable').hide();
+                    }
+
+                    renderIcons();
+
+                    showError({!hasErrors
+                    }, {!isToastError
+                    });
+                    checkPageMessage({!hasErrors
+                    });
+                </script>
+            </apex:form>
+        </body>
+    </html>
+</apex:page>

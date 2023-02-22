@@ -1,0 +1,728 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="Search" extensions="RESTPostInvoice">
+
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> 
+
+    <head>
+        <title>{!$Label.SearchTitle}</title>
+        <link rel="icon" type="image/png" href="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_without_name.png')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.ASPISOrderSite, 'css/search.css')}" />
+
+        <!-- Initalise the global variable first as these values are used in the external javascript files -->
+        <script> 
+            window.params = {
+                // URL For Icons
+                "searchSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#search')}",
+                "searchPNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility/search_60.png')}",
+                "clearSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#clear')}",
+                "clearPNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/clear_60.png')}",
+                "recordSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action-sprite/svg/symbols.svg#new_custom31')}",
+                "recordPNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/custom31_60.png')}",
+                "closeSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#close')}",
+                "closePNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/action/close_60.png')}",
+                "recordInvSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/standard-sprite/svg/symbols.svg#record')}",
+                "recordInvPNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/standard/record_60.png')}",
+                "arrowUpSVGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility-sprite/svg/symbols.svg#chevronup')}",
+                "arrowUpPNGUrl" : "{!URLFOR($Resource.slds, '/assets/icons/utility/chevronup_60.png')}"
+            };
+        </script>
+        <style>
+            .greenColor{
+                background-color: #8DC181;
+            }
+            .slds-text-heading--medium, .slds-text-heading_medium {
+                font-size: 1rem;
+            }
+        </style>
+    </head>
+
+    <body>
+        <apex:form id="searchForm">
+            <div class="slds" style="min-width: 1250px;" id="formtop">
+            <c:ASPISHeader />
+                <!-- <div id="fixedHeader" class="slds-global-header_container" style="background: #fdfdfd;"><c:ASPISHeader /></div> -->
+                
+                <!-- <article class="slds-card" id="topCard" style="margin-left:15%;margin-right:15%;"> -->
+                <!--Assessment if does not have invoice or is recently searched-->
+
+                <!-- AMI 23/11/2018  C-002781 : Migrate Spain to R4
+                                              : Display Cases
+                                              : Additional Check For case -->
+                <apex:outputText rendered="{!((!isAssessmentWrapperListEmpty && isListInvoicesEmpty && isListCaseEmpty) || (!isShowingSearchResult && !isAssessmentWrapperListEmpty))}">
+                    <article class="slds-card alignItemCenterAssessmentOnly" >
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__body">
+                                    <h2>
+                                        <apex:outputText rendered="{!isShowingSearchResult}">
+                                            <span class="slds-text-heading_small">{!$ObjectType.Assessment__c.labelPlural}</span>
+                                        </apex:outputText>
+
+                                        <apex:outputText rendered="{!!isShowingSearchResult}">
+                                            <span class="slds-text-heading_small">{!$Label.RecentlyViewed}</span>
+                                        </apex:outputText>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body">
+                            <div class="slds-card__body_inner">                            
+                                <ul class="slds-has-dividers_around-space">
+                                    <apex:repeat value="{!assessmentWrapperList}" var="currentAssessmentWrapper">
+                                        <li class="slds-item slds-theme_default">
+                                            <div class="slds-tile slds-tile_board slds-media">
+                                                <div class="slds-media__figure recordSVG" />
+                                                <div class="slds-media__body">
+                                                    <div class="slds-tile__detail slds-text-body_small">
+                                                        <ul class="slds-list_horizontal slds-has-dividers_right slds-text-heading_medium">
+                                                            <li class="slds-item">
+                                                                <a href="{!IF(!currentAssessmentWrapper.redirectToSO, $Page.OrderChooseAssessment & '?AssessmentId=' & currentAssessmentWrapper.currentAssessment.EncodedId__c, $Page.ASPISSalesOrder & '?Id=' & currentAssessmentWrapper.salesOrderEncodedId)}" class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <span class="slds-item">
+                                                                        <apex:outputField value="{!currentAssessmentWrapper.currentAssessment.Manufacturer__c}" />
+                                                                    </span>
+                                                                    <span class="slds-item">{!currentAssessmentWrapper.currentAssessment.ModelV2__c}</span>
+                                                                    <span class="slds-item">{!currentAssessmentWrapper.currentAssessment.PlateNumber2__c}</span>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+
+                                                        <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                            <li class="slds-item">
+                                                                <!--DUN 16/03/2018 Added MissionNumber for BE-->
+                                                                <apex:outputText rendered="{!currentUser.CountryCode != 'BE'}">
+                                                                    {!$ObjectType.Assessment__c.fields.ClaimReference__c.label}
+                                                                    :&nbsp;{!currentAssessmentWrapper.currentAssessment.ClaimReference__c}
+                                                                </apex:outputText>
+                                                                <apex:outputText rendered="{!currentUser.CountryCode == 'BE'}">
+                                                                    {!$ObjectType.Assessment__c.fields.MissionNumber__c.label}
+                                                                    :&nbsp;{!currentAssessmentWrapper.currentAssessment.MissionNumber__c}
+                                                                </apex:outputText>
+                                                            </li>
+                                                            <li class="slds-item">{!$Label.ASRef}: {!currentAssessmentWrapper.currentAssessment.ASReference__c}</li>
+                                                        </ul>
+
+                                                        <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                            <li class="slds-item">{!$Label.AssessmentDate}: &nbsp;
+                                                                <apex:outputField value="{!currentAssessmentWrapper.currentAssessment.CreatedDate}" />
+                                                            </li>
+                                                            <li class="slds-item">{!$Label.LastAction}: &nbsp;
+                                                                <apex:outputField value="{!currentAssessmentWrapper.currentAssessment.LastModifiedDate}" />
+                                                            </li>
+                                                        </ul>
+
+                                                        <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                            <li class="slds-item">
+                                                                <apex:outputText rendered="{!currentAssessmentWrapper.currentAssessment.BodyShop__c != null && currentAssessmentWrapper.currentAssessment.BodyShop__r.Type == 'Expert'}">
+                                                                    {!$Label.AssessmentInProgress}
+                                                                </apex:outputText>
+
+                                                                <apex:outputText rendered="{! currentAssessmentWrapper.currentAssessment.BodyShop__c == null || (currentAssessmentWrapper.currentAssessment.BodyShop__c != null && currentAssessmentWrapper.currentAssessment.BodyShop__r.Type != 'Expert')}">
+                                                                    {!$Label.MyAssessment}
+                                                                </apex:outputText>
+                                                            </li>
+                                                        </ul>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </apex:repeat>
+                                </ul>                        
+                            </div>
+                        </div>
+                    </article>
+                </apex:outputText>
+
+                <!--Assessment and invoices-->
+                <div class="slds-grid">
+                    <!--Assessment if has invoice-->
+                    <apex:outputText rendered="{!(!isAssessmentWrapperListEmpty && !isListInvoicesEmpty)}">
+                        <div class=" slds-size--1-of-2 slds-col--padded">
+                            <article class="slds-card alignItemCenter" >
+                                <div class="slds-card__header slds-grid">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div class="slds-media__body">
+                                            <h2>
+                                                <span class="slds-text-heading_small">{!$ObjectType.Assessment__c.labelPlural}</span>
+                                            </h2>
+                                        </div>
+                                    </header>
+                                </div>
+                                <div class="slds-card__body">
+                                    <div class="slds-card__body_inner">                            
+                                        <ul class="slds-has-dividers_around-space">
+                                            <apex:repeat value="{!assessmentWrapperList}" var="currentAssessmentWrapper">
+                                                <li class="slds-item slds-theme_default">
+                                                    <div class="slds-tile slds-tile_board slds-media">
+                                                        <div class="slds-media__figure recordSVG" />
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-tile__detail slds-text-body_small">
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right slds-text-heading_medium">
+                                                                    <li class="slds-item">
+                                                                        <a href="{!IF(!currentAssessmentWrapper.redirectToSO, $Page.OrderChooseAssessment & '?AssessmentId=' & currentAssessmentWrapper.currentAssessment.EncodedId__c, $Page.ASPISSalesOrder & '?Id=' & currentAssessmentWrapper.salesOrderEncodedId)}" class="slds-list_horizontal slds-has-dividers_right">
+                                                                            <span class="slds-item">
+                                                                                <apex:outputField value="{!currentAssessmentWrapper.currentAssessment.Manufacturer__c}" />
+                                                                            </span>
+                                                                            <span class="slds-item">{!currentAssessmentWrapper.currentAssessment.ModelV2__c}</span>
+                                                                            <span class="slds-item">{!currentAssessmentWrapper.currentAssessment.PlateNumber2__c}</span>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">
+                                                                        <!--DUN 16/03/2018 Added MissionNumber for BE-->
+                                                                        <apex:outputText rendered="{!currentUser.CountryCode != 'BE'}">
+                                                                            {!$ObjectType.Assessment__c.fields.ClaimReference__c.label}
+                                                                            :&nbsp;{!currentAssessmentWrapper.currentAssessment.ClaimReference__c}
+                                                                        </apex:outputText>
+                                                                        <apex:outputText rendered="{!currentUser.CountryCode == 'BE'}">
+                                                                            {!$ObjectType.Assessment__c.fields.MissionNumber__c.label}
+                                                                            :&nbsp;{!currentAssessmentWrapper.currentAssessment.MissionNumber__c}
+                                                                        </apex:outputText>
+                                                                    </li>
+                                                                    <li class="slds-item">{!$Label.ASRef}: {!currentAssessmentWrapper.currentAssessment.ASReference__c}</li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">{!$Label.AssessmentDate}: &nbsp;
+                                                                        <apex:outputField value="{!currentAssessmentWrapper.currentAssessment.CreatedDate}" />
+                                                                    </li>
+                                                                    <li class="slds-item">{!$Label.LastAction}: &nbsp;
+                                                                        <apex:outputField value="{!currentAssessmentWrapper.currentAssessment.LastModifiedDate}" />
+                                                                    </li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">
+                                                                        <apex:outputText rendered="{!currentAssessmentWrapper.currentAssessment.BodyShop__c != null && currentAssessmentWrapper.currentAssessment.BodyShop__r.Type == 'Expert'}">
+                                                                            {!$Label.AssessmentInProgress}
+                                                                        </apex:outputText>
+
+                                                                        <apex:outputText rendered="{! currentAssessmentWrapper.currentAssessment.BodyShop__c == null || (currentAssessmentWrapper.currentAssessment.BodyShop__c != null && currentAssessmentWrapper.currentAssessment.BodyShop__r.Type != 'Expert')}">
+                                                                            {!$Label.MyAssessment}
+                                                                        </apex:outputText>
+                                                                    </li>
+                                                                </ul>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </apex:repeat>
+                                        </ul>                        
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </apex:outputText>               
+                    <!-- DUN 14/05/2018 Case C-002235 : Customer Site : Search bar should retrieve other results than assessments -->
+                    <!--Invoices-->
+                    <apex:outputText rendered="{!!isListInvoicesEmpty}">
+                        <div class=" slds-size--1-of-2 slds-col--padded">
+                            <article class="slds-card alignItemCenter" >
+                                <div class="slds-card__header slds-grid">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div class="slds-media__body">
+                                            <h2>
+                                                <span class="slds-text-heading_small">{!$ObjectType.Invoice__c.labelPlural}</span>
+                                            </h2>
+                                        </div>
+                                    </header>
+                                </div>
+                                <div class="slds-card__body">
+                                    <div class="slds-card__body_inner">
+                                        <ul class="slds-has-dividers_around-space">
+                                            <apex:repeat value="{!listInvoices}" var="invoice">
+                                                <li class="slds-item slds-theme_default">
+                                                    <div class="slds-tile slds-tile_board slds-media">
+                                                        <div class="slds-media__figure recordInvSVG" />
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-tile__detail slds-text-body_small">
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right slds-text-heading_medium">
+                                                                    <li class="slds-item">
+                                                                        <a href="javascript:void(0)" target ="_self" onclick = "callSendRequestJs('{!invoice.Number__c}','{!invoice.Id}','{!invoice.TECH_Number__c}','{!invoice.TechCountryCode__c}')" class="slds-list_horizontal slds-has-dividers_right"> 
+                                                                            <span class="slds-item">
+                                                                                <apex:outputField value="{!invoice.Assessment__r.Manufacturer__c}" />
+                                                                            </span>
+                                                                            <span class="slds-item">{!invoice.Assessment__r.ModelV2__c}</span>
+                                                                            <span class="slds-item">{!invoice.PlateNumber__c}</span>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">
+                                                                        {!$ObjectType.Invoice__c.fields.Number__c.label}
+                                                                        :&nbsp;{!invoice.Number__c}
+                                                                    </li>
+                                                                    <li class="slds-item">{!$ObjectType.Invoice__c.fields.Type__c.label}: {!invoice.Type__c}</li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">{!$ObjectType.Invoice__c.fields.Date__c.label}: &nbsp;
+                                                                        <apex:outputField value="{!invoice.Date__c}" />
+                                                                    </li>
+                                                                    <li class="slds-item">{!$ObjectType.Invoice__c.fields.InvoicePaidDate__c.label}: &nbsp;
+                                                                        <apex:outputField value="{!invoice.InvoicePaidDate__c}" />
+                                                                    </li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">{!$ObjectType.Invoice__c.fields.InvoicePaidDate__c.label}: &nbsp;
+                                                                        <apex:outputField value="{!invoice.TotalNet__c}" />
+                                                                    </li>
+                                                                </ul>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </apex:repeat>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </apex:outputText>  
+                </div>
+
+                <!-- AMI 23/11/2018  C-002781 : Migrate Spain to R4
+                                              : Display Cases -->
+                <div class="slds-grid">
+                    <!--Assessment has case -->
+                    <apex:outputText rendered="{!(!isAssessmentWrapperListEmpty && !isListCaseEmpty)}">
+                        <div class=" slds-size--1-of-2 slds-col--padded">
+                            <article class="slds-card alignItemCenter" >
+                                <div class="slds-card__header slds-grid">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div class="slds-media__body">
+                                            <h2>
+                                                <span class="slds-text-heading_small">{!$ObjectType.Assessment__c.labelPlural}</span>
+                                            </h2>
+                                        </div>
+                                    </header>
+                                </div>
+                                <div class="slds-card__body">
+                                    <div class="slds-card__body_inner">                            
+                                        <ul class="slds-has-dividers_around-space">
+                                            <apex:repeat value="{!assessmentWrapperList}" var="currentAssessmentWrapper">
+                                                <li class="slds-item slds-theme_default">
+                                                    <div class="slds-tile slds-tile_board slds-media">
+                                                        <div class="slds-media__figure recordSVG" />
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-tile__detail slds-text-body_small">
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right slds-text-heading_medium">
+                                                                    <li class="slds-item">
+                                                                        <a href="{!IF(!currentAssessmentWrapper.redirectToSO, $Page.OrderChooseAssessment & '?AssessmentId=' & currentAssessmentWrapper.currentAssessment.EncodedId__c, $Page.ASPISSalesOrder & '?Id=' & currentAssessmentWrapper.salesOrderEncodedId)}" class="slds-list_horizontal slds-has-dividers_right">
+                                                                            <span class="slds-item">
+                                                                                <apex:outputField value="{!currentAssessmentWrapper.currentAssessment.Manufacturer__c}" />
+                                                                            </span>
+                                                                            <span class="slds-item">
+                                                                                {!currentAssessmentWrapper.currentAssessment.ModelV2__c}</span>
+                                                                            <span class="slds-item">{!currentAssessmentWrapper.currentAssessment.PlateNumber2__c}
+                                                                            </span>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">
+                                                                        {!$ObjectType.Assessment__c.fields.ClaimReference__c.label}
+                                                                        :&nbsp;{!currentAssessmentWrapper.currentAssessment.ClaimReference__c}
+                                                                    </li>
+                                                                    <li class="slds-item">{!$Label.ASRef}: {!currentAssessmentWrapper.currentAssessment.ASReference__c}</li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">{!$Label.AssessmentDate}: &nbsp;
+                                                                        <apex:outputField value="{!currentAssessmentWrapper.currentAssessment.CreatedDate}" />
+                                                                    </li>
+                                                                    <li class="slds-item">{!$Label.LastAction}: &nbsp;
+                                                                        <apex:outputField value="{!currentAssessmentWrapper.currentAssessment.LastModifiedDate}" />
+                                                                    </li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">
+                                                                        <apex:outputText rendered="{!currentAssessmentWrapper.currentAssessment.BodyShop__c != null && currentAssessmentWrapper.currentAssessment.BodyShop__r.Type == 'Expert'}">
+                                                                            {!$Label.AssessmentInProgress}
+                                                                        </apex:outputText>
+
+                                                                        <apex:outputText rendered="{! currentAssessmentWrapper.currentAssessment.BodyShop__c == null || (currentAssessmentWrapper.currentAssessment.BodyShop__c != null && currentAssessmentWrapper.currentAssessment.BodyShop__r.Type != 'Expert')}">
+                                                                            {!$Label.MyAssessment}
+                                                                        </apex:outputText>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </apex:repeat>
+                                        </ul>                        
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </apex:outputText>               
+                    
+                    <!--Cases-->
+                    <apex:outputText rendered="{!!isListCaseEmpty}">
+                        <div class=" slds-size--1-of-2 slds-col--padded">
+                            <article class="slds-card alignItemCenter" >
+                                <div class="slds-card__header slds-grid">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div class="slds-media__body">
+                                            <h2>
+                                                <span class="slds-text-heading_small">{!$Label.GlobalSearchMsg1}</span>
+                                            </h2>
+                                        </div>
+                                    </header>
+                                </div>
+                                <div class="slds-card__body">
+                                    <div class="slds-card__body_inner">
+                                        <ul class="slds-has-dividers_around-space">
+                                            <apex:repeat value="{!lstCaseWrapper}" var="cs">
+                                                <li class="slds-item slds-theme_default">
+                                                    <div class="slds-tile slds-tile_board slds-media">
+                                                        <div class="slds-media__figure recordInvSVG" />
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-tile__detail slds-text-body_small">
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right slds-text-heading_medium">
+                                                                    <li class="slds-item">
+                                                                        <a href="/apex/ASPISMyCaseDetail?id={!cs.cseEncodedId}" class="slds-list_horizontal slds-has-dividers_right"> 
+                                                                            <span class="slds-item">
+                                                                                <apex:outputField value="{!cs.cse.Name}" />
+                                                                            </span>
+                                                                            <span class="slds-item">
+                                                                                <apex:outputField value="{!cs.cse.Type__c}"/>
+                                                                            </span>
+
+                                                                            <span class="slds-item">
+                                                                                <apex:outputField value="{!cs.cse.Status__c}"/>
+                                                                            </span>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">
+                                                                        {!cs.cse.Subject__c}
+                                                                    </li>
+                                                                </ul>
+
+                                                                <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                                    <li class="slds-item">{!$ObjectType.Case__c.fields.CreatedDate.label}: &nbsp;
+                                                                        <apex:outputField value="{!cs.cse.CreatedDate}" />
+                                                                    </li>
+                                                                    <li class="slds-item">{!$ObjectType.Case__c.fields.LastModifiedDate.label}: &nbsp;
+                                                                        <apex:outputField value="{!cs.cse.LastModifiedDate}" />
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </apex:repeat>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </apex:outputText>  
+                </div>
+
+                <!--No result--> 
+                <apex:outputText rendered="{!(isAssessmentWrapperListEmpty && isListInvoicesEmpty)}">
+                    <article class="slds-card alignItemCenterAssessmentOnly" >
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__body">
+                                    <h2>
+                                        <apex:outputText rendered="{!isShowingSearchResult}">
+                                            <span class="slds-text-heading_small">{!$Label.Assessments}</span>
+                                        </apex:outputText>
+
+                                        <apex:outputText rendered="{!!isShowingSearchResult}">
+                                            <span class="slds-text-heading_small">{!$Label.RecentlyViewed}</span>
+                                        </apex:outputText>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body">
+                            <div class="slds-card__body_inner">                            
+                                <ul class="slds-has-dividers_around-space">
+                                    {!$Label.NoResultFound}
+                                </ul>                        
+                            </div>
+                        </div>
+                    </article>
+                </apex:outputText>  
+
+                <!-- DUN 14/05/2018 Case C-002235 : Customer Site : Search bar should retrieve other results than assessments -->
+                <apex:outputText rendered="{!displayGotopButton}">
+                    <a href="#formtop">
+                        <div class="arrowUpSVG slds-float_right" style="margin: 20px" />
+                    </a>
+                </apex:outputText>
+
+                <apex:actionstatus onstart="$j('#spinner').show();" onstop="$j('#spinner').hide();" id="statusSpinner" />
+                <div id="spinner" class="slds-spinner_container" style="display:none;">
+                    <div class="slds-spinner slds-spinner_large" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+
+                <div id="toastMessage" 
+                    class="slds-notify_container slds-hide">
+                    <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                        <button class="slds-button slds-notify__close slds-button_icon-inverse" 
+                                title="{!$Label.Close}"
+                                type="button"
+                                onclick="hideError();">
+                        </button>
+                        <div class="slds-notify__content">
+                            <p class="slds-text-align_center customErrorMsg"></p>
+                            <apex:pagemessages id="toastErrorMessage" escape="false" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="errorModal"
+                    class="slds-modal slds-modal_prompt"
+                    aria-hidden="false"
+                    role="dialog">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                            <h2 class="slds-text-heading_medium">{!$Label.ErrorModalHeader}</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <p class="slds-m-bottom_medium">
+                                {!$Label.ErrorModalBody}
+                            </p>
+                            <apex:pagemessages escape="false" />
+                        </div>
+                        <div class="slds-modal__footer slds-theme_default">
+                            <input type="button"
+                                class="slds-button slds-button_destructive"
+                                value="{!$Label.Close}"
+                                onclick="hideError();" />
+                        </div>
+                    </div>
+                </div>
+                <div id="errorModalBackdrop" class="slds-backdrop"></div>
+
+                <apex:outputText id="welcomeContainer" rendered="{!showWelcomeModal}">
+                    <div id="welcomeModal"
+                        class="slds-modal"
+                        aria-hidden="false"
+                        role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header slds-theme_info slds-theme_alert-texture">
+                                <h2 class="slds-text-heading_medium">{!$Label.WelcomeModalHeader}</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <p class="slds-m-bottom_medium">
+                                    <apex:outputText value="{!$Label.SearchWelcomeModalBody}" escape="false"/>
+                                </p>
+                            </div>
+                            <div class="slds-modal__footer slds-modal__footer_directional">
+                                <div class="slds-form-element slds-float_left">
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-checkbox">
+                                            <apex:inputField id="hidePopupCheckbox" value="{!currentUser.HideSiteWelcomePopup__c}"/>
+                                            <label class="slds-checkbox__label" for="{!$Component.hidePopupCheckbox}">
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label">{!$Label.DoNotShowAgain}</span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <input type="button"
+                                    class="slds-button slds-button_brand"
+                                    value="{!$Label.Close}"
+                                    onclick="closeWelcomeModal();" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="welcomeModalBackdrop" class="slds-backdrop"></div>
+                </apex:outputText>
+            </div>
+
+            <apex:actionfunction name="search" action="{!searchData}" rerender="searchForm" status="statusSpinner">
+                <apex:param name="searchTerm" assignTo="{!inputTerm}" value=""/><!--VSU 17/07/18 C-002644 Added param-->
+            </apex:actionfunction>
+            <apex:actionfunction name="getRecentList" action="{!getRecentList}" rerender="searchForm" status="statusSpinner" />
+            <apex:actionfunction name="checkHideSiteWelcomePopup" action="{!checkHideSiteWelcomePopup}" rerender="welcomeContainer" />
+
+            <apex:includescript value="{!URLFOR($Resource.jQueryDataTable, 'media/js/jquery.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/icons.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/site.js')}" />
+            <apex:includescript value="{!URLFOR($Resource.ASPISOrderSite, 'js/FileSaver.min.js')}" />
+            <script>
+                if (typeof jQuery != 'undefined') {
+                    $j = jQuery.noConflict();
+                }
+
+
+                function callSendRequestJs(invoiceNo, invoiceId, invoiceTechNo, invCountryCode) {
+                    invoiceTechNo = invoiceTechNo == 'undefined' ? '' : invoiceTechNo;
+                    invoiceNo = invoiceNo == 'undefined' ? '' : invoiceNo;
+                    invoiceId = invoiceId == 'undefined' ? '' : invoiceId;
+
+
+                    RESTPostInvoice.sendRequestForPdf(invoiceNo, invoiceId, invoiceTechNo, invCountryCode, function(result, event) {
+                        console.log('##event.status', event.status);
+                        //alert(invoiceNo);
+                        if (event.status) {
+                            //console.log('##result', result); 
+                            if (result.indexOf('Error') == -1 && result != '') {
+                                var blobData = b64toBlob(result, "application/pdf");
+                                saveAs(blobData, invoiceNo + ".pdf");
+                                console.log('##sendRequestJS');
+                                console.log('##invoiceTechNo '+invoiceTechNo);
+                            } else {
+                                $j(".customErrorMsg").html("{!JSENCODE($Label.CegedimPdfError)}");
+                                showError(true, true);
+                            }
+                        } else {
+                            console.log(event.message);
+                        }
+                    }, {
+                        escape: true
+                    });
+
+                }
+
+                function b64toBlob(b64Data, contentType, sliceSize) {
+                    contentType = contentType || '';
+                    sliceSize = sliceSize || 512;
+
+                    var byteCharacters = atob(b64Data.replace(/\s/g, ''));
+                    var byteArrays = [];
+
+                    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                        var byteNumbers = new Array(slice.length);
+                        for (var i = 0; i < slice.length; i++) {
+                            byteNumbers[i] = slice.charCodeAt(i);
+                        }
+
+                        var byteArray = new Uint8Array(byteNumbers);
+
+                        byteArrays.push(byteArray);
+                    }
+
+                    var blob = new Blob(byteArrays, {
+                        type: contentType
+                    });
+                    return blob;
+                }
+
+                $j(document).ready(function(){
+                /*  var headerHeight = $j('#fixedHeader').height();
+                    $j('#topCard').css({'margin-top':headerHeight+5});
+                    console.log('##in fixed');*/            
+
+                    $j('[id$="searchInput"]').on({
+                        "keypress": function(event) {
+                            // Key press to prevent enter key on blank input
+                            if ((window.event && window.event.keyCode == 13) || event.which == 13)  {
+                                if (!$j('[id$="searchInput"]').val()) {
+                                    return false;
+                                } else {
+                                    $j('#searchBox').removeClass('slds-is-open');
+                                    console.log('#searchInput'+$j('[id$="searchInput"]').val());
+                                    search($j('[id$="searchInput"]').val());
+                                    //VSU 17/07/18 C-002644 Added param
+                                    return false;
+                                }
+                            }
+                        },
+                        "keyup": function(event) {
+                            console.log('in keyup');
+                            // to copy the text to the dropdown of the search
+                            if (!((window.event && window.event.keyCode == 13) || event.which == 13)) {
+                                if (!$j('[id$="searchInput"]').val()) {
+                                    $j('#searchBox').removeClass('slds-is-open');
+                                    $j('#clearBtn').addClass('slds-hide');
+                                    if( (((window.event && window.event.keyCode == 8) || event.which == 8) ||
+                                        ((window.event && window.event.keyCode == 46) || event.which == 46))
+                                        && {!isShowingSearchResult})
+                                    {
+                                        var href = window.location.href,
+                                           newUrl = href.substring(0, href.indexOf('?'));
+                                        if (href != 'undefined'){
+                                            window.history.replaceState({}, '', newUrl);
+                                        }
+                                        getRecentList();
+                                        /*var headerHeight = $j('#fixedHeader').height();
+                                        $j('#topCard').css({'margin-top':headerHeight+5});
+                                        console.log('headerHeight : ', headerHeight);*/
+                                    }
+                                } else {
+                                    $j('#dataInput').html($j('[id$="searchInput"]').val());
+                                    $j('#searchBox').addClass('slds-is-open');
+                                    $j('#clearBtn').removeClass('slds-hide');
+                                }
+                            }
+                        },
+                        "focus": function() {
+                            // to show the dropdown on focus of the input when having at least an input
+                            if ($j('[id$="searchInput"]').val()) {
+                                $j('#dataInput').html($j('[id$="searchInput"]').val());
+                                $j('#searchBox').addClass('slds-is-open');
+                                $j('#clearBtn').removeClass('slds-hide');
+                            }
+                        },
+                        "focusout": function() {
+                            // to remove the dropdown on focus out of the input
+                            $j('#searchBox').removeClass('slds-is-open');
+                            //$j('#clearBtn').addClass('slds-hide');
+                        }
+                    });
+
+                });
+
+                function clearSearchInput() {
+                    $j('[id$="searchInput"]').val('');
+                    $j('#searchBox').removeClass('slds-is-open');
+                    $j('#clearBtn').addClass('slds-hide');
+
+                    if({!isShowingSearchResult})
+                    {
+                        getRecentList();
+                    }
+                }
+
+                function showClearSearchInput() {
+                    if($j('[id$="searchInput"]').val())
+                    {
+                        $j('#clearBtn').removeClass('slds-hide');
+                    }
+                }
+
+                function closeWelcomeModal()
+                {
+                    checkHideSiteWelcomePopup();
+                    hideWelcomeMessage();
+                }
+
+                $j(document).click(function(event){
+                    closeDropdowns(event);
+                });
+                
+                renderIcons();
+                showError({!hasErrors}, {!isToastError});
+                showClearSearchInput();
+                showWelcomeMessage({!showWelcomeModal});
+            </script>
+        </apex:form>
+    </body>
+
+    </html>
+</apex:page>

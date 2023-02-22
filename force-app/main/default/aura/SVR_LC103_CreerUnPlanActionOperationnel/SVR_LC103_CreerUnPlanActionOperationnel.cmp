@@ -1,0 +1,221 @@
+<!--
+  @description       : 
+  @author            : JPI
+  @group             : 
+  @last modified on  : 10/06/2021
+  @last modified by  : JPI
+  Modifications Log 
+  Ver   Date         Author   Modification
+  1.0   11/01/2021   JPI   Initial Version
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="public" controller="SVR_AP102_GetRecordTypePlanAction">
+    
+    <aura:attribute name="isOpen" type="boolean" default="true" />
+    <aura:attribute name="isAdmin" type="boolean" default="false" />
+    <aura:attribute name="isFactu" type="boolean" default="false" />
+    <aura:attribute name="isQualite" type="boolean" default="false" />
+    <aura:attribute name="isGroChoc" type="boolean" default="false" />
+    <aura:attribute name="isAppel" type="boolean" default="false" />
+    <aura:attribute name="nomDuGestionnaire" type="String" />
+    <aura:attribute name="recordTypeId" type="String" />
+    <aura:attribute name="type" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!v.isOpen}">
+        <div role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open">
+            <div class="container slds-modal__container">
+                <lightning:recordEditForm recordTypeId="{!v.recordTypeId}" objectApiName="Audit_Plan_Action__c" onsuccess="{!c.handleSuccess}">
+                    <lightning:messages />
+                    <!--Header-->
+                    <div class="slds-modal__header">
+                        <button class="closeButton slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModal}">
+                            <span class="slds-assistive-text">Cancel</span>
+                            <img src='{!$Resource.SVR_CloseButton}' />
+                        </button>
+                        <aura:if isTrue="{!v.isAdmin}">
+                            <h2 id="header43" class="slds-text-heading--medium">Créer un plan d'action Opérationnel - BO Admin.</h2>
+                        </aura:if>
+                        <aura:if isTrue="{!v.isFactu}">
+                            <h2 id="header43" class="slds-text-heading--medium">Créer un plan d'action Opérationnel - BO Factu.</h2>
+                        </aura:if>
+                        <aura:if isTrue="{!v.isQualite}">
+                            <h2 id="header43" class="slds-text-heading--medium">Créer un plan d'action Opérationnel - Qualité.</h2>
+                        </aura:if>
+                        <aura:if isTrue="{!v.isGroChoc}">
+                            <h2 id="header43" class="slds-text-heading--medium">Créer un plan d'action Opérationnel - Gros chocs.</h2>
+                        </aura:if>
+                        <aura:if isTrue="{!v.isAppel}">
+                            <h2 id="header43" class="slds-text-heading--medium">Créer un plan d'action Opérationnel - FO Appel.</h2>
+                        </aura:if>
+                    </div>
+
+                    <!--Body-->
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Information</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AuditOperationnel__c"  value='{!v.recordId}'/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_NomGestionnaire__c"  value='{!v.nomDuGestionnaire}'/>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Axe d'amélioration 1</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="AxeAmelioration1__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AmelItem1__c" />
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AmelCommentaire1__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_StatutAmelioration1__c" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Axe d'amélioration 2</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="AxeAmelioration2__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AmelItem2__c" />
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AmelCommentaire2__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_StatutAmelioration2__c" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Axe d'amélioration 3</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="AxeAmelioration3__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AmelItem3__c" />
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_AmelCommentaire3__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="SVR_StatutAmelioration3__c" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Axe d'amélioration additionnels</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:inputField fieldName="SVR_AxesAmeliorationAdditionnels__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-1">
+                                </div>
+                            </div>
+                            <!-- <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:inputField fieldName="SVR_MSTCommentaire__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-1">
+                                </div>
+                            </div> -->
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Commentaire Global</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:inputField fieldName="Commentaire_Global__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Validation Collaborateur</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:inputField fieldName="Status_du_Partage_du_plan_d_action__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-1">
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:inputField fieldName="Commentaire_Collaborateur__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3  class="test-id__section-header-container slds-section__title">
+                                <button aria-controls="sectionContent-1746" aria-expanded="true" class="test-id__section-header-button slds-section__title-action slds-button">
+                                    <span class="test-id__section-header-title slds-truncate">Prochaines étapes</span>
+                                </button>
+                            </h3>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="Date_du_prochain_suivi__c" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:inputField fieldName="User__c" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Footer-->
+                    <div class="slds-modal__footer">
+                        <lightning:button name="Save" label="Annuler" onclick="{!c.closeModal}" class="slds-m-top_medium"/>
+                        <lightning:button type="submit" name="Save" label="Créer" class="slds-m-top_medium slds-button--brand"/>
+                    </div>
+                </lightning:recordEditForm>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

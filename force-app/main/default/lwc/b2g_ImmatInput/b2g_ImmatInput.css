@@ -1,0 +1,10 @@
+.axa-button {
+    --sds-c-button-radius-border : 0px !important;
+    --sds-c-input-radius-border : 0px !important;
+    --sds-c-input-color-border : var(--lwc-brandAccessible);;
+    border-radius: 0px;
+}
+
+.immat-text{
+    font-size: 16px;
+}

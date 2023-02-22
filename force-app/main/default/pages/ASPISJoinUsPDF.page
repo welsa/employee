@@ -1,0 +1,740 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="ASPISJoinUsPDF" renderAs="pdf" language="{!language}" contentType="application/pdf">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.css')}" />
+        <style>
+            @page {
+                size: A4;
+                margin: 15px;
+                margin-bottom: 50px;
+                @bottom-right {
+                    content: counter(page) "/" counter(pages);
+                    font-size: 12px !important;
+                    font-weight: 200 !important;
+                    margin-top: 0px;
+                }
+                @bottom-left {
+                    content: "ALPHA SCALE FRANCE SAS Formulaire d’adhésion";
+                    font-size: 12px !important;
+                    font-weight: 200 !important;
+                }
+            }
+            
+            body {
+                font-family: sans-serif !important;
+                font-size: 13px !important;
+                font-weight: 200 !important;
+            }
+            
+            h2 {
+                color: #1f497d !important;
+                font-size: 24px;
+            }
+            
+            h3 {
+                color: #1f497d !important;
+                font-size: 18px;
+            }
+            
+            a {
+                color: blue !important;
+            }
+            
+            .title {
+                width: 100%;
+                text-align: center;
+                vertical-align: bottom;
+                border-bottom: 2px solid #4f81bd;
+            }
+            
+            .subtitle {
+                margin-bottom: 6px;
+            }
+            
+            .section {
+                page-break-before: always;
+            }
+            
+            .text-justify {
+                text-align: justify;
+            }
+            
+            .text-center {
+                text-align: center;
+            }
+            
+            .text-top {
+                vertical-align: top;
+            }
+            
+            .required {
+                color: red !important;
+            }
+            
+            .sepaId {
+                font-size: 24px;
+            }
+            
+            .unicodeCharacter {
+                font-family: Arial Unicode MS !important;
+                font-size: 24px !important;
+            }
+            
+
+            .margin-bottom-small {
+                margin-bottom: 12px;
+            }
+            .padding-top-large {
+                padding-top: 25px;
+            }
+            .margin-top-small {
+                margin-top: 20px;
+            }
+            
+            .table-bordered {
+                border: 1px solid #bfbfbf;
+            }
+            
+            .table-bordered td,
+            .table-bordered th {
+                border: 1px solid #bfbfbf;
+                font-weight: 200 !important;
+                width: 50%;
+                padding-left: 12px;
+            }
+            
+            .table-bordered td {
+                background: #f1f4ff !important;
+            }
+            
+            .signatureTable th {
+                width: 33% !important;
+            }
+            
+            .signatureTable td {
+                width: 50% !important;
+            }
+            
+            .signatureTable .dateCol {
+                width: 17% !important;
+            }
+            
+            .signatureTable .dateCell {
+                height: 100px !important;
+            }
+            
+            .payment {
+                width: 100%;
+            }
+            
+            .payment td {
+                width: 30%;
+            }
+            
+            .payment td unicodeCharacter {
+                width: 20%;
+            }
+
+            .fixedLayout {
+                table-layout: fixed;
+            }
+
+            .text-size-ten {
+                font-size: 10px;
+            }
+            .text-size-nine {
+                font-size: 9px;
+            }
+            .toBold{
+                font-weight: 700;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div>
+            <table>
+                <thead></thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <img src="{!URLFOR($Resource.AlphaScaleLogo, 'logo_alpha_scale_high.png')}" width="300" alt="Alpha Scale Logo" />
+                        </td>
+                        <td>
+                            <p>Alpha Scale France SAS</p>
+                            <p>21 avenue Matignon</p>
+                            <p>75008 Paris</p>
+                            <p>France (FR)</p>
+                            <p>TVA Intra : FR40812650166</p>
+                            <p>SAS au capital de 10 000€</p>
+                            <p>N° R.C.S. : Paris 812650166</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br/>
+
+        <div class="title">
+            <h2>Formulaire d’ouverture de compte</h2>
+        </div>
+
+        <br/>
+
+        <p class="text-justify"><!-- WCH 16/06/2020 C-003810 -->
+            Merci de remplir ce formulaire et de le transmettre par courrier électronique à l’adresse <a>{!$Label.AspisServiceEmailAddress}</a>. Les champs en rouge sont <span class="required">obligatoires.</span>
+        </p>
+
+        <br/>
+
+        <div class="subtitle">
+            <h3>Identification</h3>
+        </div>
+
+        <table class="table-bordered fixedLayout">
+            <thead></thead>
+            <tbody>
+                <tr>
+                    <th class="required" colspan="2">{!$ObjectType.Account.fields.Name.label}</th>
+                    <td colspan="2">
+                        <apex:outputField value="{!currentAccount.Name}" />
+                    </td>
+                </tr>
+                <tr>
+                    <th class="required" colspan="2">{!$ObjectType.Account.fields.BillingStreet.label}</th>
+                    <td colspan="2">
+                        <apex:outputField value="{!currentAccount.BillingStreet__c}" /><!-- WCH 24/08/2020 C-003838 -->
+                    </td>
+                </tr>
+                <tr>
+                    <th class="required" colspan="2">{!$ObjectType.Account.fields.BillingPostalCode.label}</th>
+                    <td colspan="2">
+                        <apex:outputField value="{!currentAccount.BillingPostalCode__c}" /><!-- WCH 24/08/2020 C-003838 -->
+                    </td>
+                </tr>
+                <tr>
+                    <th class="required" colspan="2">{!$ObjectType.Account.fields.BillingCity.label}</th>
+                    <td colspan="2">
+                        <apex:outputField value="{!currentAccount.BillingCity__c}" /><!-- WCH 24/08/2020 C-003838 -->
+                    </td>
+                </tr>
+                <tr>
+                    <th class="required" colspan="2">{!$ObjectType.Account.fields.BillingCountry.label}</th>
+                    <td colspan="2">
+                        <apex:outputField value="{!currentAccount.BillingCountry__c}" /><!-- WCH 24/08/2020 C-003838 -->
+                    </td>
+                </tr>
+                <tr>
+                    <th class="required">{!$ObjectType.Account.fields.Phone.label}</th>
+                    <td>
+                        <apex:outputField value="{!currentAccount.Phone}" />
+                    </td>
+                    <th>{!$ObjectType.Account.fields.Fax.label}</th>
+                    <td>
+                        <apex:outputField value="{!currentAccount.Fax}" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>{!$ObjectType.Contact.fields.MobilePhone.label}</th>
+                    <td>
+                        <apex:outputField value="{!currentContact.MobilePhone}" />
+                    </td>
+                    <th>{!$ObjectType.Contact.fields.OtherPhone.label}</th>
+                    <td>
+                        <apex:outputField value="{!currentContact.OtherPhone}" />
+                    </td>
+                </tr>
+                <tr>
+                    <th class="required" colspan="2">{!$ObjectType.Account.fields.ContactEmail__c.label}</th>
+                    <td colspan="2">
+                        <a>{!currentAccount.ContactEmail__c}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="required" colspan="2">{!$Label.SIRETCode}</th>
+                    <td colspan="2">
+                        <apex:outputField value="{!currentAccount.LocalReferenceNumber__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <th class="required" colspan="2">{!$ObjectType.Account.fields.VATNumber__c.label}</th>
+                    <td colspan="2">
+                        <apex:outputField value="{!currentAccount.VATNumber__c}" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br/>
+
+        <div class="subtitle">
+            <h3>Livraison</h3>
+        </div>
+
+        <table class="table-bordered fixedLayout">
+            <thead></thead>
+            <tbody>
+                <tr>
+                    <th class="required" colspan="2">Responsable des achats</th>
+                    <td colspan="2">
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        Adresse de livraison
+                        <br/>(si différente de l’adresse de facturation)
+                    </th>
+                    <td colspan="2">
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">{!$ObjectType.Account.fields.ShippingPostalCode.label}</th>
+                    <td colspan="2">
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">{!$ObjectType.Account.fields.ShippingCity.label}</th>
+                    <td colspan="2">
+                    </td>
+                </tr>
+                <tr>
+                    <th>{!$ObjectType.Account.fields.Phone.label}</th>
+                    <td>
+                    </td>
+                    <th>{!$ObjectType.Account.fields.Fax.label}</th>
+                    <td>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br/>
+
+        <table class="table-bordered signatureTable">
+            <thead>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="required text-top dateCol">Date</th>
+                    <th class="required text-top">Function</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="dateCol dateCell" rowspan="2"></td>
+                    <th class="required text-top">Nom et Prénom</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th class="required text-top">Signature</th>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="title section">
+            <h2>Mandat de prélèvement SEPA</h2>
+        </div>
+
+        <br/>
+
+        <div class="text-size-ten">
+            <p>
+                En signant ce formulaire de mandat, vous autorisez ALPHA SCALE FRANCE à envoyer des instructions à votre banque pour débiter votre compte, et votre banque à débiter votre compte conformément aux instructions d'ALPHA SCALE France.
+                <br/> Vous bénéficiez du droit d’être remboursé par votre banque selon les conditions décrites dans la convention que vous avez passée avec elle.
+                <br/> Une demande de remboursement doit être présentée :
+                <br/> - dans les 8 semaines suivant la date de débit de votre compte pour un prélèvement autorisé,
+                <br/> - sans tarder et au plus tard dans les 13 mois en cas de prélèvement non autorisé.
+            </p>
+        </div>
+
+        <br/>
+
+        <div class="subtitle">
+            <h3>Coordonnées du débiteur</h3>
+        </div>
+
+        <table class="table-bordered">
+            <thead></thead>
+            <tbody>
+                <tr>
+                    <th class="required">Raison sociale / nom du titulaire</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th class="required">Adresse</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th class="required">Code postal</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th class="required">Ville</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th class="required">Pays</th>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br/>
+
+        <p>Veuillez obligatoirement joindre un RIB</p>
+
+        <br/>
+
+        <table class="table-bordered">
+            <thead></thead>
+            <tbody>
+                <tr>
+                    <th class="required">
+                        IBAN
+                        <p class="required text-size-ten">Numéro d’identification international du compte bancaire</p>
+                    </th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th class="required">
+                        BIC
+                        <p class="required text-size-ten">Code international d'identification de votre banque</p>
+                    </th>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br/>
+
+        <div class="subtitle">
+            <h3>Coordonnées du créancier</h3>
+        </div>
+
+        <table class="table-bordered">
+            <thead></thead>
+            <tbody>
+                <tr>
+                    <th>Raison sociale / nom du titulaire</th>
+                    <td>ALPHA SCALE FRANCE SAS</td>
+                </tr>
+                <tr>
+                    <th>Adresse</th>
+                    <td>21 avenue Matignon</td>
+                </tr>
+                <tr>
+                    <th>Code postal</th>
+                    <td>75008</td>
+                </tr>
+                <tr>
+                    <th>Ville</th>
+                    <td>Paris</td>
+                </tr>
+                <tr>
+                    <th>Pays</th>
+                    <td>FRANCE (FR)</td>
+                </tr>
+                <tr>
+                    <th>Identifiant créancier SEPA</th>
+                    <td class="text-center text-align sepaId">
+                        <apex:outputText value="{!sepaCreditorIdentifier}" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br/>
+
+        <div class="subtitle">
+            <h3>Type de paiement</h3>
+        </div>
+
+        <table class="payment">
+            <thead></thead>
+            <tbody>
+                <tr>
+                    <td>Paiement récurrent / répétitif</td>
+                    <td class="unicodeCharacter text-center">&#9746;</td>
+                    <td>Paiement ponctuel</td>
+                    <td class="unicodeCharacter text-center">&#9744;</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="table-bordered signatureTable">
+            <thead>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="required text-top dateCol">Date</th>
+                    <th class="required text-top">Fonction</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="dateCol dateCell" rowspan="3"></td>
+                    <th class="required text-top">Nom et Prénom</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th class="required text-top">Lieu de signature</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th class="required text-top">Signature</th>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="text-size-ten">
+            <p>
+                Note : Vos droits concernant le présent mandat sont expliqués dans un document que vous pouvez obtenir auprès de votre banque.
+                <br/> Les informations contenues dans le présent mandat, qui doit être complété, sont destinées à n’être utilisées par le créancier que pour la gestion de sa relation avec son client. Elles pourront donner lieu à l’exercice, par ce dernier,
+                de ses droits d’oppositions, d’accès et de rectification tels que prévus aux articles 38 et suivants de la loi n°78-17 du 6 janvier 1978 relative à l’informatique, aux fichiers et aux libertés.
+                <br/> À retourner à : <a><!-- alphascalefrancegestionnaire@gmail.com WCH 16/06/2020 C-003810-->{!$Label.AspisServiceEmailAddress}</a>.<!--HRM 05/11/2021 C-004491 -->
+            </p>
+        </div>
+
+        <div class="section text-center">
+            <h2>CONDITIONS GÉNÉRALES DE VENTE</h2>
+            <h5 style="font-weight: 700;">Tous nos contrats sont soumis aux présentes conditions générales de vente :</h5>
+            <br/>
+        </div>
+        <div class="text-size-nine text-top"> 
+            <table>
+                <tr>
+                    <td style="width:33%;padding-right: 4px;" class="text-justify margin-top-small text-top">
+                        <p><span class="toBold"> ACCEPTATION : </span>Les présentes conditions générales de
+                            vente figurentsur chacun des documents commerciaux de
+                            la société ALPHA SCALE FRANCE, immatriculée au R.C.S.
+                            de Paris sous le numéro 812 650 166, (ci-après "ASF") et,
+                            en particulier, au dos de toutes les factures, bons de
+                            livraison, ainsi que sur tous nos catalogues et tarifs. Les
+                            présentes conditions générales de vente seront donc
+                            présumées avoir été acceptées par le client à défaut de
+                            rejet explicite dans les huit jours suivant la réception d’un
+                            des documents indiqués ci-dessus. En particulier, en cas
+                            de ventes successives, dès que le client de ASF se
+                            réapprovisionnera auprès de cette dernière, il sera
+                            présumé avoir eu connaissance des présentes conditions
+                            de vente et les avoir acceptées expressément et sans
+                            réserve.<br/><br/>
+                            </p><p>
+                            <span class="toBold">EXPÉDITION :</span> Nos marchandises sont prises en charge
+                            et agréées en nos entrepôts(ou ceux de nos fournisseurs).
+                            Elles voyagent aux risques et périls du client même si
+                            elles sont expédiées franco. En cas de retard ou
+                            d’avaries, des réserves précises et caractérisées devront
+                            être inscrites sur le récépissé de transport au moment
+                            de la réception des marchandises, et le transporteur
+                            devra être avisé de cette avarie par lettre recommandée
+                            avec accusé de réception dans un délai de quarante-huit
+                            heures qui suivra la réception des marchandises. A défaut
+                            de respecter les dispositions ci-dessus, les marchandises
+                            sont présumées avoir été acceptées sans réserve par le
+                            client.<br/><br/>
+                            </p><p>
+                            <span class="toBold">DÉLAIS ET FRAIS DE LIVRAISON : </span>Les délais de livraison
+                            des marchandises ne sont donnés qu’à titre indicatif et
+                            ne sauraient donner droit à des dédommagements de
+                            quelque nature que ce soit en cas de retard de livraison.
+                            Sauf stipulations contraires mentionnées lors de
+                            l’acceptation de la commande, les produits de ASF sont
+                            vendus "franco de port" pour la France métropolitaine
+                            lorsque la commande dépasse une somme pré-définie. A
+                            ce jour, et à titre indicatif, les montants minimums de
+                            commande sont les suivants :
+                            -pour les réparateurs, une somme de 175,00 € nette HT
+                            par expédition ;
+                            Ces montants et ces seuils pourront être révisés à tout
+                            moment, et à sa seule discrétion, par ASF.<br/><br/>
+                            </p><p>
+                            <span class="toBold">PRIX : </span>Nos prix s’entendent pour des marchandises prises
+                            en nos entrepôts (ou ceux de nos fournisseurs). Nous nous
+                            réservonsla faculté de modifier nos prix en fonction des
+                            conditions économiques et fiscales. Dès lors, nos prix ne
+                            sont donnés qu’à titre indicatif et des modifications
+                            pourront avoir lieu sans préavis de notre part.
+                            <br/><br/></p><p>
+                            <span class="toBold">RABAIS, REMISES, RISTOURNES : </span>Les rabais, remises ou
+                            ristournes figurant sur le tarif ne sont donnés qu’à titre
+                            indicatif. Ils pourront être modifiés à tout moment
+                            unilatéralement par ASF.
+                            <br/><br/></p><p>
+                            <span class="toBold">PAIEMENT : </span>Le règlement de nos factures, par le client
+                            ou pour son compte, s’effectue à trente jours date de
+                            réception des marchandises, par virement, comptant ou par
+                            prélèvement sur tout compte bancaire désigné par le client.
+                            La date de paiement prévue pour le client est celle figurant
+                            sur la facture. A la suite de toute difficulté de paiement,
+                            ASF se réserve le droit de suspendre, sans préavis et sans
+                            autre formalité, l’exécution de ses propres obligations
+                            jusqu’au règlement intégral de l’arriéré. De plus, le
+                            paiement comptant ou la fourniture d’une garantie
+                            pourra toujours être exigé par ASF à son client. En
+                            particulier, pour toute demande d’ouverture de compte
+                            de telles garanties pourront être exigées.
+                            <br/><br/></p>
+                    </td>
+                    <td style="width:33%;padding-left: 2px;padding-right: 2px;" class="text-justify margin-top-small text-top"><p>
+                        <span class="toBold">PAIEMENT ANTICIPE : </span>Aucun escompte ne sera pratiqué par
+                        ASF.<br/><br/>
+                    </p><p>
+                        <span class="toBold">PAIEMENT TARDIF : </span>Dans le cas où le délai de paiement
+                        figurant au recto ne serait pas respecté, des pénalités seront
+                        réclamées par ASF, dont le montant correspondra au moins
+                        à trois fois le taux de l’intérêt légal appliqué à la somme due.
+                        Ces pénalités de retard seront augmentées d’une somme
+                        forfaitaire de 40€ relative aux frais de dossier, sans
+                        préjudice d’éventuels dommages et intérêts que ASF se
+                        réserve le droit de demander. Les frais de rejet de cet impayé
+                        seront réclamés en supplément du montant de la facture,
+                        du montant des frais de dossier et des intérêts de retard.<br/><br/>
+                    </p><p>
+                        <span class="toBold">CLAUSE PÉNALE : </span>Outre les montants prévus ci-dessus en cas de
+                        paiement tardif, le non-paiement d’une traite à son échéance,
+                        d’une facture ou d’un relevé impayé après mise en
+                        demeure, entraînera de plein droit, à titre de clause pénale,
+                        une majoration de 10 % du montant principal dû.<br/><br/>
+                    </p><p>
+                        <span class="toBold">ÉCHÉANCE DU TERME : </span>A défaut de paiement d’une seule
+                        échéance ou facture, l’intégralité des sommes dues par le
+                        client à ASF deviendra exigible. De plus, ASF sera autorisée
+                        à suspendre, sans préavis et sans autre formalité, toute
+                        nouvelle livraison à son client dans l’attente du règlement
+                        de l’ensemble des sommes dues.<br/><br/>
+                    </p><p>
+                        <span class="toBold">RÉSERVE DE PROPRIÉTÉ : </span>La marchandise vendue restera
+                        la propriété de ASF jusqu’au complet paiement de son prix,
+                        l’acheteur demeurant responsable des risques courus par les
+                        marchandises dès le départ de ces dernières de nos
+                        entrepôts (ou ceux de nos fournisseurs) et ce jusqu’au parfait
+                        paiement. En particulier, les risques de livraison, de transport
+                        et de stockage demeureront à la charge de l’acheteur. Ce
+                        dernier devra souscrire une assurance lui permettant de
+                        garantir la couverture de tels risques. En cas denon-paiement
+                        de toute somme due à son échéance, les marchandises livrées
+                        par ASF pourront être reprises sur simple sommation.<br/><br/>
+                    </p><p>
+                        <span class="toBold">GARANTIE : </span>Outre la garantie prévue à l’article 1641 du code
+                        civil, le matériel et les marchandises vendus par ASF sont
+                        garantis un an à compter du jour de la livraison à l’exception
+                        des pièces de tôlerie pour lesquelles la durée de la garantie
+                        anticorrosion est fixée à 4 ans à compter du jour de la livraison.
+                        Ces garanties sont exclues lorsque le défaut provient :
+                        - d’une mauvaise utilisation ou montage de la pièce par
+                        l’acheteur ;
+                        - d’une intervention sur la pièce non conforme aux règles de
+                        l’art ;
+                        - de l’usure normale du bien, d’une négligence ou d’une
+                        absence de la part de l’acheteur ;
+                        - en cas de force majeure.
+                        En ce qui concerne la garantie anticorrosion, celle-ci ne joue
+                        qu’en cas de perforation de la pièce.
+                        Exclusions propres à la garantie anticorrosion : facteurs
+                        extérieurs échappant au contrôle d e ASF tels que :
+                        projections extérieures, rayures, retombées industrielles,
+                        pluies acides, transport de matières corrosives, accidents,
+                        réparations consécutives à des dommages ou à de la
+                        corrosion et non effectuées dansles délaisrapides. La mise en
+                        jeu de cette garantie impose que la pièce défectueuse puisse
+                        être expertisée par un mandataire désigné par ASF. Pour le
+                        cas où ce défaut ne serait plus visible et/ou aurait été réparé
+                        par le client avant que le mandataire de ASF ne puisse le
+                        constater, aucune garantie ne pourra être réclamée auprès de
+                        ASF.<br/><br/>
+                    </p><p>
+                        <span class="toBold">LIMITATION DE GARANTIE : </span>La garantie prévue par ASF à
+                        l’article précédent prévoitle remplacement gratuit des pièces<br/><br/>
+                        </p>
+                    </td>
+                    <td style="width:33%;padding-left: 4px" class="text-justify margin-top-small text-top"><p>
+                        reconnues défectueuses après expertise par ses
+                        propres techniciens. Cette garantie exclut expressément
+                        toute autre indemnité de quelque nature que ce soit et,
+                        en particulier, ne sont pas couverts par la présente
+                        garantie les frais de main d’œuvre et de pose ou de
+                        dépose des pièces et des accessoires s’y rapportant, et
+                        des ingrédients. De plus, le remplacement des pièces
+                        n’a pas pour conséquence de prolonger la durée initiale
+                        de la garantie prévue ci-dessus<br/><br/>
+                    </p><p>
+                        <span class="toBold">ÉCHANGE DE MARCHANDISES : </span>Les marchandises
+                        vendues par ASF ne sont ni reprises ni échangées audelà d’un délai de dix jours francs après réception de la
+                        marchandise. Dans tous les cas, aucun retour de
+                        marchandise ne sera accepté sans l’accord préalable de
+                        ASF. Tout avoir se rapportant à un retour dont l’origine
+                        ne serait pas consécutive àuneerreurdeASF fera l’objet
+                        d’une participation forfaitaire aux frais de transport et
+                        de gestion d’un montant de 15,00 € HT.<br/><br/>
+                    </p><p>
+                        <span class="toBold">RESPONSABILITÉ DE ASF : </span>La responsabilité de ASF est
+                        expressément limitée à la garantie définie ci-dessus. Elle
+                        ne pourra, en aucun cas, être engagée en raison d’un
+                        accident causé à des personnes ou à des choses par suite
+                        d’un défaut ou d’un vice de fabrication de notre
+                        matériel. ASF dégage expressément toute possibilité de
+                        garantie à quelque titre que ce soit dans cette hypothèse.<br/><br/>
+                    </p><p>
+                        <span class="toBold">ENGAGEMENT DE QUALITÉ : </span>Les pièces vendues par ASF
+                        sont toutes d’origine et/ou de qualité équivalente à celles
+                        vendues par le constructeur. Le client demeurera seul
+                        responsable de leur montage et fera son affaire de son
+                        remboursement par les compagnies d’assurances. Le
+                        client décharge ASF de toute responsabilité à ce titre.<br/><br/>
+                    </p><p>
+                        <span class="toBold">CLAUSE ATTRIBUTIVE DE JURIDICTION : </span>De convention
+                        expresse entre le client et ASF, les tribunaux de Nanterre
+                        demeurerontseuls compétents pour toute contestation,
+                        mise en cause ou appel en garantie relatifs à l’exécution
+                        des présentes conditions générales de vente et ce,
+                        même en cas de pluralité de défendeurs et au besoin
+                        par dérogation aux dispositions de l’article 42 du code
+                        de procédure civile.<br/><br/>
+                    </p><p>
+                        <span class="toBold">UTILISATION DES MARQUES : </span>ASF rappelle à ses clients
+                        que pour certains de ses produits, elle est contrainte
+                        d’utiliser des marques déposées par les fabricants ou par
+                        des constructeurs automobiles. Cette utilisation n’est
+                        faite qu’à titre de référence nécessaire pour qualifier la
+                        désignation du produit. En aucun cas cette utilisation ne
+                        peut entraîner une confusion sur l’origine des pièces. Il
+                        s’agit pour ASF de désigner le véhicule sur lequel ces
+                        pièces s’adaptent conformément à l’article L 713-6 b) du
+                        code de la propriété intellectuelle.<br/><br/>
+                    </p><p>
+                        <span class="toBold">LIMITATION DE GARANTIE - ACTION EN
+                            RESPONSABILITÉ :</span>
+                        Les marchandises vendues par ASF le sont sans aucune
+                        approbation et/ou engagement de garantie de leur
+                        situation juridique au regard du droit des dessins et
+                        modèles. En particulier, le client demeurera seul juge
+                        de la légalité de sa commande, de l’utilisation de cette
+                        pièce et de la fixation de son prix de vente à l’égard du
+                        client final. Par avance, le client renonce à toute action
+                        en responsabilité ou appel en garantie de ASF dans
+                        quelque action que ce soit, tant en matière civile, que
+                        pénale, au titre d’une éventuelle application de la
+                        législation sur le droit des marques, le droit d’auteur ou
+                        le droit des dessins et modèles<br/><br/>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="text-center padding-top-large">
+                        <span class="toBold">Alpha Scale France SAS</span><br/>
+                        Capital de 10.000 Euros<br/>
+                        Siège Social : 9 avenue des Andes – 91940 Les Ulis – France.<br/>
+                        SIREN : 812 650 166 RCS Paris – TVA FR40812650166<br/>
+                        <apex:outputText value="☏"/>
+                         Tel : +33 1 76 40 01 24<br/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+
+    </html>
+</apex:page>

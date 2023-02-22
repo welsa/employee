@@ -1,0 +1,95 @@
+<apex:page showHeader="false"
+			standardStylesheets="false"
+			standardcontroller="Assessment__c"
+			extensions="VFC01_AssessTimeline"
+			sidebar="false"
+			applyHtmlTag="false"
+			applyBodyTag="false"
+			docType="html-5.0">
+	<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+		<head>
+			<apex:stylesheet value="{!URLFOR($Resource.slds, 'assets/styles/salesforce-lightning-design-system.css')}" />
+			<style>
+				.slds-wizard__progress-bar.failure
+				{
+					background: #df3535;
+					z-index: 1;
+				}
+
+				.slds-wizard__progress-bar
+				{
+					z-index: 2;
+				}
+
+				.slds-wizard .slds-is-canceled .slds-wizard__marker
+				{
+					background: #df3535;
+				}
+
+				.timeline
+				{
+					height:120px;
+					width: 90%
+				}
+
+				.logo
+				{
+					padding-bottom: 35px; 
+					padding-left: 10px;
+					text-align: center;
+				}
+			</style>
+		</head>
+
+		<body>
+			<apex:outputfield value="{!Assessment__c.Status__c}"
+							  rendered="false" />
+			<apex:outputfield value="{!Assessment__c.PreviousStatus__c}"
+							  rendered="false" />
+            <apex:outputfield value="{!Assessment__c.HasBeenSubstituted__c}"
+							  rendered="false" />
+            <!-- <apex:outputfield value="{!Assessment__c.AgencyMode__c}"
+							  rendered="false" /> -->
+
+			<div class="slds">
+				<table>
+					<tr>
+						<td class="timeline">
+							<div class="slds-wizard" role="navigation">
+								<ol class="slds-wizard__list">
+									<apex:repeat var="stepNumber" value="{!mapStepTranslatedStatus}">
+										<li class="slds-wizard__item {!IF(stepNumber <= assessmentCurrentStepNumber, 'slds-is-active', '')}">
+											<span class="slds-wizard__link">
+												<span class="slds-wizard__marker"></span>
+												<span class="slds-wizard__label slds-text-title--caps">{!mapStepTranslatedStatus[stepNumber]}</span>
+											</span>
+										</li>
+										<apex:outputText rendered="{!hasFailed && (stepNumber == assessmentCurrentStepNumber)}">
+											<li class="slds-wizard__item {!IF(stepNumber <= assessmentCurrentStepNumber, 'slds-is-canceled', '')}">
+												<span class="slds-wizard__link">
+													<span class="slds-wizard__marker"></span>
+													<span class="slds-wizard__label slds-text-title--caps">{!mapStatusTranslatedValue['CANCELED']}</span>
+												</span>
+											</li>
+										</apex:outputText>
+									</apex:repeat>
+								</ol>
+								<span class="slds-wizard__progress">
+									<span class="slds-wizard__progress-bar" style="width:{!calculateSuccessfulLineWidth}%;"></span>
+									<span class="slds-wizard__progress-bar failure" style="width:{!calculateFailureLineWidth}%;"></span>
+								</span>
+							</div>
+						</td>
+						<!-- <apex:outputText rendered="{!Assessment__c.AgencyMode__c}">
+							<td class="logo">
+								<apex:image url="{!$Resource.AgencyLogo}" width="70" height="70"/>
+							</td>
+						</apex:outputText> -->
+					</tr>
+				</table>
+			</div>
+		</body>
+
+	</html>
+</apex:page>

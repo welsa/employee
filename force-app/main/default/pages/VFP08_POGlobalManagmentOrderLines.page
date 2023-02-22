@@ -1,0 +1,14 @@
+<apex:page standardcontroller="PurchaseOrder__c">
+	<h1>Delete this page</h1>
+</apex:page>
+<!--<apex:page standardcontroller="PurchaseOrder__c" tabstyle="OrderLine__c" sidebar="false" showheader="false" applyhtmltag="false" extensions="VFC08_POGlobalManagmentOrderLines">
+    <apex:include pagename="VFP04_POManageOrderLines_V3" rendered="{!IF(PurchaseOrder__c.RecordType.Name = 'DraftQuote' && !useDiscountManagement, true, false)}"/>
+    <apex:include pagename="VFP04_POManageOrderLines_V4" rendered="{!IF(PurchaseOrder__c.RecordType.Name = 'DraftQuote' && useDiscountManagement , true, false)}"/>
+    <apex:include pagename="VFP05_POManageOrderLinesDelivery_V2" rendered="{!IF((PurchaseOrder__c.RecordType.Name = 'In Delivery' || PurchaseOrder__c.RecordType.Name = 'Ordered' || PurchaseOrder__c.RecordType.Name = 'Eliminated') && !useDiscountManagement, true, false)}" />
+    <apex:include pagename="VFP05_POManageOrderLinesDelivery_V3" rendered="{!IF((PurchaseOrder__c.RecordType.Name = 'In Delivery' || PurchaseOrder__c.RecordType.Name = 'Ordered' || PurchaseOrder__c.RecordType.Name = 'Eliminated') && useDiscountManagement, true, false)}" />
+    !--<apex:include pagename="VFP04_POManageOrderLines_V4" rendered="{!PurchaseOrder__c.RecordType.Name = 'DraftQuote'}" />
+    <apex:include pagename="VFP05_POManageOrderLinesDelivery_V3" rendered="{!PurchaseOrder__c.RecordType.Name = 'In Delivery'}" />--
+    <div style="display:none">
+        {!PurchaseOrder__c.RecordType.Name}{!PurchaseOrder__c.TECH_AssessmentCountryCode__c}
+    </div>
+</apex:page>-->
